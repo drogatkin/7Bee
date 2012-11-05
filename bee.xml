@@ -353,7 +353,7 @@ $JAVA_HOME/bin/java -Xmx256000000 -jar $BEE_HOME/lib/bee.jar "$@"</parameter>
       </function>
       <task name="jar dependencies" code="sun.tools.jar.Main">
          <parameter value="-cf"/>
-         <parameter value="deploy\dependency.zip" type="file"/>
+         <parameter value="deploy/dependency.zip" type="file"/>
          <parameter value="-C"/>
          <parameter variable="JDEPEND_HOME"/>
          <parameter value="."/>
