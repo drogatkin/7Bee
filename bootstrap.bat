@@ -7,7 +7,7 @@ if exist lib goto :compile
 mkdir lib
 :compile
 "%JAVA_HOME%\bin\javac" -source 1.5 -sourcepath %JAVA_DEPENDENCY%\src\java -d %JAVA_DEPENDENCY%\lib %JAVA_DEPENDENCY%\src\java\jdepend\framework\*.java
-"%JAVA_HOME%\bin\javac" -source 1.5 -classpath "lib;%JAVA_DEPENDENCY%\lib;%JSCH%" -sourcepath src -d lib src\org\bee\processor\*.java src\org\bee\util\*.java src\org\bee\oper\*.java src\org\bee\func\*.java 
+"%JAVA_HOME%\bin\javac" -source 1.5 -classpath "lib;%JAVA_DEPENDENCY%\lib;%JSCH%" -sourcepath src\java -d lib src\java\org\bee\processor\*.java src\java\org\bee\util\*.java src\java\org\bee\oper\*.java src\java\org\bee\func\*.java 
 if errorlevel 1 goto :end
 "%JAVA_HOME%\bin\jar" -cvmf .\manifest.mf lib\bee.jar -C lib org
 :end

@@ -5,8 +5,7 @@
       <!ENTITY deploy_host "knitknot.info">
       <!ENTITY env SYSTEM "./env.xml">
       ]>
-<!-- $Id: bee.xml,v 1.58 2012/10/10 04:49:09 cvs Exp $
-   make file used for Bee project
+<!--  make file used for Bee project
    Copyright (c) 2004, 2012 Dmitriy Rogatkin    -->
 
 <bee name="bee" type="project">
@@ -40,7 +39,7 @@
   <target name="Build Date" dir="BEE_HOME">
     <block>
        <function name="write">
-         <parameter value="src/org/bee/CompileStamp.java" type="file"/>
+         <parameter value="src/java/org/bee/CompileStamp.java" type="file"/>
          <parameter>package org.bee;
   public class CompileStamp {
       public static final String getStamp() {
@@ -72,7 +71,7 @@
     <dependency>
            <function name="allnewer">
               <parameter value="bee.xml" type="file"/>
-              <parameter value="src\" type="dir"/>
+              <parameter value="src/java/" type="dir"/>
            </function>
     </dependency>
     <task exec="javac">
@@ -88,11 +87,11 @@
        <parameter variable="Java5 Runtime"/-->
        <parameter>-Xlint:unchecked</parameter>
        <parameter value="-sourcepath"/>
-       <parameter value="src" type="dir"/>
+       <parameter value="src/java" type="dir"/>
        <parameter>
            <!--operator name="exclude"-->
               <function name="newerthan">
-                 <parameter value="src\.java" type="dir"/>
+                 <parameter value="src/java/.java" type="dir"/>
                  <parameter value="lib/.class" type="dir"/>
               </function>
               <!--value>.*askpass.*</value>
@@ -341,7 +340,7 @@ $JAVA_HOME/bin/java -Xmx256000000 -jar $BEE_HOME/lib/bee.jar "$@"</parameter>
          <parameter value="deploy/"/>
          <parameter value="manifest.mf"/>
          <parameter value="deploy/"/>
-         <parameter value="src/*/*/*/*.java"/>
+         <parameter value="src/*/*/*/*/*.java"/>
          <parameter value="deploy/src/*"/>
          <parameter value="lib/bee.jar"/>
          <parameter value="deploy/lib/*"/>
