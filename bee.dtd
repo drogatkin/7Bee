@@ -1,0 +1,152 @@
+<!-- $Id: bee.dtd,v 1.34 2011/06/28 23:23:36 dmitriy Exp $
+  project Bee, DTD file of bee make files 
+  Copyright (c) 2004 Dmitriy Rogatkin   -->
+
+<!ENTITY % PROJ_TYPE "build|test|run">
+
+<!ENTITY % VAR_TYPE "variable|file|directory|url|number|date|array|path|environment|property">
+<!ENTITY % BLOCK_TYPE "then|else|case">
+<!ENTITY % YES_NO "yes|no">
+
+<!ELEMENT bee (variable|expression|block|target+)*>
+<!ATTLIST bee
+         name    CDATA #REQUIRED
+         dir     CDATA #IMPLIED
+         type    (%PROJ_TYPE;) "build"
+>
+
+<!ELEMENT variable (#PCDATA)>
+
+<!ATTLIST variable
+         name    CDATA #REQUIRED
+         type (%VAR_TYPE;) #IMPLIED
+>
+
+<!ELEMENT expression (operator|for|function|if|switch)>
+<!-- name - the result expression is stored
+     variable - alias of name -->
+<!ATTLIST expression
+         name    CDATA #REQUIRED
+         variable CDATA #IMPLIED
+>
+
+<!ELEMENT operator (value|function|variable|expression|operator)*>
+<!ATTLIST operator
+         name    CDATA #REQUIRED
+         type (%VAR_TYPE;) #IMPLIED
+>
+
+<!ELEMENT value (#PCDATA)>
+<!ATTLIST value
+         name CDATA        #IMPLIED
+         type (%VAR_TYPE;) #IMPLIED
+         variable CDATA    #IMPLIED
+         property CDATA    #IMPLIED
+>
+
+<!ELEMENT function (parameter*)>
+<!ATTLIST function
+         name    CDATA #REQUIRED
+>
+
+<!ELEMENT parameter (#PCDATA|expression|function|operator)*>
+<!ATTLIST parameter
+         name    CDATA #IMPLIED
+         variable CDATA #IMPLIED
+         value CDATA #IMPLIED
+         type (%VAR_TYPE;) #IMPLIED
+>
+
+<!ELEMENT target (dependency*, (block|task)*, echo*)>
+<!ATTLIST target
+         name CDATA #REQUIRED
+         dir CDATA #IMPLIED
+         comment CDATA #IMPLIED
+>
+
+<!ELEMENT echo (#PCDATA)>
+<!-- attribute options is similar to options for Unix echo
+       -n     do not output the trailing newline
+       -e     enable interpretation of the backslash-escaped characters listed below
+       -E     disable interpretation of those sequences in STRINGs
+       Without -E, the following sequences are recognized and interpolated:
+       \NNN   the character whose ASCII code is NNN (octal)
+       \\     backslash
+       \a     alert (BEL)
+       \b     backspace
+       \c     suppress trailing newline
+       \f     form feed
+       \n     new line
+       \r     carriage return
+       \t     horizontal tab
+       \v     vertical tab
+-->
+<!ATTLIST echo
+         variable CDATA        #IMPLIED
+         name     CDATA        #IMPLIED
+         type     (%VAR_TYPE;) #IMPLIED
+         options  CDATA        #IMPLIED
+>
+
+<!ELEMENT for (task|operator|expression|block|interrupt|if)*>
+<!ATTLIST for
+         variable CDATA #REQUIRED
+         in CDATA #REQUIRED 
+         separator CDATA #IMPLIED
+>
+
+<!ELEMENT task (parameter*, (onexit?,onexception?))>
+
+<!ATTLIST task
+         name  CDATA #REQUIRED
+         code  CDATA #IMPLIED
+         exec  CDATA #IMPLIED
+         path  CDATA #IMPLIED
+         dir   CDATA #IMPLIED
+         stdout CDATA #IMPLIED
+         stdin CDATA #IMPLIED
+         errout CDATA #IMPLIED
+>
+
+<!ELEMENT onexit (if)>
+
+<!ELEMENT onexception (block)>
+
+<!ELEMENT if (expression, (then|block), (else|block)?)>
+
+<!ELEMENT then (task|function|expression|echo|if|for|switch|interrupt)*>
+
+<!ELEMENT else (task|function|expression|echo|if|for|switch|interrupt)*>
+
+<!ELEMENT block (task|function|expression|echo|if|for|switch|interrupt)*>
+<!ATTLIST block
+          name CDATA #IMPLIED
+          variable CDATA #IMPLIED
+          value CDATA #IMPLIED
+          type (%BLOCK_TYPE;) #IMPLIED
+>
+
+<!ELEMENT switch (expression, (block)*)>
+<!ATTLIST switch
+          name CDATA #IMPLIED
+          variable CDATA #IMPLIED
+>
+
+<!ELEMENT dependency (#PCDATA|expression|function|operator)*>
+<!-- name - variable name where result of dependency calculation stored
+     target - target of dependency
+     variable - name of variable it depend on, can be boolean
+-->
+<!ATTLIST dependency
+          name CDATA #IMPLIED
+          target CDATA #IMPLIED
+          variable CDATA #IMPLIED
+          process_only (%YES_NO;) "no" 
+>
+
+<!ELEMENT interrupt (empty)>
+<!-- name - can be a name of named block to unterrupt 
+-->
+<!ATTLIST interrupt
+          name CDATA #IMPLIED
+>

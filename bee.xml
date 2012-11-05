@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
+    "http://knitknot.info/DTD/bee.dtd" [
+      <!ENTITY version "1.1.1">
+      <!ENTITY deploy_host "knitknot.info">
+      <!ENTITY env SYSTEM "./env.xml">
+      ]>
+<!-- $Id: bee.xml,v 1.58 2012/10/10 04:49:09 cvs Exp $
+   make file used for Bee project
+   Copyright (c) 2004, 2012 Dmitriy Rogatkin    -->
+
+<bee name="bee" type="project">
+  &env;
+
+  <echo options="-E">Bee project building...</echo>
+
+  <expression variable="javac">
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/bin/javac</value>
+     </operator>
+  </expression>
+
+  <target name="check lib" dir="BEE_HOME" comment="Check and create build output directory as needed">
+     <dependency>
+        <expression>
+          <operator name="eq">
+            <function name ="timestamp">
+               <parameter value="lib"/>
+            </function>
+            <value></value>
+          </operator>
+        </expression>
+     </dependency>
+     <task exec="mkdir">
+       <parameter value="lib"/>
+     </task>
+  </target>
+
+  <target name="Build Date" dir="BEE_HOME">
+    <block>
+       <function name="write">
+         <parameter value="src/org/bee/CompileStamp.java" type="file"/>
+         <parameter>package org.bee;
+  public class CompileStamp {
+      public static final String getStamp() {
+           return  &quot;</parameter>
+         <parameter>
+             <function name="now"/>
+         </parameter>
+         <parameter>&quot;;
+                      } 
+                 }</parameter>       
+       </function>
+    </block>
+  </target>
+
+  <expression variable="cp">
+     <operator name="append">
+        <value>lib</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="JDEPEND_HOME"/>
+        <value>/lib</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="JSCH_LIB"/>
+     </operator>
+  </expression>
+
+  <target name="compile" dir="BEE_HOME">
+    <dependency target="check lib"/>
+    <dependency target="Build Date"/>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="bee.xml" type="file"/>
+              <parameter value="src\" type="dir"/>
+           </function>
+    </dependency>
+    <task exec="javac">
+       <parameter value="-classpath"/>
+       <parameter variable="cp"/>
+       <parameter value="-d"/>
+       <parameter value="lib" type="dir"/>
+       <parameter value="-source"/>
+       <parameter value="1.5"/>
+       <parameter value="-target"/>
+       <parameter value="1.5"/>
+       <!--parameter>-bootclasspath</parameter>
+       <parameter variable="Java5 Runtime"/-->
+       <parameter>-Xlint:unchecked</parameter>
+       <parameter value="-sourcepath"/>
+       <parameter value="src" type="dir"/>
+       <parameter>
+           <!--operator name="exclude"-->
+              <function name="newerthan">
+                 <parameter value="src\.java" type="dir"/>
+                 <parameter value="lib/.class" type="dir"/>
+              </function>
+              <!--value>.*askpass.*</value>
+           </operator-->
+        </parameter>
+      <onexit>
+        <if>
+          <expression>
+             <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+          </expression>
+          <block type="then">
+                 <echo>Error(s) at compilation</echo>
+                 <function name="stop">
+			<parameter value="1"/>
+                 </function>
+          </block>
+       </if>
+      </onexit>
+    </task>
+  </target>
+
+  <expression variable="depend lib">
+     <operator name="append">
+        <value variable="JDEPEND_HOME"/>
+        <value>/lib</value>
+     </operator>
+  </expression>
+
+  <target name="clean" dir="BEE_HOME">
+    <dependency>
+       <expression>
+         <operator name="eq">
+            <value>y</value>  
+            <function name="ask">
+               <parameter value="Are you sure [n]?"/>
+               <parameter value="n"/>
+            </function>
+        </operator>
+      </expression>
+    </dependency>
+    <block>
+      <echo>Cleaning...</echo>
+      <function name="rm">
+         <parameter value="lib/*/*/*/*.class" type="dir"/>
+         <parameter value="lib/bee.jar" type="dir"/>
+         <parameter value="deploy/*/*/*/*" type="dir"/>
+      </function>
+    </block>
+  </target>
+  <!-- cscript /Nologo jver.vbs
+     to get some registry props  -->
+  <target name="install" dir="BEE_HOME">
+    <block>
+      <if>
+         <expression>
+            <function name="match">
+               <parameter>.*Windows.*</parameter>
+               <parameter name="os.name" type="property"/>
+            </function>
+         </expression>
+         <block type="then">	
+            <echo>Installing on Windows...</echo>
+            <if>
+              <expression>
+                  <function name="match">
+                     <parameter>.*Vista.*</parameter>
+                     <parameter name="os.name" type="property"/>
+                  </function>
+              </expression>
+              <block type="then">
+                 <echo>Make sure that you run this script as administrator when install in a standard location</echo>
+              </block>
+            </if>
+            <expression variable="install directory">
+              <operator name="append">
+                <value variable="ProgramFiles"/>
+              </operator>
+           </expression>
+           <expression variable="install prompt">
+             <operator name="append">
+               <value>Specify directory to installation to [</value>
+               <value variable="install directory"/>
+               <value>]?</value>
+             </operator>
+           </expression>
+           <expression variable="install directory">
+             <function name="ask">
+               <parameter variable="install prompt"/>
+               <parameter variable="install directory"/>
+             </function>
+           </expression>
+           <expression variable="tools jar">
+             <operator name="append">
+               <value variable="JAVA_HOME"/>
+               <value>\lib</value>
+               <value>\tools.jar</value>
+             </operator>
+           </expression>
+           <expression variable="bee bin">
+             <operator name="append">
+               <value variable="install directory"/>
+               <value>\bee</value>
+               <value>\bin\bee.bat</value>
+             </operator>
+           </expression>
+           <expression variable="bee lib">
+             <operator name="append">
+                <value variable="install directory"/>
+                <value>\bee</value>
+                <value>\lib\*</value>
+             </operator>
+           </expression>
+           <function name="cp">
+             <parameter value="lib\bee.jar"/>
+             <parameter variable="bee lib"/>
+             <parameter value="lib\jsch-0.1.48.jar"/>
+             <parameter variable="bee lib"/>
+           </function>
+           <if>
+               <expression>
+                  <function name="timestamp">
+                     <parameter variable="tools jar"/>
+                  </function>
+               </expression>
+               <else>
+                  <expression variable="JAVA_HOME">
+                    <function name="ask">
+                        <parameter>Provide JDK Home path? </parameter>
+                        <parameter variable="JAVA_HOME"/>
+                    </function>
+                  </expression>
+               </else>
+           </if>
+           <function name="write">
+            <parameter variable="bee bin" type="file"/>
+            <parameter>@echo off
+rem $Id: bee.xml,v 1.58 2012/10/10 04:49:09 cvs Exp $
+set JAVA_HOME=</parameter>
+            <parameter variable="JAVA_HOME"/>
+            <parameter>
+
+set BEE_HOME=</parameter>
+            <parameter variable="install directory"/>
+            <parameter>\bee
+
+set DEFAULT_BEE_HOME=.
+
+if "%BEE_HOME%"=="" set BEE_HOME=%DEFAULT_BEE_HOME%
+
+"%JAVA_HOME%\bin\java" "-DJAVA_HOME=%JAVA_HOME%" -Xmx756000000 -jar "%BEE_HOME%\lib\bee.jar" %*</parameter>
+           </function>
+           <expression variable="install note">
+             <operator name="append">
+               <value>Installation successful. Do not forget to add </value>
+               <value variable="install directory"/>
+               <value>\bee\bin in path.
+Java home directory: </value>
+               <value variable="JAVA_HOME"/>
+             </operator>
+           </expression>
+           <echo variable="install note"/>
+         </block>
+         <block type="else">
+           <echo value="(L)Unix installation"/>
+           <if>
+             <expression>
+                <operator name="neq">
+                  <value>root</value>
+                  <value name="user.name" type="property"/>
+                </operator>
+             </expression>
+             <block type="then">
+                <echo>Please login as 'root'; change to 'root' using su, and then ./install; or sudo ./install for installation.</echo>
+             </block>
+             <block type ="else">
+               <expression variable="bee lib">
+                  <operator name="append">
+                    <value value="/usr/local"/>
+                    <value>/bee</value>
+                    <value>/lib/*</value>
+                  </operator>
+               </expression>
+               <function name="cp">
+                    <parameter value="./lib/bee.jar"/>
+                    <parameter variable="bee lib"/>
+                    <parameter value="./lib/jsch-0.1.47.jar"/>
+                    <parameter variable="bee lib"/>
+               </function>
+               <function name="write">
+                  <parameter variable="/usr/local/bin/bee" type="file"/>
+	          <parameter>#! /bin/sh
+# $Id: bee.xml,v 1.58 2012/10/10 04:49:09 cvs Exp $
+JAVA_HOME=</parameter>
+                  <parameter variable="JAVA_HOME"/>
+                  <parameter>
+BEE_HOME=/usr/local/bee
+
+$JAVA_HOME/bin/java -Xmx256000000 -jar $BEE_HOME/lib/bee.jar "$@"</parameter>
+               </function>
+               <task exec="chmod" dir="./">
+                 <parameter>755</parameter>
+                 <parameter>/usr/local/bin/bee</parameter>
+               </task>
+               <echo>Unix installation successful.</echo>
+             </block>
+           </if>
+       </block>
+    </if>
+    </block>
+  </target>
+
+  <target name="deploy" dir="BEE_HOME">
+    <dependency target="jar"/>
+    <block>
+      <if>
+        <expression>
+          <operator name="eq">
+            <function name ="timestamp">
+               <parameter value="deploy"/>
+            </function>
+            <value></value>
+          </operator>
+        </expression>
+        <block type="then">
+          <task exec="mkdir">
+            <parameter value="deploy"/>
+          </task>
+        </block>
+      </if>
+      <function name="cp">
+         <parameter value="bin/install"/>
+         <parameter value="deploy/"/>
+         <parameter value="bin/install.bat"/>
+         <parameter value="deploy/"/>
+         <parameter value="bee.dtd"/>
+         <parameter value="deploy/doc/*"/>
+         <parameter value="doc/bee.properties"/>
+         <parameter value="deploy/doc/*"/>
+         <parameter value="doc/readme"/>
+         <parameter value="deploy/"/>
+         <parameter value="doc/index-bee.html"/>
+         <parameter value="deploy/index.html"/>
+         <parameter value="bee.xml"/>
+         <parameter value="deploy/"/>
+         <parameter value="env.xml"/>
+         <parameter value="deploy/"/>
+         <parameter value="manifest.mf"/>
+         <parameter value="deploy/"/>
+         <parameter value="src/*/*/*/*.java"/>
+         <parameter value="deploy/src/*"/>
+         <parameter value="lib/bee.jar"/>
+         <parameter value="deploy/lib/*"/>
+         <parameter value="lib/bee.jar"/>
+         <parameter value="deploy/lib/bee-bootstrap.jar"/>
+         <parameter value="doc/alt-grammar.bgr"/>
+         <parameter value="deploy/examples/grammar/*"/>
+         <parameter variable="JSCH_LIB"/>
+         <parameter value="deploy/lib/"/>
+      </function>
+      <task name="jar dependencies" code="sun.tools.jar.Main">
+         <parameter value="-cf"/>
+         <parameter value="deploy\dependency.zip" type="file"/>
+         <parameter value="-C"/>
+         <parameter variable="JDEPEND_HOME"/>
+         <parameter value="."/>
+      </task>
+      <!-- deploy examples -->
+      <variable name="example source"/>
+      <variable name="example dest"/>
+      <for variable="example" in="AddressBook arbat ChatHouse dependency MediaChest mindterm servletapi jspapi gnujsp SpamProtector tjws generic Lab jacorb finesearch jasper lame">
+         <expression variable="example source">
+            <operator name="append">
+                <value>examples/</value>
+                <value variable="example"/>
+                <value>/*.xml</value>
+            </operator>
+         </expression>
+         <expression variable="example dest">
+            <operator name="append">
+                <value>deploy/examples/</value>
+                <value variable="example"/>
+                <value>/*</value>
+            </operator>
+         </expression>
+         <expression>
+         <function name="cp">
+            <parameter variable="example source"/>
+            <parameter variable="example dest"/>
+         </function>
+         </expression>
+      </for>
+      <task name="deployment zip" code="sun.tools.jar.Main">
+         <parameter value="-cf"/>
+         <parameter value="bee-&version;.zip" type="file"/>
+         <parameter value="-C"/>
+         <parameter variable="BEE_HOME"/>
+         <parameter value="deploy"/>
+      </task>
+      <if>
+        <expression>
+           <operator name="eq">
+             <function name="ask">
+               <parameter>Do you want to upload a new version to server?[n]</parameter>
+               <parameter>n</parameter>
+             </function>
+             <value>y</value>
+           </operator>
+        </expression>
+        <block type="then" name="upload to server"> 
+          <function name="scp">
+            <parameter value="bee-&version;.zip"/>
+            <parameter value="dmitriy@&deploy_host;:services/doc/download/bee-&version;.zip"/>
+          </function>
+        </block>
+      </if>
+    </block>
+  </target>
+
+  <target name="calc" dir="BEE_HOME">
+       <block>
+          <expression name="result"> 
+             <function name="calc">
+                <parameter>3</parameter>
+                <parameter>+</parameter>
+                <parameter>5</parameter>
+                <parameter>+</parameter>
+                <parameter>6</parameter>
+                <parameter>*</parameter>
+                <parameter>7</parameter>
+                <parameter>*</parameter>
+                <parameter>8</parameter>
+                <parameter>+</parameter>
+                <parameter>5</parameter>
+                <parameter>/</parameter>
+                <parameter>4</parameter>
+                <parameter>+</parameter>
+                <parameter>sin</parameter>
+                <parameter>1.57</parameter>
+                <parameter>+</parameter>
+                <parameter>(</parameter>
+                <parameter>2</parameter>
+                <parameter>+</parameter>
+                <parameter>5</parameter>
+                <parameter>)</parameter>
+                <parameter>*</parameter>  
+                <parameter>10</parameter>
+                <parameter>*</parameter>  
+                <parameter>cos</parameter>
+                <parameter>3.14</parameter>
+<parameter>*</parameter><parameter>1</parameter>
+             </function>
+          </expression>
+          <echo variable="result"/>
+       </block>
+  </target>
+
+  <target name="jar" dir="BEE_HOME">
+    <dependency target="compile"/>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="lib" type="dir"/>
+              <parameter value="lib/bee.jar" type="file"/>
+           </function>
+    </dependency>
+    <dependency>true</dependency>
+    <task name="jar_do" code="sun.tools.jar.Main">
+       <parameter value="-cmf"/>
+       <parameter value="manifest.mf" type="file"/>
+       <parameter value="lib/bee.jar" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="lib" type="dir"/>
+       <parameter value="org"/>
+       <parameter value="-C"/>
+       <parameter value="doc" type="dir"/>
+       <parameter value="bee.properties"/>
+       <parameter value="-C"/>
+       <parameter variable="depend lib"/>
+       <parameter value="."/>
+    </task>
+  </target>
+</bee>
+
