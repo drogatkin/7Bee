@@ -13,7 +13,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * @author <a href="dmitriy@mochamail.com">dmitriy Rogatkin</a>
  *
- * Provide class description here
+ * Miscellenious utility methods
  */
 public class Misc {
 
