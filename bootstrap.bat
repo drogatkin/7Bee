@@ -1,4 +1,4 @@
-@echo on
+@echo off
 rem $Id: bootstrap.bat,v 1.7 2012/04/17 22:04:26 dmitriy Exp $
 set JAVA_HOME=C:\Program Files\Java\jdk1.7.0_03
 set JAVA_DEPENDENCY=.\3rdparty\jdepend

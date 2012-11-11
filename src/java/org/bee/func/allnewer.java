@@ -10,7 +10,7 @@ import org.bee.util.Misc;
 /**
  * @author <a href="dmitriy@mochamail.com">Dmitriy Rogatkin</a>
  *
- * Provide class description here
+ * compare date of files
  */
 public class allnewer {
 
