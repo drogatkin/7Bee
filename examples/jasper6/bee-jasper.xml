@@ -11,9 +11,8 @@
       <!ENTITY manifestf "">
       <!ENTITY main_class "org.apache.jasper.JspC">
       ]>
-<!-- $Id: bee-jasper.xml,v 1.2 2007/01/11 04:25:35 rogatkin Exp $
-   make file used for "Jasper for TJWS" project
-   Copyright (c) 2006-2007 Dmitriy Rogatkin    -->
+<!-- Make file used for "Jasper for TJWS" project
+   Copyright (c) 2006-2012 Dmitriy Rogatkin    -->
 
 <bee name="&project;" type="project">
   &env;

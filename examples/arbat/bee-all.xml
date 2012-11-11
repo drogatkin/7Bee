@@ -3,9 +3,8 @@
     "http://7bee.j2ee.us/xml/DTD/bee.dtd" [
       <!ENTITY env SYSTEM "./env.xml">
       ]>
-<!-- $Id: bee-all.xml,v 1.7 2007/01/05 04:46:09 rogatkin Exp $
-   make file used for Arbat project
-   Copyright (c) Dmitriy Rogatkin    -->
+<!--   make file used for Arbat project
+   Copyright (c) 2010 Dmitriy Rogatkin    -->
 
 <bee name="arbat" type="project">
   &env;
