@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!-- $Id: bee-root-rename.xml,v 1.1 2008/04/21 04:33:07 dmitriy Exp $ 
+   Copyright 2008 MetricStream Inc.
+   This script is used for for mass CVS root updates   -->
+ <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
+    "http://7bee.j2ee.us/xml/DTD/bee.dtd" [
+      <!ENTITY replace_from "new ImageIcon\(">
+      <!ENTITY replace_to "new ImageIconUrl\(">
+  ]>
+
+<bee name="Mass CVS root update script" type="project">
+   <expression name="mask">
+      <value value="*.java"/>
+   </expression>
+   <target name="mass update">
+      <block>
+               <expression name="root">
+                 <value variable="mask" type="file"/>
+               </expression>
+               <!--echo variable="root"/-->
+<!--- insert -->
+                <for variable="file" in="root">
+                   <block>
+<echo variable="file"/>
+                   <expression name="file cont">
+                      <function name="read">
+                        <parameter variable="file"/>
+                        <parameter/>
+                        <parameter/>
+                      </function>
+                   </expression>
+<!--echo variable="file cont"/-->
+                  <expression name="new content">
+                       <function name="cropname">
+                         <parameter variable="file cont"/>
+                         <parameter>&replace_from;</parameter>
+                         <parameter>&replace_to;</parameter>
+                        <parameter>all</parameter>
+                       </function>
+                    </expression>
+                    <expression name="content">
+                      <for variable="line" in="new content">
+                         <operator name="append">
+                           <value variable="line"/>
+                         </operator>
+                      </for>
+                    </expression>
+                   <function name="write">
+                     <parameter variable="file"/>
+                     <parameter variable="content">
+                      </parameter>
+                   </function>>
+                 </block>
+               </for>
+      </block>
+   </target>
+</bee>

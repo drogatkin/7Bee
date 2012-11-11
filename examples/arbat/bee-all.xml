@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
+    "http://7bee.j2ee.us/xml/DTD/bee.dtd" [
+      <!ENTITY env SYSTEM "./env.xml">
+      ]>
+<!-- $Id: bee-all.xml,v 1.7 2007/01/05 04:46:09 rogatkin Exp $
+   make file used for Arbat project
+   Copyright (c) Dmitriy Rogatkin    -->
+
+<bee name="arbat" type="project">
+  &env;
+
+  <expression  variable="idl compiler">     
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/bin/idlj</value>
+     </operator>
+  </expression>
+
+  <expression  variable="idl.timestamp">
+     <operator name="append">
+        <value variable="ARBAT_HOME"/>
+        <value>/src/idl/.idl.touch</value>
+     </operator>
+  </expression>
+
+  <expression  variable="include_lib">
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/lib</value>
+     </operator>
+  </expression>
+
+  <expression  variable="common_src">
+     <operator name="append">
+        <value variable="ARBAT_HOME"/>
+        <value>/src/java/common</value>
+     </operator>
+  </expression>
+
+  <expression variable="idl_timestamp">
+     <operator name="lt">
+       <function name="timestamp">
+          <parameter variable="idl.timestamp"/>
+       </function>
+       <function name="now"/>
+     </operator>
+  </expression>
+
+  <variable name="old compatible"/>
+
+  <block>
+    <if>
+       <expression>
+         <operator name="eq">
+           <value variable="orb_type"/>
+           <value>boa</value>
+         </operator>
+       </expression>
+       <block type="then">
+          <variable name="old compatible">-oldImplBase</variable>
+          <variable name="boa_orb">true</variable>
+       </block>
+       <block type="else">
+          <variable name="old compatible"/>
+          <variable name="boa_orb">false</variable>
+       </block>
+    </if>
+  </block>
+
+  <echo variable="old compatible"/>
+  <echo variable="idl_timestamp"/>
+
+  <variable name="idl files" type="file">*.idl</variable>  
+
+  <expression  variable="IDL src" type="dir">
+     <operator name="append">
+        <value variable="ARBAT_HOME"/>
+        <value>/src/idl</value>
+     </operator>
+  </expression>
+
+  <expression  variable="Java src common" type="dir">
+     <operator name="append">
+        <value variable="ARBAT_HOME"/>
+        <value>/src/java/common</value>
+     </operator>
+  </expression>
+
+  <expression variable="version src">
+     <operator name="append">
+        <value>src/java/</value>
+        <value variable="java version"/>
+        <value>\</value>
+        <value variable="orb_type"/>
+        <value>\.java</value>
+     </operator>
+  </expression>
+
+  
+  <expression  variable="impl java sources" >
+           <function name="newerthan">
+              <parameter variable="version src" type="dir"/>
+              <parameter value="lib/.class" type="dir"/>
+           </function>
+  </expression>
+
+  <expression  variable="java sources" >
+           <function name="newerthan">
+              <parameter variable="src/common/.java" type="dir"/>
+              <parameter value="lib/.class" type="dir"/>
+           </function>
+  </expression>
+
+
+  <variable name="event, naming IDLs" type="array">CosEventChannelAdmin.idl CosEventComm.idl CosNaming.idl</variable>
+<!-- java com.sun.tools.corba.se.idl.toJavaPortable.Compile [options] <idl file> -->
+  <target name="idl" dir="IDL src">
+    <dependency variable="idl_timestamp"/>
+    <echo>Idl compilation...</echo>
+    <for variable="idl file" in="event, naming IDLs">
+      <task name="idl compilation" exec="idl compiler">
+         <parameter variable="old compatible"/>
+         <parameter value="-i"/>
+         <parameter variable="include_lib"/>
+         <parameter value="-i"/>
+         <parameter variable="common_src"/>
+         <parameter value="-keep"/>
+         <parameter value="-fall"/>
+         <parameter value="-td"/>
+         <parameter variable="Java src common"/>
+         <parameter variable="packages list">
+            <expression variable="packages list">
+              <variable name="packages list"/>
+              <for variable="package name" in="event, naming IDLs">
+                  <operator name="array" variable="packages list">
+                      <value variable="packages list"/>
+                      <value>-pkgPrefix</value>
+                      <function name="filename">
+                         <parameter variable="package name"/>
+                      </function>
+                      <value>org.omg</value>
+                  </operator>
+               </for>
+            </expression>
+         </parameter>
+         <parameter variable="idl file"/>
+         <onexit>
+            <if>
+              <expression>
+                 <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+              </expression>
+              <block type="then">
+                 <echo>Error in IDL</echo>
+                 <function name="stop">
+			<parameter value="1"/>
+                 </function>
+              </block>
+              <block type="else">
+                  <function name="write">
+                     <parameter variable="idl.timestamp"/>
+                     <parameter value=""/>
+                  </function>
+                <!--task name="set time stamp" exec="touch">
+                  <parameter variable="idl.timestamp"/>
+                </task-->
+              </block>
+            </if>
+        </onexit>
+      </task>
+    </for>
+<!-- TODO: find out why task here can be proceeded if previous failed -->
+  </target>
+
+  <variable name="class path"/>
+
+  <expression variable="target version options">
+     <if>
+        <expression>
+          <operator name="lt">
+               <value variable="java version"/>
+               <value value="1.5"/>
+          </operator>
+        </expression>
+        <block type="then">
+            <expression variable="class path">
+               <operator name="append">
+                   <value variable="ARBAT_HOME"/>
+                   <value>/lib</value>
+                   <value variable="PATH SEPARATOR"/>
+                   <value></value>
+                   <value variable="ARBAT_HOME"/>
+                   <value>/jsr166/lib/backport-util-concurrent.jar</value>
+               </operator>
+            </expression>
+            <operator name="array">
+               <value>-target</value>
+               <value variable="java version"/>
+               <value>-bootclasspath</value>
+               <value variable="target runtime"/>
+            </operator>
+        </block>
+        <block type="else">
+            <expression variable="class path">
+               <operator name="append">
+                   <value variable="ARBAT_HOME"/>
+                   <value>/lib</value>
+               </operator>
+            </expression>
+            <expression>
+            </expression>
+        </block>
+     </if>
+  </expression>
+
+
+  <expression  variable="java compiler">
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/bin/javac</value>
+     </operator>
+  </expression>
+
+  <target name="java" dir="ARBAT_HOME" >
+
+    <dependency target="idl"/>
+    <dependency>
+      <expression>
+        <operator name="or">
+           <value variable="java sources"/>
+	   <value variable="impl java sources"/>
+        </operator>
+      </expression>
+    </dependency>
+    <echo variable="impl java sources"/>
+    <echo variable="java sources"/>
+    <task name="java compilation" exec="java compiler">
+       <parameter value="-source"/>
+       <parameter variable="java version"/>
+       <parameter variable="target version options"/>
+       <parameter value="-classpath"/>
+       <parameter variable="class path"/>
+       <parameter value="-d"/>
+       <parameter value="lib" type="dir"/>
+       <parameter value="-sourcepath"/>
+       <parameter value="src/java/common" type="dir"/>
+       <parameter variable="java sources"/>
+       <parameter variable="impl java sources"/>
+        <onexit>
+           <if>
+             <expression>
+                <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+             </expression>
+             <block type="then">
+                <echo>Error in compilation</echo>
+                <function name="stop">
+	            <parameter value="1"/>
+                </function>
+             </block>
+           </if>
+        </onexit>
+    </task>
+  </target>
+
+  <target name="clear" dir="ARBAT_HOME">
+    <block>
+       <echo>Clear..</echo>
+       <function name="rm">
+         <parameter value="src/idl/.idl.touch" type ="path"/>
+         <parameter value="lib/*/*/*/*/*.class"/>
+         <parameter value="src/java/common/org/omg/*/*/*.java"/>        
+         <parameter value="lib/arbat.jar"/>
+       </function>
+    </block>
+  </target>
+
+  <target name="jar" dir="ARBAT_HOME">
+    <dependency target="java"/>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="src/java/common/" type="dir"/>
+              <parameter value="lib/arbat.jar" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="bee-all.xml" type="file"/>
+              <parameter value="lib/arbat.jar" type="file"/>
+           </function>
+    </dependency>
+    <task name="jar_do" code="sun.tools.jar.Main">
+       <parameter value="-cf"/>
+       <parameter value="lib/arbat.jar" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="lib" type="dir"/>
+       <parameter value="org"/>
+       <parameter value="-C"/>
+       <parameter value="src/configuration"/>
+       <parameter value="resource/configuration.properties"/>
+    </task>
+  </target>
+</bee>
+

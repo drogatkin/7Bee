@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
+    "http://7bee.j2ee.us/xml/DTD/bee.dtd" [
+      <!ENTITY env SYSTEM "./env.xml">
+      ]>
+<!-- $Id: bee.xml,v 1.6 2006/02/28 08:56:28 rogatkin Exp $
+   make file used for Mindterm project
+   Copyright (c) Dmitriy Rogatkin    -->
+
+<bee name="mindterm 3.0.1" type="project">
+  &env;
+
+  <echo>Mindterm project building...</echo>
+
+  <expression variable="javac">
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/bin/javac</value>
+     </operator>
+  </expression>
+
+  <expression variable="tools">
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/lib/tools.jar</value>
+     </operator>
+  </expression>
+
+  <target name="init">
+     <dependency>
+        <expression>
+          <operator name="eq">
+            <function name ="timestamp">
+               <parameter value="build"/>
+            </function>
+            <value/>
+          </operator>
+        </expression>
+     </dependency>
+     <task exec="mkdir">
+       <parameter value="build"/>
+     </task>
+     <task exec="mkdir">
+       <parameter value="build\mindterm"/>
+     </task>
+  </target>
+
+
+  <target name="manifest" dir="MT_HOME">
+    <block>
+       <function name="write">
+         <parameter value="manifest.mf" type="file"/>
+         <parameter>Manifest-Version: 1.0
+Name: MindTerm.jar
+Main-Class: com.mindbright.application.MindTerm
+Java-Bean: False</parameter>
+       </function>
+    </block>
+  </target>
+
+  <expression variable="java sources">
+     <operator name="array">
+        <function name="newerwithdependency">
+           <parameter value="com\.java"/>
+           <parameter value="build\com\.class"/>
+           <parameter value=""/>
+        </function>
+        <function name="newerwithdependency">
+           <parameter value="netscape\.java"/>
+           <parameter value="build\netscape\.class"/>
+           <parameter value=""/>
+        </function>
+    </operator>         
+  </expression>
+
+  <target name="compile" dir="MT_HOME">
+    <dependency target="init"/>
+    <dependency variable="java sources"/>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="bee.xml" type="file"/>
+              <parameter value=".\" type="dir"/>
+           </function>
+    </dependency>
+    <task name="main" code="com.sun.tools.javac.Main" path="tools">
+       <parameter value="-classpath"/>
+       <parameter variable="build"/>
+       <parameter value="-d"/>
+       <parameter value="build" type="dir"/>
+       <parameter value="-source"/>
+       <parameter value="1.4"/>
+       <parameter value="-target"/>
+       <parameter value="1.4"/>
+       <parameter value="-sourcepath"/>
+       <parameter value="." type="dir"/>
+       <parameter variable="java sources"/>
+      <onexit>
+        <if>
+          <expression>
+             <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+          </expression>
+          <block type="then">
+                 <echo>Error(s) at compilation</echo>
+                 <function name="stop">
+			<parameter value="1"/>
+                 </function>
+          </block>
+       </if>
+      </onexit>
+    </task>
+  </target>
+
+  <target name="jar" dir="BEE_HOME">
+    <dependency target="compile"/>
+    <dependency target="manifest"/>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="build\" type="dir"/>
+              <parameter value="build\mindterm\mindterm.jar" type="file"/>
+           </function>
+    </dependency>
+    <task name="jar_do" code="sun.tools.jar.Main">
+       <parameter value="-cmf"/>
+       <parameter value="manifest.mf" type="file"/>
+       <parameter value="build\mindterm\mindterm.jar" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="build" type="dir"/>
+       <parameter value="com"/>
+       <parameter value="-C"/>
+       <parameter value="build" type="dir"/>
+       <parameter value="netscape"/>
+       <parameter value="-C"/>
+       <parameter value="." type="dir"/>
+       <parameter value="defaults/"/>
+    </task>
+  </target>
+</bee>
+

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
+    "http://7bee.j2ee.us/xml/DTD/bee.dtd">
+<!-- $Id: bee.xml,v 1.1 2006/12/14 06:28:34 rogatkin Exp $
+   lame launcher
+   Copyright (c) Dmitriy Rogatkin    -->
+
+<bee name="lame" type="project">
+
+  <variable  name="wav files" value="*.wav" type="file"/>
+  <target name="run_lame" dir=".">
+    <for variable="wav file" in="wav files">
+       <echo variable="wav file"/>
+       <expression name="pure name">
+         <function name="filename">
+            <parameter variable="wav file"/>
+         </function>
+       </expression>
+       <task exec="lame">
+          <parameter>-h</parameter>
+          <parameter>-V1</parameter>
+          <parameter>
+             <operator name="append">
+               <value variable="pure name"/>
+               <value>.wav</value>
+             </operator>
+          </parameter>
+          <parameter>
+             <operator name="append">
+               <value variable="pure name"/>
+               <value>.mp3</value>
+             </operator>
+          </parameter>
+       </task>
+    </for>
+  </target>
+</bee>

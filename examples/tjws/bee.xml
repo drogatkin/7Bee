@@ -1,0 +1,1271 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
+    "http://7bee.j2ee.us/xml/DTD/bee.dtd" [
+      <!ENTITY env SYSTEM "./env.xml">
+      <!ENTITY build_directory "lib">
+      <!ENTITY launchername "webapplauncher">
+      <!ENTITY re_sl "\\"> <!-- re_sl "\\" for Windows and "/" for POSIX -->
+      ]>
+
+<!-- $Id: bee.xml,v 1.27 2009/04/16 05:35:42 dmitriy Exp $
+  The 7Bee build script used for TJWS project
+   Copyright (c) 2005-2008 Dmitriy Rogatkin  
+
+  -->
+
+<bee name="tjws" type="project">
+  &env;
+  <expression variable="attention message">
+     <operator name="append">
+        <value>     ================ ATTENTION ==================
+     Please make sure that below variables obtain correct values
+     in file env.xml, before starting a build:
+
+      SERVLET_LIB - fully qualified path to servlet.jar or other lib/directory containing 
+                    JSS classes
+                    = </value>
+        <value variable="SERVLET_LIB"/>
+        <value>
+      SERVLET_SRC - fully qualified path to sources of JSS classes, used only for packaging 
+                    text resources in launcher packaging and can be omitted 
+                    = </value>
+        <value variable="SERVLET_SRC"/>
+        <value>
+      SERVLET_BUILD - fully qualified path to binaries of classes of JSS, used only for 
+                      packaging JSS in launcher packaging and can be 
+                    = </value>
+        <value variable="SERVLET_BUILD"/>
+        <value>
+      JSP_LIB - fully qualified path to jsp.jar or other lib/directory containing 
+                JSP API classes, unless JASPER library is defined 
+                    = </value>
+        <value variable="JSP_LIB"/>
+        <value>
+      JASPER (optional)
+                    = </value>
+        <value variable="JASPER"/> 
+        <value>
+     =============================================</value>
+     </operator>
+  </expression>
+  
+  <echo variable="attention message"/>
+  
+  <expression variable="javac">
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/bin/javac</value>
+     </operator>
+  </expression>
+  
+  <expression  variable="idl compiler">     
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/bin/idlj</value>
+     </operator>
+  </expression>
+  
+
+  <target name="check lib" dir="TJWS_HOME" comment="assure build directory">
+     <dependency>
+        <expression>
+          <operator name="eq">
+            <function name ="timestamp">
+               <parameter value="&build_directory;"/>
+            </function>
+            <value/>
+          </operator>
+        </expression>
+     </dependency>
+     <task exec="mkdir">
+       <parameter value="&build_directory;"/>
+     </task>
+  </target>
+
+  <expression variable="tjws sources">
+      <operator name="array">
+        <!--value variable="tjws sources"/-->
+        <function name="newerwithdependency">
+           <parameter value="src\Acme\.java"/>
+           <parameter value="&build_directory;\Acme\.class"/>
+           <parameter value=""/>
+           <parameter value="Acme"/>
+        </function>
+     </operator>
+  </expression>
+
+  <expression variable="jsp sources">
+     <function name="newerwithdependency">
+        <parameter value="src\org\.java"/>
+        <parameter value="&build_directory;\org\.class"/>
+        <parameter value=""/>
+        <parameter value="org"/>
+     </function>
+  </expression>
+
+  <expression variable="checker sources">
+      <operator name="array">
+        <function name="newerthan">
+           <parameter value="src\oracle\.java"/>
+           <parameter value="&build_directory;\oracle\.class"/>
+        </function>
+      </operator>
+  </expression>  
+
+  <expression variable="class path">
+     <operator name="append">
+        <value>&build_directory;</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="SERVLET_LIB"/>
+     </operator>
+  </expression>
+  
+  <expression variable="IDL sources">
+    <function name="anynewer">
+       <parameter value="idl"/>
+       <parameter value="src/rogatkin/app/remote"/>
+    </function>
+  </expression>
+
+
+  <target name="help">
+     <echo>
+//////////////////// TJWS Build Process /////////////////////////
+  type: 
+  bee -th 
+  to get help on build targets
+/////////////////////////////////////////////////////////////////
+    </echo>
+  </target>
+
+  <target name="compile" dir="TJWS_HOME" comment="main module compilation">
+    <dependency target="check lib"/>
+    <dependency variable="tjws sources"/>
+    <echo>Compiling...</echo>
+    <task exec="javac">
+       <parameter value="-classpath"/>
+       <parameter variable="class path"/>
+       <parameter value="-source"/>
+       <parameter variable="target version"/>
+       <parameter value="-target"/>
+       <parameter variable="target version"/>
+       <parameter>
+          <expression>
+            <if>
+              <expression>
+                <operator name="lt">
+                   <value variable="target version"/>
+                   <value>1.5</value>
+                </operator>
+              </expression>
+              <block type="then">
+                 <operator name="array">
+                   <value>-bootclasspath</value>
+                   <value variable="target runtime"/>
+                 </operator>
+              </block>
+            </if>   
+          </expression>
+       </parameter> 
+       <parameter value="-d"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter>
+          <expression>
+            <if>
+              <expression>
+                 <operator name="eq">
+                    <value variable="tjws sources"/>
+                    <operator name="array"></operator>
+                 </operator>
+              </expression>
+              <block type="else">
+                 <value variable="tjws sources"/>
+              </block>
+              <block type="then">
+                 <value>src/Acme/Utils.java</value>
+              </block>
+           </if>
+          </expression>
+       </parameter> 
+      <onexit>
+        <if>
+          <expression>
+             <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+          </expression>
+          <block type="then">
+                 <echo>Error(s) at compilation</echo>
+                 <function name="stop">
+			<parameter value="1"/>
+                 </function>
+          </block>
+       </if>
+      </onexit>
+    </task>
+  </target>
+
+  <target name="idl" dir="TJWS_HOME" comment="IDL files creation for JNDI (app module)">
+     <dependency variable="IDL sources"/>
+     <echo>IDL compilation...</echo>
+     <task name="idl compilation" exec="idl compiler">
+         <parameter value="-keep"/>
+         <parameter value="-fall"/>
+         <parameter value="-td"/>
+         <parameter value="src"/>
+         <parameter value="-pkgTranslate"/>
+         <parameter value="app"/>
+         <parameter value="rogatkin.app.remote"/>
+         <parameter value="idl/remotecontext.idl"/>
+     </task>
+  </target>
+
+  <variable name="j2ee sources"/>
+  
+  <target name="create j2ee sources">
+     <dependency value="true"/>
+     <block>
+		  <expression variable="j2ee sources">
+		     <if>
+		       <expression>
+		         <operator name="lt">
+		            <value variable="j2ee target version"/>
+		            <value>1.6</value>
+		         </operator>   
+		       </expression>
+		       <then>
+		         <operator name="exclude">
+		          <function name="newerwithdependency">
+		             <parameter value="src\rogatkin\.java"/>
+		             <parameter value="&build_directory;\rogatkin\.class"/>
+		             <parameter value=""/>
+		             <parameter value="rogatkin"/>
+		          </function>
+		          <value>.*SysTrayControl\.java</value>
+		         </operator>
+		       </then>
+		       <else>
+		          <function name="newerwithdependency">
+		             <parameter value="src\rogatkin\.java"/>
+		             <parameter value="&build_directory;\rogatkin\.class"/>
+		             <parameter value=""/>
+		             <parameter value="rogatkin"/>
+		          </function>
+		       </else>
+		     </if>
+		  </expression>
+     </block>
+  </target>
+  
+  <target name="compile j2ee" dir="TJWS_HOME" comment="J2EE deployer and supporter compilation">
+    <dependency target="compile"/>
+    <dependency target="idl"/>
+    <dependency target="create j2ee sources" process_only="yes"/>
+    <dependency variable="j2ee sources"/>
+    <echo>Compiling J2EE...</echo>
+    <task exec="javac">
+       <parameter value="-classpath"/>
+       <parameter variable="class path"/>
+       <parameter value="-source"/>
+       <parameter variable="j2ee target version"/>
+       <parameter value="-target"/>
+       <parameter variable="j2ee target version"/>
+       <parameter value="-d"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter>
+          <expression>
+            <if>
+              <expression>
+                 <operator name="eq">
+                    <value variable="j2ee sources"/>
+                    <operator name="array"></operator>
+                 </operator>
+              </expression>
+              <block type="else">
+                 <value variable="j2ee sources"/>
+              </block>
+              <block type="then">
+                 <value>src/rogatkin/web/WarRoller.java</value>
+              </block>
+           </if>
+          </expression>
+       </parameter> 
+      <onexit>
+        <if>
+          <expression>
+             <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+          </expression>
+          <block type="then">
+                 <echo>Error(s) at compilation</echo>
+                 <function name="stop">
+			<parameter value="1"/>
+                 </function>
+          </block>
+       </if>
+      </onexit>
+    </task>
+  </target>
+
+  <target name="compile jsp" dir="TJWS_HOME" comment="compile GNU JSP provider module">
+    <dependency variable="jsp sources"/>
+    <echo>Compiling JSP engine...</echo>
+    <task exec="javac">
+       <parameter value="-classpath"/>
+       <parameter variable="class path"/>
+       <parameter value="-source"/>
+       <parameter variable="target version"/>
+       <parameter value="-target"/>
+       <parameter variable="target version"/>
+       <parameter>
+          <expression>
+            <if>
+              <expression>
+                <operator name="lt">
+                   <value variable="target version"/>
+                   <value>1.5</value>
+                </operator>
+              </expression>
+              <block type="then">
+                 <operator name="array">
+                   <value>-bootclasspath</value>
+                   <value variable="target runtime"/>
+                 </operator>
+              </block>
+            </if>   
+          </expression>
+       </parameter> 
+       <parameter value="-d"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter>
+          <expression>
+            <if>
+              <expression>
+                 <operator name="eq">
+                    <value variable="jsp sources"/>
+                    <operator name="array"></operator>
+                 </operator>
+              </expression>
+              <block type="else">
+                 <value variable="jsp sources"/>
+              </block>
+              <block type="then">
+                 <value>src/org/gjt/jsp/JSPServlet.java</value>
+              </block>
+           </if>
+          </expression>
+       </parameter> 
+      <onexit>
+        <if>
+          <expression>
+             <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+          </expression>
+          <block type="then">
+                 <echo>Error(s) at compilation</echo>
+                 <function name="stop">
+			<parameter value="1"/>
+                 </function>
+          </block>
+       </if>
+      </onexit>
+    </task>
+  </target>
+
+  <target name="compile oracle connection checker" dir="TJWS_HOME" comment="a small Oracle JDBC connection validity checker">
+    <dependency target="check lib"/>
+    <dependency variable="checker sources"/>
+    <echo>Compiling checker...</echo>
+    <task exec="javac">
+       <parameter value="-source"/>
+       <parameter>1.4</parameter>
+       <parameter value="-target"/>
+       <parameter>1.4</parameter>
+       <parameter value="-d"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter variable="checker sources"/>
+    </task>
+  </target>
+  
+  <target name="war" dir="TJWS_HOME" comment="creation jar of J2EE deployer and supporter">
+    <echo>Jarring war...</echo>
+    <dependency target="compile j2ee"/>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="&build_directory;/rogatkin/web" type="dir"/>
+              <parameter value="&build_directory;/war.jar" type="file"/>
+           </function>
+    </dependency>
+    <task name="jar_do" code="sun.tools.jar.Main">
+       <parameter value="-cf"/>
+       <parameter value="&build_directory;/war.jar" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter value="rogatkin/web" type="dir"/>
+    </task>
+  </target>
+
+  <target name="app" dir="TJWS_HOME" comment="creation jar of J2EE app server tools, like JNDI, DataSource, and other">
+    <echo>Jarring app...</echo>
+    <dependency target="compile j2ee"/>
+    <dependency target="checker"/>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="&build_directory;/rogatkin/app" type="dir"/>
+              <parameter value="&build_directory;/app.jar" type="file"/>
+           </function>
+    </dependency>
+    <task name="jar_do" code="sun.tools.jar.Main">
+       <parameter value="-cf"/>
+       <parameter value="&build_directory;/app.jar" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter value="rogatkin/app" type="dir"/>
+    </task>
+  </target>
+
+  <target name="checker" dir="TJWS_HOME" comment="build a jar for Oracle JDBC connection checker">
+     <dependency target="compile oracle connection checker"/>
+     <dependency>
+           <function name="allnewer">
+              <parameter value="&build_directory;/oracle" type="dir"/>
+              <parameter value="&build_directory;/ora_chk.jar" type="file"/>
+           </function>
+     </dependency>
+     <echo>Jarring checker....</echo>
+     <task 
+       name="jar_chk_do" code="sun.tools.jar.Main">
+         <parameter value="-cf"/>
+         <parameter value="&build_directory;/ora_chk.jar" type="file"/>
+         <parameter value="-C"/>
+         <parameter value="&build_directory;" type="dir"/>
+         <parameter value="oracle" type="dir"/>
+     </task>
+  </target>
+  
+  <target name="jsp" dir="TJWS_HOME" comment="creation jar of GNU JSP">
+    <echo>Jarring gnujsp...</echo>
+    <dependency target="compile jsp"/>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="&build_directory;\org" type="dir"/>
+              <parameter value="&build_directory;\gnujsp09.jar" type="file"/>
+           </function>
+    </dependency>
+    <task name="jar_do" code="sun.tools.jar.Main">
+       <parameter value="-cf"/>
+       <parameter value="&build_directory;/gnujsp09.jar" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter value="org" type="dir"/>
+    </task>
+  </target>
+
+  <target name="jar" dir="TJWS_HOME" comment="Creation jar of main server">
+    <echo>Jarring...</echo>
+    <dependency target="compile"/>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="&build_directory;\Acme" type="dir"/>
+              <parameter value="&build_directory;\webserver.jar" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="bee.xml" type="dir"/>
+              <parameter value="&build_directory;\webserver.jar" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="src/manifest.mf" type="file"/>
+              <parameter value="&build_directory;\webserver.jar" type="file"/>
+           </function>
+    </dependency>
+    <task name="jar_do" code="sun.tools.jar.Main">
+       <parameter value="-cmf"/>
+       <parameter value="src/manifest.mf" type="file"/>
+       <parameter value="&build_directory;/webserver.jar" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter value="Acme" type="dir"/>
+    </task>
+  </target>
+
+  <target name="conv res" dir="TJWS_HOME" comment="convert properties with national charcters to Java properties encoding">
+     <dependency>
+        <expression name="res list">
+           <function name="newerthan">
+              <parameter value="src/rogatkin/resource/.asis" type="path"/>
+              <parameter value="src/rogatkin/resource/.properties" type="path"/>
+           </function>
+        </expression>
+     </dependency>
+     <block>
+        <echo>Converting resources</echo>
+        <expression variable="prop files">
+              <value type="file">src/rogatkin/resource/*.asis</value>
+        </expression>
+        <expression variable="java tool classes">
+           <operator name="append">
+             <value variable="JAVA_HOME"/>
+             <value>/lib/tools.jar</value>
+           </operator>
+        </expression>
+        
+        <for variable="prop file" in="prop files">
+          <task name="main" code="sun.tools.native2ascii.Main" path="java tool classes">
+              <parameter value="-encoding"/>
+              <parameter value="utf-8"/>
+              <parameter variable="prop file"/>
+              <parameter>
+                 <operator name="append">
+                    <value type="dir">src/rogatkin/resource</value>
+                    <value name="file.separator" type="property"/>
+                    <function name="filename">
+                       <parameter variable="prop file"/>
+                    </function>
+                    <value>.properties</value>
+                 </operator>
+              </parameter>
+          </task>
+        </for>
+     </block>
+  </target>
+
+  <!--  variable for building combined jar  -->
+
+  <expression variable="servlet properties">
+     <operator name="append">
+        <value variable="SERVLET_SRC"/>
+        <value>/javax/servlet/LocalStrings*.properties</value>
+     </operator>
+  </expression>
+
+  <expression variable="servlet http properties">
+     <operator name="append">
+        <value variable="SERVLET_SRC"/>
+        <value>/javax/servlet/http/LocalStrings*.properties</value>
+     </operator>
+  </expression>
+
+  <expression variable="servlet res root">
+     <operator name="append">
+        <value variable="SERVLET_SRC"/>
+     </operator>
+  </expression>
+
+  <expression variable="servlet src mask">
+           <function name="cropname">
+              <parameter variable="SERVLET_SRC"/>
+              <parameter value="(\\)|(\.)|(\-)"/>
+              <parameter value="\\$1$2$3"/>
+              <parameter value="a"/>
+           </function>
+  </expression>
+ 
+  <expression>
+    <for variable="n mask" in="servlet src mask">
+       <expression variable="servlet src mask">
+         <value variable="n mask"/>
+       </expression>
+    </for>
+  </expression>
+
+  <!--echo variable="servlet src mask"/-->
+
+  <expression variable="resource list">
+           <function name="cropname">
+              <parameter variable="servlet properties"/>
+              <parameter variable="servlet src mask"/>
+           </function>
+  </expression>
+
+  <expression variable="resource http list">
+           <function name="cropname">
+              <parameter variable="servlet http properties"/>
+              <parameter variable="servlet src mask"/>
+           </function>
+  </expression>
+  
+  <expression variable="systray properties">
+           <function name="cropname">
+              <parameter value="src/rogatkin/resource/*.properties"/>
+              <parameter>src</parameter>
+           </function>
+  </expression>
+
+  <target name="launcher" dir="TJWS_HOME" comment="build one jar web app launcher">
+    <dependency target="jar"/>
+    <dependency target="war"/>
+    <dependency target="conv res"/>
+    <!--dependency target="jsp"/-->
+    <dependency>
+           <function name="allnewer">
+              <parameter value="src/webapp.mf" type="file"/>
+              <parameter value="&build_directory;\&launchername;.jar" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="src/rogatkin/resource/*.gif" type="file"/>
+              <parameter value="&build_directory;\&launchername;.jar" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="src/rogatkin/resource/*.properties" type="file"/>
+              <parameter value="&build_directory;\&launchername;.jar" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="bee.xml" type="dir"/>
+              <parameter value="&build_directory;\&launchername;.jar" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="&build_directory;\war.jar" type="file"/>
+              <parameter value="&build_directory;\&launchername;.jar" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="&build_directory;\webserver.jar" type="file"/>
+              <parameter value="&build_directory;\&launchername;.jar" type="file"/>
+           </function>
+    </dependency>
+    <block>
+    <task name="jar launcher" code="sun.tools.jar.Main">
+       <parameter value="-cmf"/>
+       <parameter value="src/webapp.mf" type="file"/>
+       <parameter value="&build_directory;/&launchername;.jar" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter value="Acme" type="dir"/>
+       <parameter value="-C"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter value="rogatkin" type="dir"/>
+       <parameter value="-C"/>
+       <parameter value="src" type="file"/>
+       <parameter>rogatkin/resource/tjws.gif</parameter>
+       <parameter value="-C"/>
+       <parameter value="src" type="file"/>
+       <parameter>rogatkin/resource/splash.gif</parameter>
+       <parameter value="-C"/>
+       <parameter variable="SERVLET_BUILD" type="dir"/>
+       <parameter value="javax" type="dir"/>
+       <parameter>
+           <expression variable="resources">
+              <variable name="resources"/>
+              <for variable="resource name" in="resource list">
+                  <operator name="array" variable="resources">
+                      <value variable="resources"/>
+                      <value>-C</value>
+                      <value variable="servlet res root"/>
+                      <value variable="resource name"/>
+                  </operator>
+               </for>
+           </expression>
+       </parameter>
+       <parameter>
+           <expression variable="resources">
+              <variable name="resources"/>
+              <for variable="resource name" in="resource http list">
+                  <operator name="array" variable="resources">
+                      <value variable="resources"/>
+                      <value>-C</value>
+                      <value variable="servlet res root"/>
+                      <value variable="resource name"/>
+                  </operator>
+               </for>
+           </expression>
+       </parameter>
+       <parameter>
+           <expression variable="properties">
+              <variable name="properties"/>
+              <for variable="resource name" in="systray properties">
+                  <operator name="array" variable="properties">
+                      <value variable="properties"/>
+                      <value>-C</value>
+                      <value variable="src"/>
+                      <value variable="resource name"/>
+                  </operator>
+               </for>
+           </expression>
+       </parameter>
+    </task>
+    <if>
+      <expression>
+         <operator name="neq">
+           <value variable="JASPER_BUILD"/>
+           <value>JASPER_BUILD</value>
+         </operator>
+      </expression>
+      <block type="then">
+       <echo>Adding Jasper</echo>
+       <task name="jar jasper" code="sun.tools.jar.Main">
+       <parameter value="-uf"/>
+       <parameter value="&build_directory;/&launchername;.jar" type="file"/>
+       <parameter value="-C"/>
+       <parameter variable="JASPER_BUILD" type="dir"/>
+       <parameter value="org" type="dir"/>
+       <parameter value="-C"/>
+       <parameter variable="JASPER_BUILD" type="dir"/>
+       <parameter value="javax/servlet/jsp" type="dir"/>
+       <parameter value="-C"/>
+       <parameter variable="JASPER_BUILD" type="dir"/>
+       <parameter value="javax/el" type="dir"/>
+       <parameter value="-C"/>
+       <parameter variable="JASPER_SRC" type="dir"/>
+       <parameter>org/apache/jasper/resources</parameter>
+       </task>
+      </block>
+    </if>
+    </block>
+    <echo>Launcher's been built.</echo>
+  </target>
+
+  <target name="aslauncher" dir="TJWS_HOME" comment="build one jar web app launcher with services">
+    <dependency target="app"/>
+    <dependency target="jsp"/>
+    <dependency target="conv res"/>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="src/appserver.mf" type="file"/>
+              <parameter value="&build_directory;\as&launchername;.jar" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="src/rogatkin/resource/*.gif" type="file"/>
+              <parameter value="&build_directory;/as&launchername;.jar" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="src/rogatkin/resource/*.properties" type="file"/>
+              <parameter value="&build_directory;\&launchername;.jar" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="bee.xml" type="dir"/>
+              <parameter value="&build_directory;\as&launchername;.jar" type="file"/>
+           </function>
+    </dependency>
+    <block>
+    <task name="jar aslauncher" code="sun.tools.jar.Main">
+       <parameter value="-cmf"/>
+       <parameter value="src/appserver.mf" type="file"/>
+       <parameter value="&build_directory;/as&launchername;.jar" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter value="Acme" type="dir"/>
+       <parameter value="-C"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter value="rogatkin" type="dir"/>
+       <parameter value="-C"/>
+       <parameter value="src" type="file"/>
+       <parameter>rogatkin/resource/tjws.gif</parameter>
+       <parameter value="-C"/>
+       <parameter value="src" type="file"/>
+       <parameter>rogatkin/resource/splash.gif</parameter>
+       <parameter value="-C"/>
+       <parameter variable="SERVLET_BUILD" type="dir"/>
+       <parameter value="javax" type="dir"/>
+       <parameter>
+           <expression variable="resources">
+              <variable name="resources"/>
+              <for variable="resource name" in="resource list">
+                  <operator name="array" variable="resources">
+                      <value variable="resources"/>
+                      <value>-C</value>
+                      <value variable="servlet res root"/>
+                      <value variable="resource name"/>
+                  </operator>
+               </for>
+           </expression>
+       </parameter>
+       <parameter>
+           <expression variable="resources">
+              <variable name="resources"/>
+              <for variable="resource name" in="resource http list">
+                  <operator name="array" variable="resources">
+                      <value variable="resources"/>
+                      <value>-C</value>
+                      <value variable="servlet res root"/>
+                      <value variable="resource name"/>
+                  </operator>
+               </for>
+           </expression>
+       </parameter>
+       <parameter>
+           <expression variable="properties">
+              <variable name="properties"/>
+              <for variable="resource name" in="systray properties">
+                  <operator name="array" variable="properties">
+                      <value variable="properties"/>
+                      <value>-C</value>
+                      <value variable="src"/>
+                      <value variable="resource name"/>
+                  </operator>
+               </for>
+           </expression>
+       </parameter>
+    </task>
+    <if>
+      <expression>
+         <operator name="neq">
+           <value variable="JASPER_BUILD"/>
+           <value>JASPER_BUILD</value>
+         </operator>
+      </expression>
+      <block type="then">
+       <echo>Adding Jasper</echo>
+       <task name="jar jasper" code="sun.tools.jar.Main">
+         <parameter value="-uf"/>
+         <parameter value="&build_directory;/as&launchername;.jar" type="file"/>
+         <parameter value="-C"/>
+         <parameter variable="JASPER_BUILD" type="dir"/>
+         <parameter value="org" type="dir"/>
+         <parameter value="-C"/>
+         <parameter variable="JASPER_BUILD" type="dir"/>
+         <parameter value="javax/servlet/jsp" type="dir"/>
+         <parameter value="-C"/>
+         <parameter variable="JASPER_BUILD" type="dir"/>
+         <parameter value="javax/el" type="dir"/>
+         <parameter value="-C"/>
+         <parameter variable="JASPER_SRC" type="dir"/>
+         <parameter>org/apache/jasper/resources</parameter>
+       </task>
+      </block>
+      <else>
+         <echo>No JSP support added in the launcher</echo>
+      </else>
+    </if>
+    </block>
+    <echo>App Server Launcher's been built.</echo>
+  </target>
+
+  <target name="embedded" dir="TJWS_HOME" comment="build one jar web application">
+    <dependency target="launcher"/>
+    <dependency value="true"/>
+    <block>
+       <expression variable="CLA">
+         <function name="ask">
+            <parameter>Enter command line arguments for app [-nohup -p 8080]? </parameter>
+            <parameter>-nohup -p 8080</parameter>
+         </function>
+       </expression>
+       <expression variable="app war">
+         <function name="ask">
+            <parameter>Enter application .war file location? </parameter>
+            <parameter></parameter>
+         </function>
+       </expression>
+       <expression variable="app icon">
+         <function name="ask">
+            <parameter>Enter application icon (32x32 gif image file) location[src/rogatkin/resource/tjws.gif]? </parameter>
+            <parameter type="path">src/rogatkin/resource/tjws.gif</parameter>
+         </function>
+       </expression>
+       <function name="write">
+         <parameter>rundescriptor</parameter>
+         <parameter variable="CLA"/>
+         <parameter>
+</parameter>
+         <parameter>
+            <function name="filename">
+              <parameter variable="app war"/>
+            </function>
+         </parameter>
+         <parameter>.war</parameter>
+       </function>
+       <task name="jar launcher" code="sun.tools.jar.Main">
+          <parameter value="-uf"/>
+          <parameter value="&build_directory;/&launchername;.jar" type="file"/>
+          <parameter>rundescriptor</parameter>
+          <parameter>-C</parameter>
+          <parameter>
+             <function name="cropname">
+                 <parameter variable="app war"/>
+                 <parameter>
+                    <expression>
+                       <operator name="append">
+                         <function name="filename">
+                            <parameter variable="app war"/>
+                         </function>
+                         <value>\..*</value>
+                       </operator>
+                    </expression>
+                 </parameter>
+             </function>
+          </parameter>
+          <parameter>
+             <expression>
+                <operator name="append">
+                   <function name="filename">
+                     <parameter variable="app war"/>
+                   </function>
+                   <value>.war</value>
+                </operator>
+             </expression>
+          </parameter>
+       </task>
+       <expression variable="app jar">
+          <operator name="append">
+            <value>&build_directory;/</value>
+            <function name="filename">
+              <parameter variable="app war"/>
+            </function>
+            <value>.jar</value>
+          </operator>
+       </expression>
+       <function name="rm">
+          <parameter>rundescriptor</parameter>
+          <parameter variable="app jar"/>
+       </function>
+       <function name="mv">
+          <parameter value="&build_directory;/&launchername;.jar" type="file"/>
+          <parameter variable="app jar"/>
+       </function> 
+    </block>
+  </target>
+
+  <target name="asembedded" dir="TJWS_HOME" comment="build one jar web application with services">
+    <dependency target="aslauncher"/>
+    <dependency value="true"/>
+    <block>
+       <expression variable="CLA">
+         <function name="ask">
+            <parameter>Enter command line arguments for app server, use
+-j org.apache.jasper.servlet.JspServlet -org.apache.jasper.servlet.JspServlet.classpath %classpath% -org.apache.jasper.servlet.JspServlet.scratchdir %deploydir%/WEB-INF            
+for Jasper enabled application [-nohup -p 80 -dataSource datasource.properties]? </parameter>
+            <parameter>-nohup -p 80 -dataSource datasource.properties</parameter>
+         </function>
+       </expression>
+       <expression variable="app war">
+         <function name="ask">
+            <parameter>Enter application .war file location? </parameter>
+            <parameter></parameter>
+         </function>
+       </expression>
+       <function name="write">
+         <parameter>rundescriptor</parameter>
+         <parameter variable="CLA"/>
+         <parameter>
+</parameter>
+         <parameter>
+            <function name="filename">
+              <parameter variable="app war"/>
+            </function>
+         </parameter>
+         <parameter>.war</parameter>
+       </function>
+       <task name="as jar launcher" code="sun.tools.jar.Main">
+          <parameter value="-uf"/>
+          <parameter value="&build_directory;/as&launchername;.jar" type="file"/>
+          <parameter>rundescriptor</parameter>
+          <parameter>-C</parameter>
+          <parameter>
+             <function name="cropname">
+                 <parameter variable="app war"/>
+                 <parameter>
+                    <expression>
+                       <operator name="append">
+                         <function name="filename">
+                            <parameter variable="app war"/>
+                         </function>
+                         <value>\..*</value>
+                       </operator>
+                    </expression>
+                 </parameter>
+             </function>
+          </parameter>
+          <parameter>
+             <expression>
+                <operator name="append">
+                   <function name="filename">
+                     <parameter variable="app war"/>
+                   </function>
+                   <value>.war</value>
+                </operator>
+             </expression>
+          </parameter>
+       </task>
+       <expression variable="app jar">
+          <operator name="append">
+            <value>&build_directory;/</value>
+            <function name="filename">
+              <parameter variable="app war"/>
+            </function>
+            <value>.jar</value>
+          </operator>
+       </expression>
+       <function name="rm">
+          <parameter>rundescriptor</parameter>
+          <parameter variable="app jar"/>
+       </function>
+       <function name="mv">
+          <parameter value="&build_directory;/as&launchername;.jar" type="file"/>
+          <parameter variable="app jar"/>
+       </function> 
+    </block>
+  </target>
+
+  <target name="clean" dir="TJWS_HOME" comment="clean all build results">
+    <dependency>
+       <expression>
+         <operator name="eq">
+            <value>y</value>  
+            <function name="ask">
+               <parameter value="Are you sure to remove all files in &build_directory; [n]?"/>
+               <parameter value="n"/>
+            </function>
+        </operator>
+      </expression>
+    </dependency>
+    <block>
+      <echo>Cleaning...</echo>
+      <function name="rm">
+         <parameter value="&build_directory;/*/*/*/*.class" type="dir"/>
+         <parameter value="&build_directory;/webserver.jar" type="file"/>
+         <parameter value="&build_directory;/&launchername;.jar" type="file"/>
+         <parameter value="&build_directory;/as&launchername;.jar" type="file"/>
+         <parameter value="&build_directory;/war.jar" type="file"/>
+         <parameter value="&build_directory;/app.jar" type="file"/>
+         <parameter value="&build_directory;/gnujsp09.jar" type="file"/>
+         <parameter value="&build_directory;/ora_chk.jar" type="file"/>
+         <parameter value="src/rogatkin/app/remote/*.java" type="dir"/>
+      </function>
+    </block>
+  </target>
+
+  <expression variable="run class path">
+     <operator name="append">
+        <value variable="TJWS_HOME"/>
+        <value>/&build_directory;/webserver.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="TJWS_HOME"/>
+        <value>/&build_directory;/war.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="TJWS_HOME"/>
+        <value>/&build_directory;/gnujsp09.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="SERVLET_LIB"/>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="JAVA_HOME"/>
+        <value>/lib/tools.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="JSP_LIB"/>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="JSP_SERVLET"/>
+        <expression>
+           <if>
+             <expression>
+                <operator name="neq">
+                   <value variable="JASPER"/>
+                   <value/>
+                </operator>
+             </expression>
+             <block type="then">
+                <operator name="append">
+                  <value variable="PATH SEPARATOR"/>
+                  <value variable="JASPER"/>
+                  <value variable="PATH SEPARATOR"/>
+                  <value variable="APACHE_COMMONS_LOGGING"/>
+                  <value variable="PATH SEPARATOR"/>
+                  <value variable="APACHE_COMMONS_EL"/>
+                </operator>
+             </block> 
+           </if>
+        </expression>
+     </operator>
+  </expression>
+
+  <expression variable="run app class path">
+     <operator name="append">
+        <value variable="run class path"/>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="TJWS_HOME"/>
+        <value>/&build_directory;/app.jar</value>
+     </operator>
+  </expression>
+
+  <target name="runtest" dir="TJWS_HOME" comment="run Utils test">
+    <dependency target="jar"/>
+    <dependency value="true"/>
+    <echo>Runs test..</echo>
+    <task name="main" code="Acme.Utils" path="run app class path">
+      <parameter variable="~#args#~"/>
+    </task>
+  </target>
+
+  <target name="runapp" dir="TJWS_HOME" comment="run jndi test">
+    <dependency target="jar"/>
+    <dependency target="app"/>
+    <dependency target="war"/>
+    <dependency value="true"/>
+    <task name="main" code="rogatkin.app.Main" path="run app class path">
+      <parameter name="tjws.wardeploy.dynamically" value="10"/>
+      <parameter>-dataSource</parameter>
+      <parameter>mediachest_ds.properties</parameter>
+      <parameter>-dataSource</parameter>
+      <parameter>ecp_datasource.properties</parameter>
+      <parameter>-p</parameter>
+      <parameter>80</parameter>
+      <parameter>-z</parameter>
+      <parameter>50</parameter>
+      <parameter value="-j"/>
+      <parameter value="org.apache.jasper.servlet.JspServlet"/>
+      <parameter value="-org.apache.jasper.servlet.JspServlet.classpath"/>
+      <parameter value="%classpath%"/>
+      <parameter value="-org.apache.jasper.servlet.JspServlet.scratchdir"/>
+      <parameter value="%deploydir%/WEB-INF"/>
+      <parameter variable="~#args#~"/>
+    </task>
+  </target>
+
+  <target name="run" dir="TJWS_HOME" comment="run server">
+    <echo>Running...</echo>
+    <dependency target="jar"/>
+    <dependency target="war"/>
+    <dependency target="jsp"/>
+    <dependency value="true"/>
+    <task name="main" code="Acme.Serve.Main" path="run class path">
+       <parameter name="rogatkin.webapp.debug" value="no"/>
+       <parameter name="tjws.wardeploy.warname-as-context" value="yes"/>
+       <parameter name="tjws.serve.log.encoding" value="UTF-8"/>
+       <parameter name="tjws.wardeploy.dynamically" value="10"/>
+       <parameter name="org.apache.commons.logging.LogFactory" value="org.apache.commons.logging.impl.LogFactoryImpl"/>
+       <parameter name="org.apache.commons.logging.simplelog.defaultlog" value="error" type="property"/>
+       <parameter name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.SimpleLog"/>
+       <parameter name="tjws.fileservlet.usecompression" value=""/>
+       <!--parameter name="jaxp.debug" value="1"/-->
+       <!--parameter value="-nka"/-->
+       <!--parameter value="-sp"/-->
+       <parameter value="-a"/>
+       <parameter value="aliases.properties"/>
+       <parameter value="-r"/>
+       <parameter value="realm.properties"/>
+       <parameter value="-p"/>
+       <parameter>
+         <expression>
+           <if>
+             <expression>
+               <value name="secure" type="property"/>
+             </expression>
+             <block type="then">
+                <variable name="port" value="443"/>
+             </block>
+             <block type="else">
+                <variable name="port">80</variable>
+             </block>
+           </if>
+         </expression>
+       </parameter>
+       <parameter value="-z"/>
+       <parameter value="50"/>
+       <parameter value="-l"/>
+       <parameter>
+          <expression>
+            <if>
+              <expression>
+                 <operator name="neq">
+                    <value variable="JSP_SERVLET"/>
+                    <value/>
+                 </operator>
+              </expression>
+              <block type="then">
+                 <operator name="array">
+                    <value value="-j"/>
+                    <value value="gnu.jspengine.JspServlet"/>
+                    <value value="-gnu.jspengine.JspServlet.scratchdir"/>
+                    <value value="%deploydir%/~~~/jsp"/>
+                    <value value="-gnu.jspengine.JspServlet.classloadername"/>
+                    <value value="%classloader%"/>
+                    <value value="-gnu.jspengine.JspServlet.debug"/>
+                    <value value="on"/>
+                 </operator>
+              </block>
+              <block type="else">
+                 <if>
+                   <expression>
+                     <operator name="neq">
+                       <value variable="JASPER"/>
+                       <value/>
+                     </operator>
+                   </expression>
+                   <block type="then">
+                     <operator name="array">
+                       <value value="-j"/>
+                       <value value="org.apache.jasper.servlet.JspServlet"/>
+                       <value value="-org.apache.jasper.servlet.JspServlet.classpath"/>
+                       <value value="%classpath%"/>
+                       <value value="-org.apache.jasper.servlet.JspServlet.scratchdir"/>
+                       <value value="%deploydir%/WEB-INF"/>
+                     </operator>
+                   </block>
+                 </if>
+              </block>
+           </if>
+          </expression>
+       </parameter> 
+       <parameter value="-k"/>
+       <parameter value="200"/>
+       <parameter value="-z"/>
+       <parameter value="100"/>
+       <parameter value="-c"/>
+       <parameter value="cgi-bin"/>
+       <!--parameter value="-out"/>
+       <parameter value="Acme.Utils$DummyPrintStream"/-->
+       <parameter>
+          <expression variable="secure socket">
+           <if>
+             <expression>
+               <value name="secure" type="property"/>
+             </expression>
+             <block type="then">
+                <expression variable="secure socket">
+                  <operator name="array">
+                      <value>-acceptorImpl</value>
+                      <value>Acme.Serve.SSLAcceptor</value>
+                      <value>-keystorePass</value>
+                      <value variable="keystore pass"/>
+                  </operator>
+                </expression>
+             </block>
+             <block type="else">
+                <expression>
+                  <operator name="array">
+                      <value>-acceptorImpl</value>
+                      <value>Acme.Serve.SelectorAcceptor</value>
+                  </operator>
+                </expression>
+             </block>
+           </if>
+         </expression>
+       </parameter>
+       <parameter>
+          <expression variable="double socket">
+           <if>
+             <expression>
+               <value name="doublehead" type="property"/>
+             </expression>
+             <block type="then">
+                <expression variable="secure socket">
+                  <operator name="array">
+                      <value>-acceptorImpl</value>
+                      <value>rogatkin.web.DualSocketAcceptor</value>
+                      <value>-keystorePass</value>
+                      <value variable="keystore pass"/> 
+                      <value>-ssl-port</value>
+                      <value>443</value>
+                  </operator>
+                </expression>
+             </block>
+           </if>
+         </expression>
+      </parameter>
+    </task>
+  </target>  
+</bee>
+

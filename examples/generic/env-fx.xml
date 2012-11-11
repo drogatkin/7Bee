@@ -1,0 +1,16 @@
+<!-- $Id: env-fx.xml,v 1.1 2009/05/31 20:34:24 dmitriy Exp $
+   Defines current environment specific variables -->
+  <expression variable="PATH SEPARATOR">
+      <value name="path.separator" type="property"/>
+  </expression>
+  <variable name="PROJECT_HOME" type="path">.</variable>
+  <!-- Only this may require to change -->
+  <variable name="JAVAFX_HOME">C:\Program Files\JavaFX\javafx-sdk1.1</variable>
+
+  <variable name="comp target">1.5</variable>
+  
+  <expression variable="CUSTOM CP">
+    <operator name="append">
+       <value></value>
+    </operator>
+  </expression>

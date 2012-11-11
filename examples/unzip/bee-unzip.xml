@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
+    "http://knitknot.info/DTD/bee.dtd" >
+<!-- $Id: bee-unzip.xml,v 1.2 2012/04/19 05:27:17 dmitriy Exp $
+   Unzip
+   Copyright (c) Dmitriy Rogatkin    -->
+
+<bee name="unzip" type="project">
+
+ 
+  <target name="unzip" dir=".">
+     <block>
+         <variable name="zip file"/>
+         <for variable="current" in="~#args#~">
+                <if>
+                    <expression>
+                        <operator name="eq">
+                            <value variable="zip file"/>
+                            <value/>
+                        </operator>
+                    </expression>
+                    <then>
+                        <expression name="zip file">
+                            <value variable="current"/>
+                        </expression>
+                    </then>
+                </if>
+            </for>
+         <function name="unzip">
+            <parameter variable="zip file"/>
+         </function>
+     </block>
+  </target>
+</bee>

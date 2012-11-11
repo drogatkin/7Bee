@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
+    "http://7bee.j2ee.us/xml/DTD/bee.dtd" [
+      <!ENTITY env SYSTEM "./env.xml">
+      <!ENTITY build_directory "lib">
+      <!ENTITY jarname "jsp">
+      ]>
+<!-- $Id: bee.xml,v 1.2 2006/06/24 22:40:17 rogatkin Exp $
+   make file used J2EE
+   Copyright (c) 2006 Dmitriy Rogatkin    -->
+
+<bee name="jsp" type="project">
+  &env;
+
+  <echo>JSP API building...</echo>
+                     	
+  <expression variable="compiler classes">
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/lib/tools.jar</value>
+     </operator>
+  </expression>
+
+  <target name="check lib" dir=".">
+     <dependency>
+        <expression>
+          <operator name="eq">
+            <function name ="timestamp">
+               <parameter value="&build_directory;"/>
+            </function>
+            <value/>
+          </operator>
+        </expression>
+     </dependency>
+     <task exec="mkdir">
+       <parameter value="&build_directory;"/>
+     </task>
+  </target>
+
+  <expression variable="api sources">
+        <function name="newerwithdependency">
+           <parameter value="src\share\.java"/>
+           <parameter value="&build_directory;\.class"/>
+           <parameter value=""/>
+           <parameter/>
+        </function>
+  </expression>
+
+  <expression variable="class path">
+    <operator name="append">
+       <value>&build_directory;</value>
+       <value variable="PATH SEPARATOR"/>
+       <value variable="SERVLET_HOME"/>
+       <value>/servlet.jar</value>
+    </operator>
+  </expression>
+
+
+  <target name="compile" dir="JSP_HOME">
+    <dependency target="check lib"/>
+    <dependency variable="api sources"/>
+    <task name="main" code="com.sun.tools.javac.Main" path="compiler classes">
+       <parameter value="-classpath"/>
+       <parameter variable="class path"/>
+       <parameter value="-d"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter value="-source"/>
+       <parameter value="1.4"/>
+       <parameter value="-sourcepath"/>
+       <parameter value="src\share" type="dir"/>
+       <parameter variable="api sources"/>
+      <onexit>
+        <if>
+          <expression>
+             <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+          </expression>
+          <block type="then">
+                 <echo>Error(s) at compilation</echo>
+                 <function name="stop">
+			<parameter value="1"/>
+                 </function>
+          </block>
+       </if>
+      </onexit>
+    </task>
+  </target>
+
+  <expression variable="resource list">
+           <function name="cropname">
+              <parameter value="src\share\javax\servlet\jsp\tagext\doc-files\*.gif"/>
+              <parameter value="src\\share\\"/>
+           </function>
+  </expression>
+
+  <target name="copy resources">
+     <block>
+         <function name="cp">
+             <parameter>src/share/dtd/jsp*.dtd</parameter>
+             <parameter>&build_directory;/javax/servlet/jsp/resources</parameter>
+             <parameter>src/share/dtd/jsp*.xsd</parameter>
+             <parameter>&build_directory;/javax/servlet/jsp/resources</parameter>
+             <parameter>src/share/dtd/web-jsp*.dtd</parameter>
+             <parameter>&build_directory;/javax/servlet/jsp/resources</parameter>
+             <parameter>src/share/dtd/web-jsp*.xsd</parameter>
+             <parameter>&build_directory;/javax/servlet/jsp/resources</parameter>
+         </function>
+     </block>
+  </target>
+
+  <target name="jar" dir=".">
+    <dependency target="compile"/>
+    <dependency target="copy resources"/>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="&build_directory;\" type="dir"/>
+              <parameter value="&jarname;.jar" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="bee.xml" type="dir"/>
+              <parameter value="&jarname;.jar" type="file"/>
+           </function>
+    </dependency>
+    <task name="jar_do" code="sun.tools.jar.Main">
+       <parameter value="-cmf"/>
+       <parameter value="src\etc\manifest"/>
+       <parameter value="&jarname;.jar" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter value="." type="dir"/>
+       <parameter>
+            <expression variable="resources">
+              <variable name="resources"/>
+              <for variable="resource name" in="resource list">
+                  <operator name="array" variable="resources">
+                      <value variable="resources"/>
+                      <value>-C</value>
+                      <value>src\share</value>
+                      <value variable="resource name"/>
+                  </operator>
+               </for>
+            </expression>
+       </parameter>
+    </task>
+  </target>
+</bee>
+

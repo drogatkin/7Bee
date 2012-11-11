@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
+    "http://knitknot.info/DTD/bee.dtd" [
+      <!ENTITY env SYSTEM "./env.xml">
+      <!ENTITY project "project name">
+      <!ENTITY build_directory "your build directory">
+      <!ENTITY source_directory "src"> <!-- change if differs -->
+      <!ENTITY build_file "your jar.jar">
+      <!ENTITY domain "com">
+      <!ENTITY manifestf "type relative path to manifest">
+      <!ENTITY main_class "type main class for run">
+      ]>
+<!-- $Id: bee-hivol.xml,v 1.9 2012/04/17 22:52:48 dmitriy Exp $
+   make file used for "generic" project
+   Copyright (c) 2004-2006 Dmitriy Rogatkin    -->
+
+<bee name="project name" type="project">
+  &env;
+
+  <expression variable="javac">
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/bin/javac</value>
+     </operator>
+  </expression>
+
+  <target name="check build" dir=".">
+     <dependency>
+        <expression>
+          <operator name="eq">
+            <function name ="timestamp">
+               <parameter value="&build_directory;"/>
+            </function>
+            <value></value>
+          </operator>
+        </expression>
+     </dependency>
+     <block>
+       <function name="mkd">
+         <parameter value="&build_directory;"/>
+       </function>
+     </block>
+  </target>
+
+  <expression variable="java sources">
+        <function name="newerwithdependency">
+           <parameter value="&source_directory;/&domain;/.java"/>
+           <parameter value="&build_directory;/&domain;/.class"/>
+	   <parameter/>
+	   <parameter value="&domain;"/>
+        </function>
+  </expression>
+
+  <expression variable="class path">
+     <operator name="append">
+        <value variable="PROJECT_HOME"/>
+        <value>/&build_directory;</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="CUSTOM CP"/>
+     </operator>
+  </expression>
+
+  <expression variable="compiler classes">
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/lib/tools.jar</value>
+     </operator>
+  </expression>
+
+  <target name="compile" dir="PROJECT_HOME">
+    <dependency target="check build"/>
+    <dependency variable="java sources"/>
+    <echo>Compiling...</echo>
+    <task name="compile task" code="com.sun.tools.javac.Main" path="compiler classes">
+       <parameter value="-classpath"/>
+       <parameter variable="class path"/>
+       <parameter value="-source"/>
+       <parameter value="1.5"/>
+       <parameter value="-d"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter variable="java sources"/>>
+      <onexit>
+        <if>
+          <expression>
+             <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+          </expression>
+          <block type="then">
+                 <echo>Error(s) at compilation</echo>
+                 <function name="stop">
+			<parameter value="1"/>
+                 </function>
+          </block>
+       </if>
+      </onexit>
+      <!--onexception>
+	<block>
+                 <echo>Exception at compilation</echo>
+                 <function name="stop">
+			<parameter value="-1"/>
+                 </function>
+	</block>
+      </onexception-->
+    </task>
+  </target>
+
+  <expression variable="manifest file">
+     <value type="path">&manifestf;</value>
+  </expression>
+
+  <target name="jar" dir="PROJECT_HOME">
+    <echo>Jarring...</echo>
+    <dependency target="compile"/>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="&build_directory;/&domain;" type="dir"/>
+              <parameter value="&build_directory;/&build_file;" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="bee.xml" type="dir"/>
+              <parameter value="&build_directory;/&build_file;" type="file"/>
+           </function>
+    </dependency>
+
+    <task name="jar_do" code="sun.tools.jar.Main">
+       <parameter>
+          <expression>
+            <if>
+              <expression>
+                <operator name="eq">
+                  <value/>
+                  <value variable="manifest file"/>
+                </operator>
+              </expression>
+              <block type="then">
+                <value>-cf</value>
+              </block>
+              <block type="else">
+                <operator name="array">
+	           <value>-cmf</value>
+                   <value variable="manifest file"/>
+                 </operator>
+              </block>
+            </if>
+          </expression>
+       </parameter>   
+       <parameter value="&build_directory;/&build_file;" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter value="&domain;" type="dir"/>
+      <onexception>
+	<block>
+                 <echo>Exception at jarring</echo>
+                 <function name="stop">
+			<parameter value="-1"/>
+                 </function>
+	</block>
+      </onexception>
+    </task>
+  </target>
+
+  <target name="clean" dir="PROJECT_HOME">
+    <dependency>
+       <expression>
+         <operator name="eq">
+            <value>y</value>  
+            <function name="ask">
+               <parameter value="Are you sure to remove all files in &build_directory; [n]?"/>
+               <parameter value="n"/>
+            </function>
+        </operator>
+      </expression>
+    </dependency>
+    <block>
+      <echo>Cleaning...</echo>
+      <function name="rm">
+         <parameter value="&build_directory;/*/*/*/*/*.class" type="path"/>
+         <parameter value="&build_directory;/&build_file;" type="file"/>
+      </function>
+    </block>
+  </target>
+
+  <expression variable="run class path">
+     <operator name="append">
+        <value variable="PROJECT_HOME"/>
+        <value>/&build_directory;/&build_file;</value>
+        <value variable="PATH SEPARATOR"/>
+     </operator>
+  </expression>
+
+  <target name="run" dir="PROJECT_HOME">
+    <echo>Running...</echo>
+    <dependency target="jar"/>
+    <dependency value="true"/>
+    <task name="main" code="&main_class;" path="run class path">
+       <parameter variable="~#args#~"/>
+    </task>
+  </target>  
+</bee>
+

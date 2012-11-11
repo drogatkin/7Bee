@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
+    "http://7bee.j2ee.us/xml/DTD/bee.dtd" [
+      <!ENTITY env SYSTEM "./env.xml">
+      ]>
+<!-- $Id: bee.xml,v 1.12 2009/04/16 05:35:41 dmitriy Exp $
+   make file used for project MediaChest
+   Copyright (c) 2007 Dmitriy Rogatkin    -->
+
+<bee name="MediaChest">
+  &env;
+
+ <!-- TODO: provide include file with standard compile and other
+           build tool definitions -->
+  <expression variable="javac">
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/bin/javac</value>
+     </operator>
+  </expression>
+
+  <expression variable="class path">
+     <operator name="append">
+        <value variable="ALDAN3_HOME"/>
+        <value>/build/aldan3.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="MEDIACHEST_HOME"/>
+        <value>/lib/mp3.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="ADDRESSBOOK_HOME"/>
+        <value>/lib/addressbook.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="JMAIL_HOME"/>
+        <value>/mail.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="MEDIAUTIL_HOME"/>
+        <value>/lib/mediautil.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="JavaLayer Home"/>
+        <value>/jl1.0.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="IBM MPEG 4 SDK lib"/>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="ACTIVATION_HOME"/>
+        <value>/activation.jar</value> <!-- activation framework -->
+        <value variable="PATH SEPARATOR"/>
+        <value variable="JAVACOMM_HOME"/>
+        <value>/comm.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="JAVA_HOME"/>
+        <value>/jre/lib/javaws.jar</value>
+     </operator>
+  </expression>
+
+  <expression variable="compile cp">
+     <operator name="append">
+        <value variable="MEDIACHEST_HOME"/>
+        <value>/lib</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="class path"/>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="SERVLET_LIB"/>
+    </operator>
+  </expression>
+
+  <expression variable="mediautil lib">
+    <operator name="append">
+       <value variable="MEDIAUTIL_HOME"/>
+       <value>/lib</value>
+    </operator>
+  </expression>
+
+  <target name="check lib" dir=".">
+     <dependency>
+        <expression>
+          <operator name="eq">
+            <function name ="timestamp">
+               <parameter value="lib"/>
+            </function>
+            <value/>
+          </operator>
+        </expression>
+     </dependency>
+     <task exec="mkdir">
+       <parameter value="lib"/>
+     </task>
+  </target>
+
+  <target name="check mediautil lib" dir=".">
+     <dependency>
+        <expression>
+          <operator name="eq">
+            <function name ="timestamp">
+               <parameter variable="mediautil lib"/>
+            </function>
+            <value/>
+          </operator>
+        </expression>
+     </dependency>
+     <task exec="mkdir">
+       <parameter variable="mediautil lib"/>
+     </task>
+  </target>
+
+  <target name="check signed target lib" dir=".">
+     <dependency>
+        <expression>
+          <operator name="eq">
+            <function name ="timestamp">
+               <parameter value="webstart/signedlib"/>
+            </function>
+            <value/>
+          </operator>
+        </expression>
+     </dependency>
+     <task exec="mkdir">
+       <parameter value="webstart/signedlib"/>
+     </task>
+  </target>
+
+  <target name="mediautil" dir="MEDIAUTIL_HOME">
+    <dependency target="check mediautil lib"/>
+    <dependency name="mediautil sources">
+      <operator name="exclude">
+        <function name="newerthan">
+          <parameter value="src/mediautil\.java" type="path"/>
+          <parameter value="lib/mediautil/.class" type="path"/>
+        </function>
+        <value>.*package-info.*</value>
+      </operator>
+    </dependency>
+    <task exec="javac">
+       <parameter value="-classpath"/>
+       <parameter variable="compile cp"/>
+       <parameter value="-d"/>
+       <parameter variable="mediautil lib" type="dir"/>
+       <parameter value="-source"/>
+       <parameter value="1.5"/>
+       <parameter value="-target"/>
+       <parameter value="1.5"/>
+       <parameter value="-sourcepath"/>
+       <parameter value="src" type="dir"/>
+       <parameter variable="mediautil sources"/>
+      <onexit>
+        <if>
+          <expression>
+             <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+          </expression>
+          <block type="then">
+                 <echo>Error(s) at mediautils compilation</echo>
+                 <function name="stop">
+			<parameter value="1"/>
+                 </function>
+          </block>
+       </if>
+      </onexit>
+    </task>
+  </target>
+
+  <target name="compile ID3 tagger" dir="MEDIACHEST_HOME">
+    <dependency target="check lib"/>
+    <dependency name="ID3 tagger sources">
+      <function name="newerthan">
+        <parameter value="src/de\.java" type="dir"/>
+        <parameter value="lib/de/.class" type="dir"/>
+      </function>
+    </dependency>
+    <task exec="javac">
+       <parameter value="-classpath"/>
+       <parameter variable="compile cp"/>
+       <parameter value="-d"/>
+       <parameter value="lib" type="dir"/>
+       <parameter value="-source"/>
+       <parameter value="1.5"/>
+       <parameter value="-target"/>
+       <parameter value="1.5"/>
+       <parameter value="-sourcepath"/>
+       <parameter value="src" type="dir"/>
+       <parameter variable="ID3 tagger sources"/>
+      <onexit>
+        <if>
+          <expression>
+             <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+          </expression>
+          <block type="then">
+                 <echo>Error(s) at ID3 tagger compilation</echo>
+                 <function name="stop">
+			<parameter value="1"/>
+                 </function>
+          </block>
+       </if>
+      </onexit>
+    </task>
+  </target>
+  
+  <target name="make stamp" dir="MEDIACHEST_HOME">
+    <dependency>
+      <function name="newerthan">
+         <parameter value="src\photoorganizer\.java" type="dir"/>
+         <parameter value="lib/photoorganizer/.class" type="dir"/>
+      </function>
+    </dependency>
+    <block>
+       <!--expression name="classes to compile">
+          <function name="newerthan">
+            <parameter value="src\photoorganizer\.java" type="dir"/>
+            <parameter value="lib/photoorganizer/.class" type="dir"/>
+          </function>
+       </expression>
+       <echo variable="classes to compile"/-->
+       <function name="write">
+          <parameter type="path">./src/photoorganizer/BuildStamp.java</parameter>
+          <parameter>package photoorganizer;
+public final class BuildStamp {
+     public static final String BUILD_STAMP=&quot;</parameter>
+          <parameter>
+             <function name="now"/>
+          </parameter>
+          <parameter>&quot;;
+}</parameter>
+       </function>
+    </block>  
+  </target>
+
+  <target name="compile" dir="MEDIACHEST_HOME">
+    <dependency target="mediautil jar"/>
+    <dependency target="ID3 tagger jar"/>
+    <dependency target="make stamp"/>
+    <dependency>
+      <function name="newerthan">
+         <parameter value="src\photoorganizer\.java" type="dir"/>
+         <parameter value="lib/photoorganizer/.class" type="dir"/>
+      </function>
+    </dependency>
+    <echo>MediaChest building...</echo>
+    <task exec="javac">
+       <parameter value="-classpath"/>
+       <parameter variable="compile cp"/>
+       <parameter value="-d"/>
+       <parameter value="lib" type="dir"/>
+       <parameter value="-source"/>
+       <parameter value="1.5"/>
+       <parameter value="-target"/>
+       <parameter value="1.5"/>
+       <parameter value="-sourcepath"/>
+       <parameter value="src" type="dir"/>
+       <parameter>
+           <function name="newerwithdependency">
+              <parameter value="src\photoorganizer\.java" type="dir"/>
+              <parameter value="lib/photoorganizer/.class" type="dir"/>
+              <parameter value="PhotoOrganizer"/>
+              <parameter value="photoorganizer"/>
+           </function>
+      </parameter>
+      <onexit>
+        <if>
+          <expression>
+             <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+          </expression>
+          <block type="then">
+                 <echo>Error(s) at MediaChest compilation</echo>
+                 <function name="stop">
+			<parameter value="1"/>
+                 </function>
+          </block>
+       </if>
+      </onexit>
+    </task>
+  </target>
+
+  <target name="ID3 tagger jar" dir="MEDIACHEST_HOME">
+    <dependency target="compile ID3 tagger"/>
+    <dependency>
+      <function name="allnewer">
+        <parameter value="lib\de" type="dir"/>
+        <parameter value="lib\mp3.jar" type="file"/>
+      </function>
+    </dependency>
+    <task name="jar_do" code="sun.tools.jar.Main">
+       <parameter value="-cf"/>
+       <parameter value="lib\mp3.jar" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="lib" type="dir"/>
+       <parameter value="de"/>
+    </task>
+  </target>
+
+  <target name="mediautil jar" dir="MEDIAUTIL_HOME">
+    <dependency target="mediautil"/>
+    <dependency>
+      <function name="allnewer">
+        <parameter value="mediautil" type="path"/>
+        <parameter value="lib\mediautil.jar" type="path"/>
+      </function>
+    </dependency>
+    <task name="jar_do" code="sun.tools.jar.Main">
+       <parameter value="-cf"/>
+       <parameter value="lib\mediautil.jar" type="path"/>
+       <parameter value="-C"/>
+       <parameter value="lib" type="path"/>
+       <parameter value="mediautil"/>
+    </task>
+  </target>
+
+  <target name="jar" dir="MEDIACHEST_HOME">
+    <dependency target="compile"/>
+    <dependency>
+      <!--operator name="or"  -->
+      <function name="allnewer">
+        <parameter value="lib\" type="dir"/>
+        <parameter value="lib\MediaChest.jar" type="file"/>
+      </function>
+    </dependency>
+    <dependency>
+       <function name="allnewer">
+        <parameter value="src\manifest.mf" type="file"/>
+        <parameter value="lib\MediaChest.jar" type="file"/>
+      </function>
+    </dependency>
+    <task name="jar_do" code="sun.tools.jar.Main">
+       <parameter value="-cmf"/>
+       <parameter value="src/manifest.mf" type="file"/>
+       <parameter value="lib\MediaChest.jar" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="lib"/>
+       <parameter value="photoorganizer"/>
+       <parameter value="resource/image/*.jpg" type="file"/>
+       <parameter value="resource/image/*.png" type="file"/>
+       <parameter value="resource/image/*.gif" type="file"/>
+       <parameter value="resource/template/*.htmp" type="file"/>
+       <parameter value="resource/template/*.xml" type="file"/>
+       <parameter value="resource/text/*.res" type="file"/>
+    </task>
+  </target>
+
+  <expression variable="java tool classes">
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/lib/tools.jar</value>
+     </operator>
+  </expression>
+
+  <target name="sign" dir="MEDIACHEST_HOME">
+    <dependency target="jar"/>
+    <dependency target="check signed target lib"/>
+    <dependency value="true"/>
+    <block>
+       <echo>Use: keytool -genkey -alias dima -keypass keyme12 -dname "CN=Dmitriy Rogatkin, OU=WebStart, O=MediaChest, L=RWC, ST=CA, C=US" -validity 360
+     when you need to create a key, then self sign
+     keytool -selfcert -alias dima -keypass keyme12 -dname "CN=Dmitriy Rogatkin, OU=WebStart, O=MediaChest, L=RWC, ST=CA, C=US"
+     to delete alias for renew certificate
+     keytool -delete -alias dima
+     Note: a new task createcert due to be created
+</echo>
+       <expression variable="keypass">
+          <function name="ask">
+             <parameter>Enter keystore password (note it will be shown on screen)?</parameter>
+             <parameter/>
+          </function>
+       </expression>
+       <expression variable="keystore">
+          <operator name="append">
+             <value name="user.home" type="property"/>
+             <value>/.keystore</value>
+          </operator>
+       </expression>
+       <for name="sign" variable="jarfile" in="run class path" separator="PATH SEPARATOR">
+         <echo options="-n">Processing... </echo><echo variable="jarfile"/>
+         <if>
+             <expression>
+               <operator name="neq">
+                 <function name="ask">
+                    <parameter>Continue [y]?</parameter>
+                    <parameter>y</parameter>
+                 </function>
+                 <value>y</value>
+               </operator>
+             </expression>
+             <block type="then">
+                <interrupt name="sign"/>
+             </block>
+         </if>      
+         <task name="jarsign" code="sun.security.tools.JarSigner" path="java tool classes">
+           <parameter>-keystore</parameter>
+           <parameter variable="keystore"/>
+           <parameter>-storepass</parameter>
+           <parameter variable="keypass"/>
+           <parameter>-keypass</parameter>
+           <parameter>
+              <function name="ask">
+                <parameter>Alias key password?</parameter>
+                <parameter>keyme12</parameter>
+              </function>
+           </parameter>
+           <parameter>-signedjar</parameter>
+           <parameter>
+              <expression>
+                <operator name="append">
+                  <value>webstart/signedlib/</value>
+                  <function name="filename">
+                     <parameter variable="jarfile"/>
+                  </function>
+                  <value>.jar</value>
+                </operator>
+              </expression>
+           </parameter>
+           <parameter variable="jarfile"/>
+           <parameter>dima</parameter>
+         </task> 
+      </for>
+    </block>
+  </target>
+
+
+  <expression variable="MediaChest data">
+     <operator name="append">
+        <value variable="MEDIACHEST_HOME"/>
+        <value>\data\</value>
+     </operator>
+  </expression>
+  
+  <expression variable="AddressBook data">
+     <operator name="append">
+        <value variable="ADDRESSBOOK_HOME"/>
+        <value>\data\</value>
+     </operator>
+  </expression>
+
+  <expression variable="run class path">
+     <operator name="append">
+        <value variable="MEDIACHEST_HOME"/>
+        <value>/lib\MediaChest.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="MEDIAUTIL_HOME"/>
+        <value>/lib\mediautil.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="class path"/>
+     </operator>
+  </expression>
+
+  <target name="mu clean" dir="MEDIAUTIL_HOME">
+    <block>
+       <echo>Cleaning MediaUtil...</echo>
+       <function name="rm">
+         <parameter value="lib\*\*\*\*.class" type="path"/>
+         <parameter value="lib/*.jar" type="path"/>
+       </function>
+    </block>
+  </target>
+
+  <target name="clean" dir="MEDIACHEST_HOME">
+    <dependency target="mu clean"/>
+    <block>
+       <echo>Cleaning...</echo>
+       <function name="rm">
+         <parameter value="lib\*\*\*\*.class"/>
+         <parameter value="lib/*.jar"/>
+       </function>
+    </block>
+  </target>
+
+  <target name="play" dir="MEDIACHEST_HOME">
+    <dependency target="jar"/>
+    <dependency value="true"/>
+    <task name="MediaChest" code="photoorganizer.renderer.ToolbarPlayer" path="run class path">
+      <parameter variable="~#args#~"/>
+    </task>
+  </target>
+
+
+  <target name="run" dir="MEDIACHEST_HOME">
+    <dependency target="jar"/>
+    <dependency value="true"/>
+    <task name="MediaChest" code="photoorganizer.PhotoOrganizer" path="run class path">
+      <parameter name="jdbc.drivers" value="sun.jdbc.odbc.JdbcOdbcDriver:com.ms.jdbc.odbc.JdbcOdbcDriver"/>
+      <parameter name="MediaChest.home" variable="MediaChest data"/>
+      <parameter name="mediachest.log.encoding" value="UTF-8"/>
+      <parameter name="jAddressBook.home" variable="AddressBook data"/>
+    </task>
+  </target>
+
+  <target name="extractor" dir="MEDIACHEST_HOME">
+    <task name="RIFF MP3 extractor" code="photoorganizer.formats.WMA" path="run class path">
+      <parameter variable="~#args#~"/>
+    </task>
+  </target>
+
+  <target name="all" dir="MEDIACHEST_HOME">
+    <dependency target="run"/>
+  </target>
+</bee>
+

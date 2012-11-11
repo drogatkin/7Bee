@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
+    "http://7bee.j2ee.us/xml/DTD/bee.dtd" [
+      <!ENTITY env SYSTEM "./env.xml">
+      <!ENTITY webapp_file "&project;.war">
+      <!ENTITY build_directory "bin">
+      <!ENTITY deploy_directory "&project;_app">
+      <!ENTITY source_directory "src"> <!-- change if differs -->
+      <!ENTITY build_file "&project;.jar">
+      <!ENTITY domain "&project;">
+      <!ENTITY manifestf "">
+      <!ENTITY main_class "&domain;.vc.Queryvc">
+      <!ENTITY project "finesearch">
+      ]>
+<!-- $Id: bee-web.xml,v 1.4 2009/04/16 05:35:42 dmitriy Exp $
+   make file used for  project &project;
+   Copyright (c) 2007 Dmitriy Rogatkin    -->
+
+<bee name="&project;" type="project">
+  &env;
+
+  <expression variable="javac">
+     <operator name="append">
+        <value variable="JAVA_HOME"/>
+        <value>/bin/javac</value>
+     </operator>
+  </expression>
+
+  <target name="check build" dir=".">
+     <dependency>
+        <expression>
+          <operator name="eq">
+            <function name ="timestamp">
+               <parameter value="&build_directory;"/>
+            </function>
+            <value></value>
+          </operator>
+        </expression>
+     </dependency>
+     <task exec="mkdir">
+       <parameter value="&build_directory;"/>
+     </task>
+  </target>
+
+  <target name="check deploy" dir=".">
+     <dependency>
+        <expression>
+          <operator name="eq">
+            <function name ="timestamp">
+               <parameter value="&deploy_directory;"/>
+            </function>
+            <value></value>
+          </operator>
+        </expression>
+     </dependency>
+     <task exec="mkdir">
+       <parameter value="&deploy_directory;"/>
+     </task>
+  </target>
+
+  <expression variable="java sources">
+        <function name="newerwithdependency">
+           <parameter value="&source_directory;/&domain;/.java"/>
+           <parameter value="&build_directory;/&domain;/.class"/>
+	   <parameter/>
+	   <parameter value="&domain;"/>
+        </function>
+  </expression>
+
+  <expression variable="class path">
+     <operator name="append">
+        <value variable="PROJECT_HOME"/>
+        <value>/&build_directory;</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="CUSTOM CP"/>
+     </operator>
+  </expression>
+
+  <target name="compile" dir="PROJECT_HOME">
+    <dependency target="check build"/>
+    <dependency variable="java sources"/>
+    <echo>Compiling...</echo>
+    <task exec="javac">
+       <parameter value="-classpath"/>
+       <parameter variable="class path"/>
+       <parameter value="-source"/>
+       <parameter value="1.5"/>
+       <parameter value="-target"/>
+       <parameter value="1.5"/>
+       <parameter value="-d"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter variable="java sources"/>>
+      <onexit>
+        <if>
+          <expression>
+             <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+          </expression>
+          <block type="then">
+                 <echo>Error(s) at compilation</echo>
+                 <function name="stop">
+			<parameter value="1"/>
+                 </function>
+          </block>
+       </if>
+      </onexit>
+      <onexception>
+	<block>
+                 <echo>Exception at compilation</echo>
+                 <function name="stop">
+			<parameter value="-1"/>
+                 </function>
+	</block>
+      </onexception>
+    </task>
+  </target>
+
+  <expression variable="manifest file">
+     <value type="path">&manifestf;</value>
+  </expression>
+
+  <target name="jar" dir="PROJECT_HOME">
+    <echo>Jarring...</echo>
+    <dependency target="compile"/>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="&build_directory;/&domain;" type="dir"/>
+              <parameter value="&build_directory;/&build_file;" type="file"/>
+           </function>
+    </dependency>
+    <dependency>
+           <function name="allnewer">
+              <parameter value="bee.xml" type="dir"/>
+              <parameter value="&build_directory;/&build_file;" type="file"/>
+           </function>
+    </dependency>
+
+    <task name="jar_do" code="sun.tools.jar.Main">
+       <parameter>
+          <expression>
+            <if>
+              <expression>
+                <operator name="eq">
+                  <value/>
+                  <value variable="manifest file"/>
+                </operator>
+              </expression>
+              <block type="then">
+                <value>-cf</value>
+              </block>
+              <block type="else">
+                <operator name="array">
+	           <value>-cmf</value>
+                   <value variable="manifest file"/>
+                 </operator>
+              </block>
+            </if>
+          </expression>
+       </parameter>   
+       <parameter value="&build_directory;/&build_file;" type="file"/>
+       <parameter value="-C"/>
+       <parameter value="&build_directory;" type="dir"/>
+       <parameter value="&domain;" type="dir"/>
+      <onexception>
+	<block>
+                 <echo>Exception at jarring</echo>
+                 <function name="stop">
+			<parameter value="-1"/>
+                 </function>
+	</block>
+      </onexception>
+    </task>
+  </target>
+
+  <target name="clean" dir="PROJECT_HOME">
+    <dependency>
+       <expression>
+         <operator name="eq">
+            <value>y</value>  
+            <function name="ask">
+               <parameter value="Are you sure to remove all files in &build_directory; [n]?"/>
+               <parameter value="n"/>
+            </function>
+        </operator>
+      </expression>
+    </dependency>
+    <block>
+      <echo>Cleaning...</echo>
+      <function name="rm">
+         <parameter value="&build_directory;/*/*/*/*/*.class" type="dir"/>
+         <parameter value="&build_directory;/&build_file;" type="file"/>
+         <parameter value="&deploy_directory;/&webapp_file;" type="file"/>
+      </function>
+    </block>
+  </target>
+
+  <target name="war" dir="PROJECT_HOME">
+    <dependency target="jar"/>
+    <dependency target="check deploy"/>
+    <dependency>
+       <expression>
+          <operator name="not">
+             <function name ="timestamp">
+                <parameter value="&deploy_directory;/&webapp_file;"/>
+             </function>
+          </operator>
+       </expression>
+    </dependency>
+    <dependency>
+       <expression>
+          <function name="anynewer">
+             <parameter value="res/html" type="path"/>
+             <parameter value="&deploy_directory;/&webapp_file;" type="path"/>
+          </function>
+       </expression>
+    </dependency>
+    <dependency>
+       <expression>
+          <function name="anynewer">
+             <parameter value="res/web" type="path"/>
+             <parameter value="&deploy_directory;/&webapp_file;" type="path"/>
+          </function>
+       </expression>
+    </dependency>
+    <dependency>
+       <expression>
+          <function name="anynewer">
+             <parameter value="res/cfg" type="path"/>
+             <parameter value="&deploy_directory;/&webapp_file;" type="path"/>
+          </function>
+       </expression>
+    </dependency>
+    <dependency>
+       <expression>
+          <function name="anynewer">
+             <parameter variable="ALDAN3_LIB" type="path"/>
+             <parameter value="&deploy_directory;/&webapp_file;" type="path"/>
+          </function>
+       </expression>
+    </dependency>
+    <block>
+      <echo value="...->&deploy_directory;/&webapp_file;"/>
+      <function name="warit">
+         <parameter value="&deploy_directory;/&webapp_file;"/>
+         <parameter>res/cfg/web.xml</parameter>
+         <parameter>L</parameter>
+         <parameter>&build_directory;/&build_file;</parameter>
+         <parameter/>
+         <parameter>L</parameter>
+         <parameter variable="ALDAN3_LIB"/>
+         <parameter/>
+         <parameter>A</parameter>
+         <parameter>res/jsp/servletfromjsp.jsp</parameter> 
+         <parameter>A WEB-INF/jsps/</parameter>
+         <parameter>res/jsp/hello.jsp</parameter> 
+         <parameter>A WEB-INF/res/html/</parameter>
+         <parameter>res/html/*.html</parameter>
+         <parameter>A WEB-INF/res/html/</parameter>
+         <parameter>res/html/*.json</parameter>
+         <parameter>A WEB-INF/res/txt/</parameter>
+         <parameter>res/txt/*.properties</parameter>
+         <parameter>A</parameter>
+         <parameter>res/web/*</parameter>
+         <parameter>A WEB-INF/cfg/</parameter>
+         <parameter>res/cfg/finesearch.properties</parameter>
+      </function>
+    </block>
+  </target>
+ 
+  <expression variable="web run class path">
+     <operator name="append">
+        <value variable="TJWS_HOME"/>
+        <value>/lib/webserver.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="TJWS_HOME"/>
+        <value>/lib/war.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="SERVLET_LIB"/>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="JSP_LIB"/>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="GNUJSP_HOME"/>
+        <value>/lib/jspengine.jar</value>
+        <value variable="PATH SEPARATOR"/>
+        <value variable="JAVA_HOME"/>
+        <value>/lib/tools.jar</value>
+     </operator>
+  </expression>
+
+  <target name="run" dir="PROJECT_HOME">
+    <echo>Running web app &project; ...</echo>
+    <dependency target="war"/>
+    <dependency value="true"/>
+    <task name="main" code="Acme.Serve.Main" path="web run class path">
+       <parameter name="rogatkin.web.WebAppServlet.debug" value="yes"/>
+       <parameter name="tjws.webappdir" value="&deploy_directory;"/>
+       <parameter name="java.awt.headless" value="true"/>
+       <parameter value="-j"/>
+       <parameter value="gnu.jspengine.JspServlet"/>
+       <parameter value="-gnu.jspengine.JspServlet.scratchdir"/>
+       <parameter value="%deploydir%/~~~/_jsp"/>
+       <parameter value="-gnu.jspengine.JspServlet.classloadername"/>
+       <parameter value="%classloader%"/>
+       <parameter value="-gnu.jspengine.JspServlet.debug"/>
+       <parameter value="off"/>
+       <parameter value="-b"/>
+       <parameter value="127.0.0.1"/>
+       <parameter value="-p"/>
+       <parameter>
+         <expression>
+           <if>
+             <expression>
+               <value name="secure" type="property"/>
+             </expression>
+             <block type="then">
+                <variable name="port" value="443"/>
+             </block>
+             <block type="else">
+                <variable name="port">80</variable>
+             </block>
+           </if>
+         </expression>
+       </parameter>
+       <parameter value="-lar"/>
+       <parameter>
+          <expression variable="secure socket">
+           <if>
+             <expression>
+               <value name="secure" type="property"/>
+             </expression>
+             <block type="then">
+                <expression variable="secure socket">
+                  <operator name="array">
+                      <value>-acceptorImpl</value>
+                      <value>Acme.Serve.SSLAcceptor</value>
+                      <value>-keystorePass</value>
+                      <value variable="key pass"/>
+                  </operator>
+                </expression>
+             </block>
+           </if>
+         </expression>
+      </parameter>
+
+    </task>
+  </target>  
+</bee>
+
