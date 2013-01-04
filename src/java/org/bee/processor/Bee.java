@@ -23,7 +23,7 @@ import org.bee.util.InfoHolder;
  */
 public class Bee extends AbstractBlock {
     // TODO: add global variables set from command line
-    public static final String DEDICATION = "To my children Anna and Phillip";
+    public static final String DEDICATION = "To my children Anna, Phillip, and Elizabeth";
 
     protected String homeDirectory;
 
