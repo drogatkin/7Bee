@@ -1,0 +1,34 @@
+7Bee version 1.1.1
+                               Read Me
+                               ~~~~~~~
+Installation
+------------
+
+1. Unpack the archive - unzip bee-1.1.1.zip 
+2. Step in deploy directory and type 
+   install or ./install for Windows and Linux/Mac platforms correspondingly.
+   You need to be 'root' to successfully install it on non Windows. If you got permission
+   denied on Unix/Linux, then run chmod 764 install. Administrator responsibilities
+   can be required in Windows to add 7Bee installation directory in path.
+
+Run
+---
+
+If you succeeded in an installation, then just type bee in directory
+where you want to use it. Use bee -h to get help screen. You may need
+to add install_directory/bee/bin in program path of your platform manually.
+
+Build
+-----
+
+If you do 7Bee source modifications or extensions, then you need to build 7Bee.
+1. Unpack dependency.zip somewhere in your file system, unzip dependency.zip
+2. Modify env.xml in your bee directory providing correct paths for
+   JAVA_HOME, BEE_HOME, JDEPEND_HOME.
+3. Type bee
+4. Manually copy result bee.jar to lib directory of installation. Automatic
+   copying not provided for reason of 7Bee is self booting tool, so if you
+   did harmful changes, you won't be able to use 7Bee until restore from
+   a backup copy.
+
+$Id: readme,v 1.10 2012/09/15 17:51:20 dmitriy Exp $

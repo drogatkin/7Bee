@@ -1,0 +1,770 @@
+<html>
+<!-- $Id: index-bee.html,v 1.70 2011/11/18 05:29:53 dmitriy Exp $
+   Copyright (c) 2004-2007 Dmitriy Rogatkin -->
+<head>
+<title>7Bee Project (aka Bee)</title>
+<style>
+<!--
+h1           { font-family: Verdana; font-size: 18pt }
+h3           { color: #FFFFFF; font-family: Verdana; font-size: 12pt }
+h2           { font-family: Verdana; font-size: 18pt; color: #FFFFFF }
+code         { background-color: #CECECE }
+div.exampleInner pre { margin-left: 1em;
+                       margin-top: 0em; margin-bottom: 0em}
+div.exampleInner { background-color: #d5dee3;
+                   border-top-width: 4px;
+                   border-top-style: double;
+                   border-top-color: #d3d3d3;
+                   border-bottom-width: 4px;
+                   border-bottom-style: double;
+                   border-bottom-color: #d3d3d3;
+                   padding: 4px; margin: 0em }
+-->
+</style>
+</head>
+<body>
+<table border="0" width="100%">
+  <tr>
+    <td width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="100%">
+      <table border=0>
+        <tr>
+          <td><h1>Welcome to</h1></td>
+          <td><img src="7bee_logo_small.png" border=0></td>
+          <td><h1>Home</h1></td>
+        </tr>
+      </table>
+      <center>7Bee is a Java-based build tool</center>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#800080">
+      <table border=0 width="100%">
+      <tr><td width="60%"><h3><a name="bee 1.1.0"></a><font color="#FFFFFF">7Bee 1.1.0 </font></h3></td>
+      <td width="*" align=right><a href="http://7bee.j2ee.us/bee/index-bee.html"><img src="http://7bee.j2ee.us/bee/7bee_logo_avatar.png" border=0></a><a href="http://java.com/java/download/index.jsp?cid=jdp78847" target="_blank">
+<img width="88" height="31" border="0" style="margin: 8px;" alt="GetJava Download Button" title="GetJava" src="http://java.com/en/img/everywhere/getjava_sm.gif?cid=jdp78847">
+</a><a href="http://www.java.net"><img src="http://today.java.net/images/javanet_button_170.gif" border=0 alt="java.net"></a></td>
+      </tr>
+      </table>      
+    </td>
+    
+  </tr>
+  <tr>
+    <td width="100%">7Bee 1.1.1 is now available for <a href="http://7bee.j2ee.us/download/bee-1.1.1.zip">download</a>.
+      <!--webbot bot="HTMLMarkup" startspan --><IFRAME height="42" MARGINWIDTH="0" MARGINHEIGHT="0"
+ FRAMEBORDER="0" SRC="/bee/bee-update.html">
+</IFRAME><!--webbot bot="HTMLMarkup" endspan i-checksum="38056" -->
+      <p>This is an initial version of 7Bee. There is no any license for this product
+except an author's copyright. Any usage of this software is your own risk and an
+author has no any responsibility for it.</td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#800080">
+      <a name="Bee"></a><h3>7Bee (<font color="#00FFFF">B</font>uild <font color="#00FFFF">E</font>verything
+      <font color="#00FFFF">E</font>asier)</h3>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%">
+<p>7Bee is a Java-based build tool. 7Bee inherited some principles of Make.</p>
+<p>Why another build tool when there are <i>make, gnumake, nmake, ant,
+maven, jam</i>, and many others? Because all those tools have limitations that 7Bee's an original author couldn't live with when developing software across multiple
+platforms using different products. Actually, an author had two objections before starting this project:</p>
+<ol>
+  <li>Usage of Make requires to install a set of GNU tools</li>
+  <li>Ant didn't meet to requirements of creation sophisticated build
+    procedures, and had too big footprint&nbsp;</li>
+</ol>
+    <p>Why 7, because 7 is a number of base classes giving 7Bee implementation.</td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#7F7F00">
+      <h2><a name="Documentation"></a>Documentation</h2>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%">7Bee uses a language with a simple set of predefined operations for creation
+build scripts. The language is XML based, so 
+	<a href="http://7bee.j2ee.us/xml/DTD/bee.dtd">DTD</a> is very helpful to understand
+general rules of creation language constructions. Although base set of
+operations is very limited, it can be easily extended by adding user defined
+operators and functions. Creation specialized tasks can also reduce efforts of
+      a preparation of build scripts.&nbsp;Another powerful thing is weakly hardcoded DTD, 
+	so generally the 7Bee processor can be configured for parsing
+different languages by just changing a grammar definition in externally defined 
+	file. See <a href="#Getting Started"> Getting Started</a> section how to start using 7Bee.</td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#008080">
+      <h3><font color="#FFFFFF">Basic 7Bee language elements</font></h3>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%">7Bee provides variables, expression, operators, functions, conditional
+operators, and loops. All variables are typeless, and they obtain a global
+scope in context where they defined.&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#008080">
+      <h4><font color="#FFFFFF">Basic statements</font></h4>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%">
+<p>The set include statements for creation build files. </p>
+<ul>
+  <li><i>variable</i> - defines a variable with specified name and set value when
+    specified. <a href="#variable"> example</a></li>
+  <li><i>value</i> - specifies a value which can be literal constant, value of
+    variable, name of property, directory, path, eval, and some others. Used attribute
+    type for qualification.
+    <ul>
+      <li>to get property value: <b>name</b>=&quot;property_name&quot; <b>type</b>=&quot;<i>property</i>&quot;</li>
+      <li>to consider value as directory: <b>type</b>=&quot;<i>directory</i>&quot;</li>
+      <li>to consider value as absolute path: <b>type</b>=&quot;<i>path</i>&quot;</li>
+      <li>to consider value as array: <b>type</b>=&quot;<i>array</i>&quot;, default separator
+        in a blank, unless <b> separator</b> defined.</li>
+      <li>to consider value as file or array of files: <b>type</b>=&quot;<i>file</i>&quot;,
+        wildcard extended to get matching array of files without extending name
+        to absolute path</li>
+      <li>to consider value as environment value: <b>type</b>=&quot;<i>environment</i>&quot;
+        <b>name</b>=&quot;name of env variable&quot;</li>
+      <li>to consider value as number: <b>type</b>=&quot;<i>number</i>&quot;</li>
+      <li>to consider value as date: <b>type</b>=&quot;<i>date</i>&quot;</li>
+      <li>to consider value as name of variable <b>type</b>=&quot;<i>eval</i>&quot;</li>
+    </ul>
+  </li>
+  <li><i>target </i>- defines an addressable build task. Attribute <b>name</b> 
+	defines a name of target which can be specified in command line of 7Bee. 
+	Attribute <b>dir</b> is optional and provides a work directory for target if 
+	it's different than for a project. A target description can be specified in 
+	attribute <b>comment</b>. <a href="#target">example</a></li>
+	<li><i>expression</i> - allows to combine operators functions to set a
+    variable value. <a href="#expression"> example</a></li>
+  <li><i>task</i> - define a build task. Attributes <b>name</b> and <b>code</b>
+    used for calling a class, <b>exec</b> for an OS executable, <b>path</b>
+    provides additional path or class path. Attributes <strong>stdout</strong>, <strong>stderr</strong>
+      and <strong>stdin</strong> can specify variables keeping a content of corresponding
+      streams of a running process. Parameters (<em>parameter</em>) specify strings passed in
+    command line or main() arguments. If name of a parameter specified then it
+    is used as a definition which is available by <i>System.getProperty()</i>. <a href="#task">example</a></li>
+  <li><i>dependency</i> - define a a dependency of a build task. All dependencies are 
+	evaluated. Any dependency returned true or not empty result means that a 
+	task will be executed, unless a dependency has attribute process_only="yes". <a href="#dependency">exampe</a></li>
+  <li><i>for</i> - define iteration. Attributes specify iteration <b>variable</b>,
+    <b>in</b> interval, and an optional <b>separator</b> to convert scalar 
+	interval value in an array. <a href="#for">example</a></li>
+  <li><i>if</i> - if statement. Calculate first <i>expression</i> and then
+    execute <i><u>then</u> block</i> if expression value is true, otherwise <i>
+	<u>else</u>
+    block</i>. <i><u>else</u> block</i> can be omitted. <a href="#if">example</a></li>
+  <li><i>block</i> - allows to combine different statements in one batch. <a href="#block">example</a></li>
+	<li><i>else</i> - else branch inside <b>if</b>, <font size="2">since 1.1</font></li>
+	<li><i>then</i> - then branch inside <b>if</b>, <font size="2">since 1.1</font></li>
+	<li><i>elseif</i> - else branch inside <b>if</b> starting a new if block,
+	<font size="2">since 1.1</font></li>
+	<li><i>condition</i> - <b>if</b> condition, <font size="2">since 1.1</font></li>
+  <li><i>echo</i> - displays a value or a variable on console. Two options
+   are available, as&nbsp; <i>-n </i>do not output the trailing newline, and <i>-E </i>disable interpretation of
+    escape sequences in
+    Strings
+  </li>
+  <li><i>switch</i> - provides switch, attribute <b>variable</b> defines a value
+    which checked against attribute <b>value</b> of <i>case block</i>s. A <i>default
+    block </i>is executed when no one other block matches.. <a href="#switch">example</a></li>
+  <li><i>function</i> - calls a function, see predefined functions below. Function can be also
+    custom defined. <a href="#function">example</a></li>
+	<li><i>parameter</i> - used for specifying parameters for <i>task</i>s and 
+	<i>function</i>s. It acts the same as a <i>value</i>, however it can set system variables with 
+	value specified., when used with types <i>environment</i> or <i>property</i> 
+	.</li>
+  <li><i>operator</i> - executes an operator, see list of available operators below. An
+    operator can be custom defined. <a href="#operator">example</a></li>
+  <li><i>interrupt</i> - interrupts current context execution, useful for early
+   termination of loops or leaving blocks.</li>
+</ul>
+<p>Note that 7Bee is highly expandable language for creation build files, test
+scripts, and many others tasks. Therefore, set of above statements can be
+extended by adding new ones. An external grammar definition can be applied 
+without
+recompiling of any core code.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#008080">
+<h4><font color="#FFFFFF">Operators</font> </h4>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%">
+<p>Generally any operator defined as a two addresses operation, when it applied 
+on two operands and result takes place of first operand. Further a result used as 
+first operand for the next operand in the chain. An operator can have unlimited 
+number of operands. An operand can be a value, a variable or a result of a 
+function. There are no parentheses to prioritize or group operands. However operators can
+be nested and operators of lower levels are calculated first. An operator has 
+a required attribute <i>name</i> and an optional <i>variable</i> specifying a 
+variable name for a result, otherwise an operator result passed to up level 
+context. The first version
+of 7Bee doesn't have inline operators, so most of expressions will look a bit
+bulky. It considered as not a big disadvantage, because build files are very rarely
+modified, therefore one time creation efforts can be neglected in a lifetime of a
+project.</p>
+<ul>
+  <li><b>append</b> - provides concatenation of variables and/or values.&nbsp;</li>
+  <li><b>array</b> - groups set of scalar or vector operands in a vector or array.</li>
+  <li><b>eq</b> - returns true if all operands are equal.</li>
+  <li><b>exclude</b> - used for excluding elements from array or vector based on 
+	a regular
+    expression. The operator arguments can be as single regular expressions as 
+	arrays of them.</li>
+  <li><b>lt</b> - less than.</li>
+  <li><b>neq</b> - not equal.</li>
+  <li><b>and</b> - logical AND</li>
+  <li><b>or</b> - logical OR</li>
+  <li><b>xor</b> - logical XOR</li>
+  <li><b>not</b> - logical NOT</li>
+</ul>
+<p>Some other operators can be build using the basis. Set of operators is customizable,
+when an operator <i>name</i> is a name of a class of its implementation. All operators
+are considered in package <i>org.bee.oper</i>. Basic arithmetic operations are implemented as
+<strong>calc</strong> function currently. </p>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#008080">
+      <h4><font color="#FFFFFF">Functions</font></h4>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%">
+<p>Set of functions is expandable and useful for different build tasks.
+Functions can be used in parameters of a <i>task</i>, or in <i>expression</i>s
+and <i>operator</i>s.</p>
+<ul>
+  <li><b>anynewer</b> - scans for last modification time of files defined by 
+	first parameter and last modification time specified by second and returns 
+	true if most newest file in first parameter newer than most newest file in 
+	second parameter. Any parameter can be a directory, in this case
+    entire directory is checked. Filtering is allowed using Wildcard char in file names.(<b>allnewer</b> depreciated)</li>
+  <li><b>ask</b> - displays a prompt to a user specified by first parameter, second
+    parameter provides default answer if a user pressed enter.</li>
+    <li><b>askpass</b> - displays a prompt to a user specified by first parameter, second
+    parameter provides default answer for empty input. User input isn't echoed, 
+	so this function can be used for entering sensitive data. Available since 
+	Java 6.</li>
+	<li><b>calc</b> - calculates expression given by parameters. Numbers and following operations
+	+,-,*,/,(,),power, sqrt, sqr, sin, cos, tan, atan, log, ln are allowed.. Calc acknowledges order of operations and priority
+	of *,/,power, and (). Parameters have to be scalar, however if first parameter is array, then its elements
+	represent an expression elements and other parameter get ignored.
+    </li>
+	<li><b>cp, cpa</b> - file copy command similar used for Unix. Number of parameter
+      pairs is not limited.
+    </li>
+	<li><b>scp</b> - secure network file copy command similar to scp used for Unix. It copies to host and takes
+	  two parameters : <strong>source file name</strong>  in local system and remote file name in format:
+	  <i>user:password@host:remote_file</i>. Optional 3rd parameter can specify connection port number unless it is 22. '@' is not
+	  allowed in remote file name.
+    </li>
+	<li><b>cropname</b> - removes a part of a file name defined as a regular expression. First
+      parameter specifies a name, second - a regular expression. An optional 3rd parameter
+      defines a string to substitute a deleted part. If a name includes wildcard
+      symbols like *, or ?, then it considered as a mask for file names to
+      perform the operation on. The function returns always an array.</li>
+	<li><b>filename</b> - extracts file name from an arbitrary name, it cuts
+      extension.</li>
+    <li><b>mkd</b> - creates directories from list of parameters. Returns array of success code for every parameter. Directories get created from current
+    work directory unless fully qualified name is specified.</li>
+	<li><b>mv</b> - similar to cp, but does move.</li>
+	<li><b>match</b> - matches string value to pattern, 1st parameter is a pattern, second is
+      a string. More about patterns is 
+	<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html" target="_blank">here</a>.</li>
+	<li><b>newerthan</b> - compares last modification time of files defined by
+      first parameter with last modification time corresponding files defined by
+      second parameters and returns a list of files with later time. If 
+	extensions are defined in first and second parameters, then they are ignored 
+	to find corresponding files.</li>
+	<li><b>newerwithdependency</b> - is similar to <i>newerthan</i> , but looks in Java
+      dependency, so for example if some Java file has newer date than
+      corresponding byte code file, all dependent on this byte code Java files
+      will be added to a&nbsp; result. One or two additional parameters specify
+      default class name to return, unless non empty result produced, and a package
+      prefix, when source directory points to not top level package.</li>
+	<li><b>now</b> - returns current time.</li>
+	<li><b>read</b> - reads content of file and returns it as a result, 1st
+      parameter is a file name, 2nd a separator pattern for returning an array, and 3rd is
+      encoding.</li>
+	<li><b>rm</b> - removes files defined in parameters.</li>
+                    <li><b>scalar</b> - convenient function to convert an array to single value, 1<sup>st</sup> 
+                        parametere specifies an array and 2<sup>nd</sup> an optional separator.</li>
+	<li><b>stop</b> - stops processing of 7Bee build file.</li>
+	<li><b>timestamp</b> - returns a time stamp of a file specified as a parameter.</li>
+	<li><b>touch</b> - is similar to Unix touch command, updates time of last file modification to
+	<b>now</b>.</li>
+	<li><b>unzip</b> - unzip file provided by first parameter in a directory specified by second parameter.
+	 If the former isn't specified then current directory is used. Extra parameters can be added to unzip specific entries
+	 matching to this parameters. Wild card isn't implemented yet.'</li>
+	<li><b>warit</b> - builds .war file, parameters define 1. web.xml, then
+      sets of parameters defining .war content. See mode detail <a href="#warit">below</a>.</li>
+	<li><b>write, writea</b> - creates a new file with content specified by
+      parameters, 1st provides file name, 2nd and following provide content of file, every new parameter
+        just appends to the file (no automatic line feed happens).</li>
+    <li><b>zip</b> - zip in file provided by fisrt parameter filses or directories specified by following parameters. Array type parameters are
+    supported, however no wild card in name supported yet. Array parameters can be used.</li>
+</ul>
+<p>A function name is a class name in package <i>org.bee.func</i>. Function can
+have a variable number of Object or String parameters, a result can be any type, which will be
+interpreted accordingly context where the function met.
+    </td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#008080">
+      <h4><font color="#FFFFFF">Scope rules</font></h4>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%">A variable obtains scope of its declaration and below. So
+     variables with the same name can coexist as different only in sibling
+      branches. When any statement is processed, all variables get evaluated
+      first in order of appearing. </td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#008080">
+      <h4><font color="#FFFFFF">Changeable Grammar</font></h4>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%">A language understandable by 7Bee can be changed. Take a look
+      at <i>alt-grammar.bgr</i> in examples. It provides a handler class for paths in
+      XML tree. So generally 3 different changes can be done:
+      <ol>
+        <li>changing tag names&nbsp;</li>
+        <li>changing tag hierarchy</li>
+        <li>adding new tags with corresponding handlers</li>
+      </ol>
+      <p>All these changes should be accompanied corresponding changes of DTD.</p>
+ </td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#008080">
+      <h4><font color="#FFFFFF">Function parameter details</font></h4>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%"><a name="warit"></a>
+<h5>warit</h5>
+<p>This function creates <b>.war</b> file specified by 1st parameter
+  <p>
+  2nd provides a location of <i>web.xml</i>, but it can be considered as content
+  of it, if the location can't be resolved. (a standard 7Bee behavior)
+  <p>
+  Further parameters grouped by 2 or more parameters, and 1st in a group
+  provides
+  <p>
+  operation abbreviations, like</p>
+  <ul>
+  <li> <b>A [prfx] </b>- add files to .war
+  <ol>
+  <li>source path, can include wild cards like * or ?</li>
+  </ol>
+  </li>
+  <li><b>E [prfx] </b>- add files not in exclude list
+  <ol>
+  <li>source path, can include wild cards like * or ?</li>
+  <li>exclude list comma separated with names only, wild card can be used as
+  well</li>
+  </ol>
+  </li>
+  <li><b>C [prfx] </b>- add files in classes
+  <ol>
+  <li>source path</li>
+  <li>exclude list, can be empty</li>
+  </ol>
+  </li>
+  <li><b>L [prfx] </b>- add files in library
+  <ol>
+  <li>source path</li>
+  <li>exclude list, can be empty</li>
+  </ol>
+  </li>
+  <li><b>W filename_path </b>- add content of parameter
+  <ol>
+  <li>content to add</li>
+  </ol>
+  </li>
+  </ul>
+<p>prfx -is path in .war to add files, it shouldn't start with / or \, if source
+path represent a single file, then prefix will be destination file name, unless
+it ended by / or /*. If a group started parameter has type an array, then its 
+content considered as additional parameters. It allows to create group of 
+parameters separately.</p>
+<h5>ask</h5>
+<p>1st parameter provides prompt and 2nd default value. Result of the function
+is user input or default value if user entered nothing.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#008080">
+      <h4><font color="#FFFFFF">7Bee file structure</font></h4>
+    </td>
+  </tr>
+  <tr><td>
+  7Bee build file starts with entities definitions. They used for definition 
+	build elements used multiple times, for example output directories, file 
+	names, main class name and so on. Using entities simplifies maintenance 
+	build file and allows to reuse it. Then global variables can be defined, for 
+	example class paths. The rest includes multiple target sections. If name of 
+	target section not specified at starting 7bee, then an execution starts from 
+	the last target section. Every target section can include several 
+	dependencies. In this case all dependencies evaluated first. If dependency 
+	is a target section, then process repeated recursively.</td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#008080">
+      <h4><font color="#FFFFFF">Predefined variable names</font></h4>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%">
+<p>Bee provides a mechanism of predefined variable&nbsp;</p>
+<ol>
+  <li>~#dir#~ - current working directory</li>
+  <li>~#args#~ - array of command line arguments</li>
+  <li>~#error#~ - value of last error</li>
+	<li>~#exception#~ - value of last exception</li>
+	<li>~#option-noinput#~ - value set if option -noinput used</li>
+	<li>~#build-file#~ - path of build file</li>
+	<li>~#class-lib#~ - array of class libraries set by command argument -lib</li> 
+</ol>
+    </td>
+  </tr>
+  <tr>
+     <td width="100%" bgcolor="#800080">
+       <font size="4" color="#F0F0F9"><b>Help to promote 7Bee
+     </b></font>
+     </td>
+  </tr>
+  <tr>
+     <td width="100%">
+      If you use 7Bee in your development, then you can help to promote this tool. You can add a small icon somewhere
+      on your site web pages inserting the following simple fragment:
+      <div class=exampleinner><code></code>&lt;a href=http://7bee.j2ee.us/bee/index-bee.html&quot;&gt;&lt;img 
+		src=&quot;http://7bee.j2ee.us/bee/7bee_logo_avatar.png&quot; border=0&gt;&lt;/a&gt;</div>
+     </td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#FFFF00"><a name="Getting Started"></a><b>
+	<font color="#000080">Getting Started</font></b></td>
+  </tr>
+  <tr>
+    <td width="100%">Although 7Bee build files look bulky, creation of a build 
+	script is fairly simple when templates of build files used. Folder <i>examples</i> of 7Bee distribution contains
+      many useful templates for different type of projects. Consider a simple 
+	project with compilation, jar creation and run tasks. Examples for such 
+	projects can be found in <i>examples/generic</i> folder. The templates 
+	consider some project tree structures, with separate folders for sources, 
+	result of compilation and build target files.
+      Let's create a classic <b>Hello, world!</b> project.
+      <ol>
+      <li>cd in user home directory and then create a project directory, <kbd>mkdir
+      helloworld-bee</kbd>
+      <li>create src directory, <kbd>mkdir src</kbd>
+      <li>copy generic 7Bee templates form 7bee\deploy\examples\generic\bee.xml
+      and 7bee\deploy\examples\generic\env.xml
+      <li>step in src directory (<kbd>cd src</kbd>) and create domain directory, <kbd>mkdir
+      userdomain</kbd>
+      <li>step in userdomain directory and create HelloWorld.java, <kbd>echo
+      &quot;package userdomain; public class HelloWorld { public static void
+      main(String ... args) { System.out.printf(\&quot;Hello,
+      World\!\\n\&quot;);}}&quot; &gt; HelloWorld.java</kbd>
+      <li>go back in the project home directory (home/userdomain/helloworld-bee)
+      and edit bee.xml, <kbd>vi bee.xml</kbd>
+      <p>before:</p>
+      <div class="exampleInner"><pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+ &lt;!DOCTYPE bee PUBLIC &quot;-//Dmitriy Rogatkin//DTD 7Bee Project Builder 1.0//EN&quot;
+    &quot;http://7bee.j2ee.us/xml/DTD/bee.dtd&quot; [
+      &lt;!ENTITY env SYSTEM &quot;./env.xml&quot;&gt;
+      &lt;!ENTITY build_directory &quot;your build directory&quot;&gt;</pre>
+		<pre>      &lt;!ENTITY source_directory &quot;src&quot;&gt;
+      &lt;!ENTITY build_file &quot;your jar.jar&quot;&gt;
+      &lt;!ENTITY domain &quot;com&quot;&gt;
+      &lt;!ENTITY manifestf &quot;type relative path to manifest&quot;&gt;
+      &lt;!ENTITY main_class &quot;type main class for run&quot;&gt;
+      ]&gt;</pre></div>
+      <p>after:</p>
+            <div class="exampleInner"><pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+ &lt;!DOCTYPE bee PUBLIC &quot;-//Dmitriy Rogatkin//DTD 7Bee Project Builder 1.0//EN&quot;
+    &quot;http://7bee.j2ee.us/xml/DTD/bee.dtd&quot; [
+      &lt;!ENTITY env SYSTEM &quot;./env.xml&quot;&gt;
+      &lt;!ENTITY build_directory &quot;build&quot;&gt;
+      &lt;!ENTITY source_directory &quot;src&quot;&gt;
+      &lt;!ENTITY build_file &quot;helloworld.jar&quot;&gt;
+      &lt;!ENTITY domain &quot;userdomain&quot;&gt;
+      &lt;!ENTITY manifestf &quot;&quot;&gt;
+      &lt;!ENTITY main_class &quot;userdomain.HelloWorld&quot;&gt;
+      ]&gt;</pre></div>
+      <li>Now you can run 7Bee. 
+      <table border="1" width="100%">
+        <tr>
+          <td width="100%" bgcolor="#000000"><font color="#FFFFFF">[dmitriy@BEEMACHINE 
+			mydomain]$bee<br>
+            Compiling...<br>
+            Jarring...<br>
+            Running...<br>
+            Hello, World!</font></td>
+        </tr>
+      </table>
+      </li>
+      </ol>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%" bgcolor="#FFFF00"><b><font color="#000080">Examples</font></b></td>
+  </tr>
+  <tr>
+     <td>
+     <a name="variable"></a><h4>variable</h4>
+     <div class="exampleInner"><pre>     &lt;variable name=&quot;jdk version&quot;&gt;1.5&lt;/variable&gt;
+     &lt;variable name=&quot;resource path&quot; type=&quot;path&quot;&gt;/src/resources&lt;/variable&gt;</pre></div>
+     <a name="expression"></a><h4>expression</h4>
+     <div class="exampleInner"><pre>     &lt;expression variable=&quot;class path&quot;&gt;
+        &lt;operator name=&quot;append&quot;&gt;
+           &lt;value variable=&quot;jdk root&quot;/&gt;
+           &lt;value variable=&quot;jdk version&quot;/&gt;
+           &lt;value&gt;/lib/rt.jar&lt;/value&gt;
+        &lt;/operator&gt;
+     &lt;/expression&gt;</pre></div>
+     <a name="task"></a><h4>task</h4>
+     <div class="exampleInner"><pre>&lt;task exec=&quot;mkdir&quot;&gt;
+       &lt;parameter value=&quot;&amp;build_directory;&quot;/&gt;
+&lt;/task&gt;
+&lt;task name=&quot;main&quot; code=&quot;com.sun.tools.javac.Main&quot; path=&quot;compiler classes&quot;&gt;
+  &lt;parameter value=&quot;-classpath&quot;/&gt;
+  &lt;parameter variable=&quot;class path&quot;/&gt;
+  &lt;parameter value=&quot;-source&quot;/&gt;
+  &lt;parameter value=&quot;1.5&quot;/&gt;
+  &lt;parameter value=&quot;-d&quot;/&gt;
+  &lt;parameter value=&quot;&amp;build_directory;&quot; type=&quot;dir&quot;/&gt;
+  &lt;parameter variable=&quot;java sources&quot;/&gt;&gt;
+  &lt;onexit&gt;
+     &lt;if&gt;
+        &lt;expression&gt;
+           &lt;operator name=&quot;neq&quot;&gt;&lt;value variable=&quot;resultcode&quot;/&gt;&lt;value&gt;0&lt;/value&gt;&lt;/operator&gt;
+        &lt;/expression&gt;
+        &lt;block type=&quot;then&quot;&gt;
+           &lt;echo&gt;Error(s) at compilation&lt;/echo&gt;
+           &lt;function name=&quot;stop&quot;&gt;
+	      &lt;parameter value=&quot;1&quot;/&gt;
+           &lt;/function&gt;
+        &lt;/block&gt;
+     &lt;/if&gt;
+  &lt;/onexit&gt;
+&lt;/task&gt;
+    </pre></div>
+     <a name="dependency"></a><h4>dependency</h4>
+     <div class="exampleInner"><pre>     &lt;dependency&gt;
+        &lt;expression&gt;
+          &lt;operator name=&quot;eq&quot;&gt;
+            &lt;function name =&quot;timestamp&quot;&gt;
+               &lt;parameter value=&quot;lib&quot;/&gt;
+            &lt;/function&gt;
+            &lt;value/&gt;
+          &lt;/operator&gt;
+        &lt;/expression&gt;
+     &lt;/dependency&gt;
+     &lt;dependency target=&quot;check lib&quot;/&gt;
+     </pre></div>
+     <a name="for"></a><h4>for</h4>
+     <div class="exampleInner"><pre>&lt;for variable=&quot;idl file&quot; in=&quot;event, naming IDLs&quot;&gt;
+      &lt;task name=&quot;idl compilation&quot; exec=&quot;idl compiler&quot;&gt;
+         &lt;parameter variable=&quot;old compatible&quot;/&gt;
+         &lt;parameter value=&quot;-i&quot;/&gt;
+         &lt;parameter variable=&quot;include_lib&quot;/&gt;
+         &lt;parameter value=&quot;-i&quot;/&gt;
+         &lt;parameter variable=&quot;common_src&quot;/&gt;
+         &lt;parameter value=&quot;-keep&quot;/&gt;
+         &lt;parameter value=&quot;-fall&quot;/&gt;
+         &lt;parameter value=&quot;-td&quot;/&gt;
+         &lt;parameter variable=&quot;Java src common&quot;/&gt;
+         &lt;parameter variable=&quot;packages list&quot;&gt;
+            &lt;expression variable=&quot;packages list&quot;&gt;
+              &lt;variable name=&quot;packages list&quot;/&gt;
+              &lt;for variable=&quot;package name&quot; in=&quot;event, naming IDLs&quot;&gt;
+                  &lt;operator name=&quot;array&quot; variable=&quot;packages list&quot;&gt;
+                      &lt;value variable=&quot;packages list&quot;/&gt;
+                      &lt;value&gt;-pkgPrefix&lt;/value&gt;
+                      &lt;function name=&quot;filename&quot;&gt;
+                         &lt;parameter variable=&quot;package name&quot;/&gt;
+                      &lt;/function&gt;
+                      &lt;value&gt;org.omg&lt;/value&gt;
+                  &lt;/operator&gt;
+               &lt;/for&gt;
+            &lt;/expression&gt;
+         &lt;/parameter&gt;
+         &lt;parameter variable=&quot;idl file&quot;/&gt;
+         &lt;onexit&gt;
+            &lt;if&gt;
+              &lt;expression&gt;
+                 &lt;operator name=&quot;neq&quot;&gt;&lt;value variable=&quot;resultcode&quot;/&gt;&lt;value&gt;0&lt;/value&gt;&lt;/operator&gt;
+              &lt;/expression&gt;
+              &lt;block type=&quot;then&quot;&gt;
+                 &lt;echo&gt;Error in IDL&lt;/echo&gt;
+                 &lt;function name=&quot;stop&quot;&gt;
+			&lt;parameter value=&quot;1&quot;/&gt;
+                 &lt;/function&gt;
+              &lt;/block&gt;
+              &lt;block type=&quot;else&quot;&gt;
+                  &lt;function name=&quot;write&quot;&gt;
+                     &lt;parameter variable=&quot;idl.timestamp&quot;/&gt;
+                     &lt;parameter value=&quot;&quot;/&gt;
+                  &lt;/function&gt;
+              &lt;/block&gt;
+            &lt;/if&gt;
+        &lt;/onexit&gt;
+      &lt;/task&gt;
+    &lt;/for&gt;
+      </pre></div>
+     <a name="if"></a><h4>if</h4>
+     <div class="exampleInner"><pre>&lt;if&gt;
+   &lt;expression&gt;
+      &lt;operator name=&quot;eq&quot;&gt;
+         &lt;value&gt;80&lt;/value&gt;
+         &lt;value variable=&quot;access port&quot;/&gt;
+      &lt;/operator&gt;
+   &lt;/expression&gt;
+   &lt;block type=&quot;then&quot;&gt;
+      &lt;expression variable=&quot;access port&quot;&gt;
+         &lt;value&gt;&lt;/value&gt;
+      &lt;/expression&gt;
+   &lt;/block&gt;
+   &lt;block type=&quot;else&quot;&gt; 
+      &lt;expression variable=&quot;access port&quot;&gt;
+        &lt;operator name=&quot;append&quot;&gt;
+           &lt;value&gt;:&lt;/value&gt;
+           &lt;value variable=&quot;access port&quot;/&gt;
+        &lt;/operator&gt;
+      &lt;/expression&gt;
+   &lt;/block&gt;
+ &lt;/if&gt;
+      </pre></div>
+     <a name="block"></a><h4>block</h4>
+     <div class="exampleInner"><pre> &lt;block&gt;
+    &lt;function name=&quot;touch&quot;&gt;
+       &lt;parameter value=&quot;src/Java/org/omg/timestamp.touch&quot; type=&quot;path&quot;/&gt;
+    &lt;/function&gt;
+ &lt;/block&gt;
+     </pre></div>
+     <a name="switch"></a><h4>switch</h4>
+     <div class="exampleInner"><pre>&lt;switch variable=&quot;component&quot;&gt;
+  &lt;block type=&quot;case&quot; value=&quot;s&quot;&gt;
+     &lt;echo&gt;EPM server configuration&lt;/echo&gt;
+  &lt;/block&gt;
+  &lt;block type=&quot;case&quot; value=&quot;c&quot;&gt;
+     &lt;echo&gt;EPM client configuration&lt;/echo&gt;
+  &lt;/block&gt;
+  &lt;block type=&quot;case&quot; value=&quot;a&quot;&gt;
+     &lt;echo&gt;EPM All-in-one configuration&lt;/echo&gt;
+  &lt;/block&gt;
+  &lt;block type=&quot;case&quot; value=&quot;r&quot;&gt;
+     &lt;echo&gt;Scheduler only configuration&lt;/echo&gt;
+  &lt;/block&gt;</pre><pre>&lt;/switch&gt;
+     </pre></div>
+     <a name="function"></a><h4>function</h4>
+     <div class="exampleInner"><pre>&lt;function name=&quot;warit&quot;&gt;
+         &lt;parameter value=&quot;&amp;build_directory;/&amp;webapp_file;&quot;/&gt;
+         &lt;parameter&gt;src\javaarchitect\servlet\web.xml&lt;/parameter&gt;
+         &lt;parameter&gt;C &amp;domain;&lt;/parameter&gt;
+         &lt;parameter&gt;&amp;build_directory;/&amp;domain;&lt;/parameter&gt;
+         &lt;parameter/&gt;
+         &lt;parameter&gt;E config/&lt;/parameter&gt;
+         &lt;parameter&gt;src\javaarchitect\servlet\*.properties&lt;/parameter&gt;
+         &lt;parameter&gt;servlets\.properties|aliases.properties&lt;/parameter&gt;
+         &lt;parameter&gt;C &amp;domain;/tree/resource/&lt;/parameter&gt;
+         &lt;parameter&gt;src\&amp;domain;/tree/resource&lt;/parameter&gt;
+         &lt;parameter&gt;CVS*&lt;/parameter&gt;
+         &lt;parameter&gt;C &amp;domain;/tree/&lt;/parameter&gt;
+         &lt;parameter&gt;src\&amp;domain;/tree/tree.dtd&lt;/parameter&gt;
+         &lt;parameter&gt;&lt;/parameter&gt;
+         &lt;parameter&gt;C &amp;domain;/mishka/resource/&lt;/parameter&gt;
+         &lt;parameter&gt;src\&amp;domain;/mishka/resource&lt;/parameter&gt;
+         &lt;parameter&gt;CVS*&lt;/parameter&gt;
+         &lt;parameter&gt;L&lt;/parameter&gt;
+         &lt;parameter&gt;
+           &lt;expression&gt;
+             &lt;operator name=&quot;append&quot;&gt;
+		&lt;value variable=&quot;DEMROG_HOME&quot;/&gt;
+                &lt;value&gt;/lib/demrog.jar&lt;/value&gt;              
+             &lt;/operator&gt;
+           &lt;/expression&gt;
+         &lt;/parameter&gt;
+         &lt;parameter/&gt;
+         &lt;parameter&gt;A&lt;/parameter&gt;
+         &lt;parameter&gt;src\javaarchitect\servlet\tree\resource/*.htm&lt;/parameter&gt;
+         &lt;parameter&gt;A tre_eview-doc.html&lt;/parameter&gt;
+         &lt;parameter&gt;doc\treeview-doc.html&lt;/parameter&gt;
+         &lt;parameter&gt;A&lt;/parameter&gt;
+         &lt;parameter&gt;doc\*.png&lt;/parameter&gt;
+         &lt;parameter&gt;A&lt;/parameter&gt;
+         &lt;parameter&gt;src\snoop.jsp&lt;/parameter&gt;
+      &lt;/function&gt;
+     </pre></div>
+     <a name="operator"></a><h4>operator</h4>
+     <div class="exampleInner"><pre>&lt;operator name=&quot;array&quot;&gt;
+  &lt;value&gt;-cmf&lt;/value&gt;
+  &lt;value variable=&quot;manifest file&quot;/&gt;
+&lt;/operator&gt;
+    </pre></div>
+     <a name="target"></a><h4>target</h4>
+     <div class="exampleInner"><pre>&lt;target name=&quot;war&quot; dir=&quot;.&quot; comment=&quot;Build J2EE deployer war.jar&quot;&gt;
+  &lt;echo&gt;Jarring war...&lt;/echo&gt;
+  &lt;dependency target=&quot;compile j2ee&quot;/&gt;
+  &lt;dependency&gt;
+    &lt;function name=&quot;allnewer&quot;&gt;
+      &lt;parameter value=&quot;&amp;build_directory;\rogatkin&quot; type=&quot;dir&quot;/&gt;
+      &lt;parameter value=&quot;&amp;build_directory;\war.jar&quot; type=&quot;file&quot;/&gt;
+    &lt;/function&gt;
+  &lt;/dependency&gt;
+  &lt;task name=&quot;jar_do&quot; code=&quot;sun.tools.jar.Main&quot;&gt;
+     &lt;parameter value=&quot;-cf&quot;/&gt;
+     &lt;parameter value=&quot;&amp;build_directory;/war.jar&quot; type=&quot;file&quot;/&gt;
+     &lt;parameter value=&quot;-C&quot;/&gt;
+     &lt;parameter value=&quot;&amp;build_directory;&quot; type=&quot;dir&quot;/&gt;
+     &lt;parameter value=&quot;rogatkin&quot; type=&quot;dir&quot;/&gt;
+  &lt;/task&gt;
+&lt;/target&gt;    </pre></div>
+   </td>
+  </tr>   
+  <tr>
+    <td width="100%" bgcolor="#000080"><font color="#FFFF00"><b>7BeeSP</b></font></td>
+  </tr>
+  <tr>
+    <td width="100%">What's 7BeeSP?
+      <p>7BeeSP is 7Bee server pages. 7Bee can be used not only as a build tool, it
+      can be used as a scripting language for generation web pages with 
+		JavaScript in, taking user requests,
+      sending dynamic response and much more. Some examples are coming soon.</td>
+  </tr>
+  <tr>
+    <td width="100%">Search for another great Linux utility helping improving
+      productivity of your work<CENTER>
+      <FORM ACTION="http://www.linuxlinks.com/portal/cgi-bin/search.cgi"
+METHOD="GET"><TABLE WIDTH=450 BORDER=1 
+CELLSPACING=0 BORDERCOLOR="#000000" BGCOLOR="#F0F0F9">
+<TR><TD ALIGN="center">
+<FONT FACE="arial,helvetica" COLOR="#000000" SIZE=2>
+<b>Search for</B> <INPUT TYPE=TEXT SIZE=20
+NAME="query"><INPUT TYPE=SUBMIT VALUE="Find!">
+<A HREF="http://www.linuxlinks.com/portal/cgi-bin/search.cgi">
+Options</A></FONT><BR><FONT FACE="arial,helvetica"
+COLOR="#000000" SIZE=0 >Powered by 
+<A HREF="http://www.linuxlinks.com">
+LinuxLinks.com</A> - the Linux portal site
+</FONT></TD></TR></TABLE></FORM></CENTER></td>
+  </tr>
+</table>
+<p>Contact <a href="mailto:jAddressBook@gmail.com">Dmitriy Rogatkin</a> </p>
+</body>
+</html>
