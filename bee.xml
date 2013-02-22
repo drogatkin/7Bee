@@ -31,11 +31,39 @@
           </operator>
         </expression>
      </dependency>
-     <task exec="mkdir">
-       <parameter value="lib"/>
-     </task>
+     <block>
+       <function name="mkd">
+          <parameter value="lib"/>
+       </function>
+     </block>
   </target>
+  
+  <expression name="jdepend_lib">
+      <operator name="append">
+          <value variable="JDEPEND_HOME"/>
+          <value>/lib</value>
+      </operator>
+  </expression>
 
+  <target name="check lib jdepend" dir="BEE_HOME" comment="Check and create build output directory for JDepend">
+     <dependency>
+        <expression>
+          <operator name="eq">
+            <function name ="timestamp">
+               <parameter variable="jdepend_lib"/>
+            </function>
+            <value></value>
+          </operator>
+        </expression>
+     </dependency>
+     <block>
+         <echo>Creating jdepend lib</echo>
+       <function name="mkd">
+          <parameter variable="jdepend_lib"/>
+       </function>
+     </block>
+  </target>
+  
   <target name="Build Date" dir="BEE_HOME">
     <block>
        <function name="write">
@@ -65,9 +93,84 @@
      </operator>
   </expression>
 
-  <target name="compile" dir="BEE_HOME">
+  <expression name="jdepend_java">
+      <operator name="append">
+          <value variable="JDEPEND_HOME"/>
+          <value>/src/java/.java</value>
+      </operator>
+  </expression>
+  
+  <expression name="jdepend_class">
+      <operator name="append">
+          <value variable="jdepend_lib"/>
+          <value>/.class</value>
+      </operator>
+  </expression>
+  
+  <expression variable="jdepend sources">
+       <function name="newerwithdependency">
+           <parameter variable="jdepend_java" type="path"/>
+           <parameter variable="jdepend_class" type="path"/>
+	   <parameter/>
+	   <parameter value="jdepend"/>
+        </function>
+  </expression>
+  
+  <target
+        name="compile_jdepend"
+        dir="BEE_HOME" >
+        <dependency target="check lib jdepend" />
+        <dependency variable="jdepend sources" />
+       <echo>
+Compiling jdepend...
+        </echo>
+        <task exec="javac" >
+           <!--
+       parameter value="-classpath"/>
+       <parameter variable="class path"/>
+            -->
+            <parameter value="-source" />
+            <parameter variable="1.5" />
+            <parameter value="-target" />
+            <parameter variable="1.5" />
+            <parameter value="-d" />
+            <parameter variable="jdepend_lib" />
+            <parameter variable="jdepend sources" />
+            <onexit>
+                <if>
+                    <expression>
+                        <operator name="neq" >
+                            <value variable="resultcode" />
+                            <value>0</value>
+                        </operator>
+                    </expression>
+                    <block type="then" >
+                        <echo>
+Error(s) at compilation jdepend
+                        </echo>
+                        <function name="stop" >
+                            <parameter value="1" />
+                        </function>
+                    </block>
+                </if>
+            </onexit>
+            <onexception>
+                <block>
+                    <echo>
+Exception at compilation
+                    </echo>
+                    <function name="stop" >
+                       <parameter value="-1" />
+                    </function>
+                </block>
+            </onexception>
+        </task>
+  </target>
+
+<target name="compile" dir="BEE_HOME">
     <dependency target="check lib"/>
     <dependency target="Build Date"/>
+    <dependency target="compile_jdepend"/>
     <dependency>
            <function name="allnewer">
               <parameter value="bee.xml" type="file"/>
@@ -157,12 +260,23 @@
             <if>
               <expression>
                   <function name="match">
-                     <parameter>.*Vista.*</parameter>
+                     <parameter>.*(Vista|Windows 8|Windows 7).*</parameter>
                      <parameter name="os.name" type="property"/>
                   </function>
               </expression>
               <block type="then">
-                 <echo>Make sure that you run this script as administrator when install in a standard location</echo>
+                  <if>
+                      <expression>
+			                  <function name="match">
+			                     <parameter>Administrator</parameter>
+			                     <parameter name="user.name" type="property"/>
+			                  </function>
+                      </expression>
+                      <else>
+                          <echo name="user.name" type="property"/>
+							<echo>Make sure that you run this script as an administrator when install in the standard location</echo>                          
+                      </else>
+                  </if>
               </block>
             </if>
             <expression variable="install directory">
@@ -183,6 +297,12 @@
                <parameter variable="install directory"/>
              </function>
            </expression>
+           <expression name="script name">
+               <function name="ask">
+                   <parameter>Specify starting script name [bee]? </parameter>
+                   <parameter>bee</parameter>
+               </function>
+           </expression>
            <expression variable="tools jar">
              <operator name="append">
                <value variable="JAVA_HOME"/>
@@ -194,7 +314,9 @@
              <operator name="append">
                <value variable="install directory"/>
                <value>\bee</value>
-               <value>\bin\bee.bat</value>
+               <value>\bin\</value>
+               <value variable="script name"/>
+               <value>.bat</value>
              </operator>
            </expression>
            <expression variable="bee lib">
@@ -207,7 +329,7 @@
            <function name="cp">
              <parameter value="lib\bee.jar"/>
              <parameter variable="bee lib"/>
-             <parameter value="lib\jsch-0.1.48.jar"/>
+             <parameter value="lib\jsch-0.1.49.jar"/>
              <parameter variable="bee lib"/>
            </function>
            <if>
@@ -217,9 +339,16 @@
                   </function>
                </expression>
                <else>
+                   <expression name="java home prompt">
+                       <operator name="append">
+                           <value>Provide JDK Home path [</value>
+                           <value variable="JAVA_HOME"/>
+                           <value>]? </value>
+                       </operator>
+                   </expression>
                   <expression variable="JAVA_HOME">
                     <function name="ask">
-                        <parameter>Provide JDK Home path? </parameter>
+                        <parameter variable="java home prompt"/>
                         <parameter variable="JAVA_HOME"/>
                     </function>
                   </expression>
@@ -277,11 +406,17 @@ Java home directory: </value>
                <function name="cp">
                     <parameter value="./lib/bee.jar"/>
                     <parameter variable="bee lib"/>
-                    <parameter value="./lib/jsch-0.1.47.jar"/>
+                    <parameter value="./lib/jsch-0.1.49.jar"/>
                     <parameter variable="bee lib"/>
                </function>
+               <expression name="bin script name">
+                   <operator name="append">
+                       <value>/usr/local/bin/</value>
+                       <value variable="script name"/>
+                   </operator>
+               </expression>
                <function name="write">
-                  <parameter variable="/usr/local/bin/bee" type="file"/>
+                  <parameter variable="bin script name" type="file"/>
 	          <parameter>#! /bin/sh
 # $Id: bee.xml,v 1.58 2012/10/10 04:49:09 cvs Exp $
 JAVA_HOME=</parameter>
