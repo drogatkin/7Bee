@@ -1,7 +1,10 @@
-JAVA_DEPENDENCY=./3rdparty/jdepend
-JSCH=./3rdparty/jsch/lib/jsch-0.1.48.jar
+JDEPEN_LOC=./3rdparty/jdepend
+JSCH=./3rdparty/jsch/lib/jsch-0.1.49.jar
+mkdir $JDEPEN_LOC/lib
+echo "JDepend"
+javac -sourcepath $JDEPEN_LOC/src/java -d $JDEPEN_LOC/lib $JDEPEN_LOC/src/java/jdepend/framework/*.java
 mkdir lib
-echo ./lib:$JAVA_DEPENDENCY/lib:$JSCH
+echo ./lib:$JDEPEN_LOC/lib:$JSCH
 echo "package org.bee; public class CompileStamp { public static final String getStamp() { return  \"Thu Aug 09 23:16:06 PDT 2012\"; }}" > src/org/bee/CompileStamp.java 
-javac -source 1.5 -target 1.5 -classpath ./lib:$JAVA_DEPENDENCY/lib:$JSCH -sourcepath src/java -d lib src/java/org/bee/processor/*.java src/java/org/bee/util/*.java src/java/org/bee/oper/*.java src/java/org/bee/func/*.java
+javac -source 1.5 -target 1.5 -classpath ./lib:$JDEPEN_LOC/lib:$JSCH -sourcepath src/java -d lib src/java/org/bee/processor/*.java src/java/org/bee/util/*.java src/java/org/bee/oper/*.java src/java/org/bee/func/*.java
 jar -cvmf ./manifest.mf lib/bee.jar -C lib org
