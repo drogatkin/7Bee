@@ -3,4 +3,4 @@ Name: bee.jar
 Main-Class: org.bee.processor.Bee
 Java-Bean: False
 Class-Path: 
- jsch-0.1.48.jar
+ jsch-0.1.49.jar
