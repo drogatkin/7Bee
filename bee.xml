@@ -409,6 +409,12 @@ Java home directory: </value>
                     <parameter value="./lib/jsch-0.1.49.jar"/>
                     <parameter variable="bee lib"/>
                </function>
+               <expression name="script name">
+                    <function name="ask">
+                       <parameter>Provide 7Bee start script name[bee]? </parameter>
+                      <parameter>bee</parameter>
+                   </function>
+               </expression>
                <expression name="bin script name">
                    <operator name="append">
                        <value>/usr/local/bin/</value>
