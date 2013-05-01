@@ -2,6 +2,7 @@
 //Bee Copyright (c) 2004 Dmitriy Rogatkin
 // Created on Apr 23, 2004
 package org.bee.util;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.InputStream;
@@ -101,20 +102,29 @@ public class Misc {
 		return result.toArray(new String[result.size()]);
 	}
 	
-	public static String streamToString(InputStream is, String encoding, int bufSize) throws IOException {
+	public static String streamToString(InputStream is, String encoding,
+			int bufSize) throws IOException {
 		StringBuffer result = new StringBuffer(100);
-		byte [] buffer = new byte[bufSize];
+		byte[] buffer = new byte[bufSize];
 		int len;
 		if (encoding == null)
-			while((len = is.read(buffer)) > 0)
+			while ((len = is.read(buffer)) > 0)
 				result.append(new String(buffer, 0, len));
-		else 
-			while((len = is.read(buffer)) > 0)
-				try {
-					result.append(new String(buffer, 0, len, encoding));
-				} catch(UnsupportedEncodingException uee) {
-					break;
-				}
+		else {
+			byte[] bres = null;
+			while ((len = is.read(buffer)) > 0) {
+				if (bres == null)
+					bres = new byte[len];
+				else
+					bres = Arrays.copyOf(bres, bres.length + len);
+				System.arraycopy(buffer, 0, bres, bres.length - len, len);
+			}
+			try {
+				return new String(bres, encoding);
+			} catch (UnsupportedEncodingException uee) {
+				throw new IOException("Can't apply encoding:" + encoding, uee);
+			}
+		}
 		return result.toString();
 	}
 
