@@ -430,7 +430,7 @@ JAVA_HOME=</parameter>
                   <parameter>
 BEE_HOME=/usr/local/bee
 
-$JAVA_HOME/bin/java -Xmx256000000 -jar $BEE_HOME/lib/bee.jar "$@"</parameter>
+$JAVA_HOME/bin/java -Xmx512m -jar $BEE_HOME/lib/bee.jar "$@"</parameter>
                </function>
                <task exec="chmod" dir="./">
                  <parameter>755</parameter>
