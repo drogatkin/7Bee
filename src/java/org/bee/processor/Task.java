@@ -45,6 +45,8 @@ public class Task extends Function {
 	protected String stdErrVar, stdOutVar, stdInVar;
 
 	protected OnExit onExitHandler;
+	
+	protected boolean lockSM;
 
 	protected OnException onExceptionHandler;
 
@@ -211,6 +213,7 @@ public class Task extends Function {
 					logger.fine(code + ".main(" + args.toString() + ") in " + System.getProperty("user.dir"));
 				if (useSM)
 					Policy.getPolicy().refresh();
+				lockSM = true;
 				System.setSecurityManager(new SecurityManager() {
 					public void checkExit(int status) {
 						/*
@@ -234,7 +237,7 @@ public class Task extends Function {
 					}
 
 					public void checkPermission(Permission perm) {
-						if (perm.getName().equals("setSecurityManager")) {
+						if (!lockSM && perm.getName().equals("setSecurityManager")) {
 							// TODO: make sure that it's called from right place
 							return;
 						}
@@ -298,6 +301,7 @@ public class Task extends Function {
 						onExceptionHandler.eval();
 				}
 			} finally {
+				lockSM = false;
 				System.setSecurityManager(origSM);
 				System.setProperties(origSystemProps);
 				if (origLoader != null)
