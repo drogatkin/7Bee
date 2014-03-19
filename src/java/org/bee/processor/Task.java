@@ -207,8 +207,8 @@ public class Task extends Function {
 								this.getClass().getClassLoader()));
 				}
 				workDir = lookupStringValue(RESERVE_NAME_DIR);
-				if (workDir != null)
-					workDir = System.setProperty("user.dir", workDir);
+				if (workDir != null) 
+					workDir = System.setProperty("user.dir", new File(workDir).getAbsolutePath());
 				if (logger.isLoggable(FINE))
 					logger.fine(code + ".main(" + args.toString() + ") in " + System.getProperty("user.dir"));
 				if (useSM)
