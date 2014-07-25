@@ -90,7 +90,7 @@
             <expression name="unwar dir">
                 <operator name="append">
                     <value name="java.io.tmpdir" type="property"/>
-                    <value>/war_temp</value>
+                    <value>war_temp</value>
                 </operator>
             </expression>
             <if>
@@ -244,6 +244,8 @@
             <function name="mkd">
                 <parameter variable="jsp dir"/>
             </function>
+            <echo>Compiling JSP</echo>
+            <echo variable="jsp dir"/>
             <task name="compile jsp" code="org.apache.jasper.JspC" path="jasper path">
                 <parameter>-classpath</parameter>
                 <parameter variable="jasper path"/>
@@ -270,20 +272,25 @@
             <if>
                 <expression>
                     <operator name="neq">
-                        <function name ="timestamp">
-                            <parameter variable="jsp jar"/>
+                        <function name ="timestamp">                            
+                            <parameter>
+                               <operator name = "append">
+                                  <value variable="jsp dir"/>
+                                  <value>/org</value>
+                               </operator>           
+                            </parameter>
                         </function>
                         <value></value>
                     </operator>
                 </expression>
                 <then>
-                    <echo variable="jsp dir"/>
                     <expression name="jsp dir">
                         <operator name="append">
                             <value variable="jsp dir"/>
                             <value>/*</value>
                         </operator>
                     </expression>
+                    <echo>Zipping JSP classes</echo>
                     <function name="zip">
                         <parameter variable="jsp jar"/>
                         <parameter variable="jsp dir" type="file"/>
@@ -294,12 +301,13 @@
                             <value>/*/*/*/*/*/*/*/*/*/*/*</value>
                         </operator>
                     </expression>
-                    <echo>Zipping JSP classes</echo>
-                    <!--
-                        <function name="rm">
+                    <function name="rm">
                           <parameter variable="jsp dir"/>
-                        </function> -->
+                    </function>
                 </then>
+                <else>
+                    <echo>No JSP</echo>
+                </else>
             </if>
             <!-- process all jars, and zips -->
             <expression name="jars dir">
