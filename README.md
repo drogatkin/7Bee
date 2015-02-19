@@ -15,10 +15,14 @@ bee.jar will be created in <b>lib</b> directory. However before using 7Bee, it i
 <h2>Installation</h2>
 Obtain administrator privileges of your platform. <i>sudo</i> can be used on Linux, or <i>cmd</i> as Administrator on Windows.
 Type
-<br>java -jar ./lib/bee.jar install
-<br>or
-<br>java -jar .\lib\bee.jar install
-<br>You will be prompted few simple questions, you can just use default answers, except JDK location. Specify
+
+   java -jar ./lib/bee.jar install
+
+or
+
+   java -jar .\lib\bee.jar install
+
+You will be prompted few simple questions, you can just use default answers, except JDK location. Specify
 correct JDK root directory on the prompt.
 If your platform is WIndows, then it is recommended to add 7Bee installation bin directory in your
 SYSTEM path. Just change Windows environment to add the path as installation script advises.
