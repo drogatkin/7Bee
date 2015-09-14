@@ -124,6 +124,24 @@ public class Value extends AbstractValue {
 							.warning("Requested 'property' value type, but neither 'name' nor 'variable' weren't specified.");
 			}
 			break;
+		case repo_artifact:
+			// parse repo as name-vendor-jar-version, for example maven-org.glassfish-javax.json-1.04			
+			String repDetails[] = value.split("-");
+			if (repDetails.length != 4) {
+				logger.warning("Requested 'repo_artifact' value type, but it doesn't match pattern: name-vendor-product-version.");
+				break;
+			}
+			if ("maven".equals(repDetails[0]))
+				try {
+
+					URL url = new URL("http://central.maven.org/maven2/" + repDetails[1].replace('.', '/') + "/"
+							+ repDetails[2] + "/" + repDetails[3] + "/" + repDetails[2] + "-" + repDetails[3] + ".jar");
+					return new InfoHolder<String, String, URL>(name, url.toString(), url);
+				} catch (Exception e) {
+					logger.fine("Value " + value + " can't be present as repo URL, " + e);
+					value = null;
+				}
+			break;
 		case url:
 			try {
 				URL url = new URL(value);

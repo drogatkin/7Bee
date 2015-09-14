@@ -18,7 +18,7 @@ import static org.bee.util.Logger.logger;
  */
 public abstract class AbstractValue extends DefaultHandler implements Instruction {
 	public enum Type {
-		variable, file, directory, url, number, date, array, path, environment, property, eval, block, project };
+		variable, file, directory, url, number, date, array, path, environment, property, eval, block, project, repo_artifact };
 		
 	protected String xpath;
 	protected String value;
