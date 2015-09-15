@@ -1,10 +1,10 @@
-7Bee version 1.1.1
+7Bee version 1.1.2
                                Read Me
                                ~~~~~~~
 Installation
 ------------
 
-1. Unpack the archive - unzip bee-1.1.1.zip 
+1. Unpack the archive - unzip bee-1.1.2.zip 
 2. Step in deploy directory and type 
    install or ./install for Windows and Linux/Mac platforms correspondingly.
    You need to be 'root' to successfully install it on non Windows. If you got permission
@@ -30,5 +30,3 @@ If you do 7Bee source modifications or extensions, then you need to build 7Bee.
    copying not provided for reason of 7Bee is self booting tool, so if you
    did harmful changes, you won't be able to use 7Bee until restore from
    a backup copy.
-
-$Id: readme,v 1.10 2012/09/15 17:51:20 dmitriy Exp $

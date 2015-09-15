@@ -1,6 +1,5 @@
 <html>
-<!-- $Id: index-bee.html,v 1.70 2011/11/18 05:29:53 dmitriy Exp $
-   Copyright (c) 2004-2007 Dmitriy Rogatkin -->
+<!-- Copyright (c) 2004-2015 Dmitriy Rogatkin -->
 <head>
 <title>7Bee Project (aka Bee)</title>
 <style>
@@ -43,8 +42,8 @@ div.exampleInner { background-color: #d5dee3;
   <tr>
     <td width="100%" bgcolor="#800080">
       <table border=0 width="100%">
-      <tr><td width="60%"><h3><a name="bee 1.1.0"></a><font color="#FFFFFF">7Bee 1.1.0 </font></h3></td>
-      <td width="*" align=right><a href="http://7bee.j2ee.us/bee/index-bee.html"><img src="http://7bee.j2ee.us/bee/7bee_logo_avatar.png" border=0></a><a href="http://java.com/java/download/index.jsp?cid=jdp78847" target="_blank">
+      <tr><td width="60%"><h3><a name="bee 1.1.2"></a><font color="#FFFFFF">7Bee 1.1.0 </font></h3></td>
+      <td width="*" align=right><a href="https://github.com/drogatkin/7Bee/blob/master/doc/index-bee.html"><img src="http://7bee.j2ee.us/bee/7bee_logo_avatar.png" border=0></a><a href="http://java.com/java/download/index.jsp?cid=jdp78847" target="_blank">
 <img width="88" height="31" border="0" style="margin: 8px;" alt="GetJava Download Button" title="GetJava" src="http://java.com/en/img/everywhere/getjava_sm.gif?cid=jdp78847">
 </a><a href="http://www.java.net"><img src="http://today.java.net/images/javanet_button_170.gif" border=0 alt="java.net"></a></td>
       </tr>
@@ -53,7 +52,7 @@ div.exampleInner { background-color: #d5dee3;
     
   </tr>
   <tr>
-    <td width="100%">7Bee 1.1.1 is now available for <a href="http://7bee.j2ee.us/download/bee-1.1.1.zip">download</a>.
+    <td width="100%">7Bee 1.1.2 is now available for <a href="https://github.com/drogatkin/7Bee">download</a>.
       <!--webbot bot="HTMLMarkup" startspan --><IFRAME height="42" MARGINWIDTH="0" MARGINHEIGHT="0"
  FRAMEBORDER="0" SRC="/bee/bee-update.html">
 </IFRAME><!--webbot bot="HTMLMarkup" endspan i-checksum="38056" -->
@@ -119,7 +118,7 @@ scope in context where they defined.&nbsp;</td>
   <li><i>variable</i> - defines a variable with specified name and set value when
     specified. <a href="#variable"> example</a></li>
   <li><i>value</i> - specifies a value which can be literal constant, value of
-    variable, name of property, directory, path, eval, and some others. Used attribute
+    variable, name of property, directory, path, eval, url, repo_artifact and some others. Uses the attribute
     type for qualification.
     <ul>
       <li>to get property value: <b>name</b>=&quot;property_name&quot; <b>type</b>=&quot;<i>property</i>&quot;</li>
@@ -135,7 +134,10 @@ scope in context where they defined.&nbsp;</td>
       <li>to consider value as number: <b>type</b>=&quot;<i>number</i>&quot;</li>
       <li>to consider value as date: <b>type</b>=&quot;<i>date</i>&quot;</li>
       <li>to consider value as name of variable <b>type</b>=&quot;<i>eval</i>&quot;</li>
+      <li>to consider value as URL <b>type</b>=&quot;<i>url</i>&quot;</li>
+      <li>to consider value as a repository artifact <b>type</b>=&quot;<i>repo_artifact</i>&quot;</li>
     </ul>
+    Maven repository artifact format is <i>maven:vendor:product:version</i>.
   </li>
   <li><i>target </i>- defines an addressable build task. Attribute <b>name</b> 
 	defines a name of target which can be specified in command line of 7Bee. 
