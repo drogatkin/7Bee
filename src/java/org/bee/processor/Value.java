@@ -6,15 +6,20 @@ package org.bee.processor;
 import java.util.Date;
 import java.net.URL;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.bee.util.InfoHolder;
+import org.bee.util.Misc;
+
 import static org.bee.util.Logger.logger;
 
 /**
@@ -125,20 +130,44 @@ public class Value extends AbstractValue {
 			}
 			break;
 		case repo_artifact:
-			// parse repo as name-vendor-jar-version, for example maven-org.glassfish-javax.json-1.04			
-			String repDetails[] = value.split("-");
+			// parse repo as name-vendor-jar-version, for example maven:org.glassfish:javax.json:1.04			
+			String repDetails[] = value.split(":");
 			if (repDetails.length != 4) {
-				logger.warning("Requested 'repo_artifact' value type, but it doesn't match pattern: name-vendor-product-version.");
+				logger.warning("Requested 'repo_artifact' value type, but it doesn't match pattern: name:vendor:product:version.");
 				break;
 			}
 			if ("maven".equals(repDetails[0]))
 				try {
+					File tempRepo = makeFile(".temp_repo");
+					if (tempRepo.mkdirs())
+						logger.finest("Temp repo directory " + tempRepo + " created");
+					tempRepo = new File(tempRepo, repDetails[2]+"-"+repDetails[3] + ".jar");
+					if (!tempRepo.exists()) {
+						URL url = new URL("http://central.maven.org/maven2/" + repDetails[1].replace('.', '/') + "/"
+								+ repDetails[2] + "/" + repDetails[3] + "/" + repDetails[2] + "-" + repDetails[3]
+								+ ".jar");
+						InputStream uis = null;
+						FileOutputStream fos = null;
+						try {
+							Misc.copyStream(uis = url.openStream(), fos = new FileOutputStream(tempRepo), 0);
+						} catch (Exception e) {
+							logger.warning("Can't load artifact from " + url + " : " + e);
+						} finally {
+							try {
+								uis.close();
+							} catch (Exception e) {
 
-					URL url = new URL("http://central.maven.org/maven2/" + repDetails[1].replace('.', '/') + "/"
-							+ repDetails[2] + "/" + repDetails[3] + "/" + repDetails[2] + "-" + repDetails[3] + ".jar");
-					return new InfoHolder<String, String, URL>(name, url.toString(), url);
+							}
+							try {
+								fos.close();
+							} catch (Exception e) {
+
+							}
+						}
+					}
+					return new InfoHolder<String, String, File>(name, tempRepo.getPath(), tempRepo);
 				} catch (Exception e) {
-					logger.fine("Value " + value + " can't be present as repo URL, " + e);
+					logger.fine("Value " + value + " can't be presented as repo URL, " + e);
 					value = null;
 				}
 			break;

@@ -130,9 +130,9 @@ Compiling jdepend...
        <parameter variable="class path"/>
             -->
             <parameter value="-source" />
-            <parameter variable="1.5" />
+            <parameter variable="1.6" />
             <parameter value="-target" />
-            <parameter variable="1.5" />
+            <parameter variable="1.6" />
             <parameter value="-d" />
             <parameter variable="jdepend_lib" />
             <parameter variable="jdepend sources" />
