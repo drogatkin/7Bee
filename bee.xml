@@ -6,7 +6,7 @@
       <!ENTITY env SYSTEM "./env.xml">
       ]>
 <!--  make file used for Bee project
-   Copyright (c) 2004, 2012 Dmitriy Rogatkin    -->
+   Copyright (c) 2004, 2015 Dmitriy Rogatkin    -->
 
 <bee name="bee" type="project">
   &env;
@@ -329,7 +329,7 @@ Exception at compilation
            <function name="cp">
              <parameter value="lib\bee.jar"/>
              <parameter variable="bee lib"/>
-             <parameter value="lib\jsch-0.1.49.jar"/>
+             <parameter value="lib\jsch-0.1.53.jar"/>
              <parameter variable="bee lib"/>
            </function>
            <if>
@@ -406,7 +406,7 @@ Java home directory: </value>
                <function name="cp">
                     <parameter value="./lib/bee.jar"/>
                     <parameter variable="bee lib"/>
-                    <parameter value="./lib/jsch-0.1.49.jar"/>
+                    <parameter value="./lib/jsch-0.1.53.jar"/>
                     <parameter variable="bee lib"/>
                </function>
                <expression name="script name">
