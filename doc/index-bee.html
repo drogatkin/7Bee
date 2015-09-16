@@ -305,6 +305,20 @@ and <i>operator</i>s.</p>
                     <li><b>scalar</b> - convenient function to convert an array to single value, 1<sup>st</sup> 
                         parametere specifies an array and 2<sup>nd</sup> an optional separator.</li>
 	<li><b>stop</b> - stops processing of 7Bee build file.</li>
+	<li><b>string</b> - provides string operations as one of the following:
+	    <ul>
+	       <li>upper - convert to upper case</li>
+	       <li>lower - convert to lower case</li>
+	       <li>capital - convert to capitalized case</li>
+	       <li>trim - trim string removing white spaces at begining and end</li>
+	       <li>reverse - reverse characters in string</li>
+	       <li>trunc - truncate string length to specified length by third parameter</li>
+	       <li>sub - extract substring of string using range indexes from third and forth parameters</li>
+	    </ul>
+	    First parameter is a value/variable considered as a string, second parameter specifies
+	    one of above operation, and thrird and forth parametrs are used for trunc and sub operations
+	    to specify length or range.
+	</li>
 	<li><b>timestamp</b> - returns a time stamp of a file specified as a parameter.</li>
 	<li><b>touch</b> - is similar to Unix touch command, updates time of last file modification to
 	<b>now</b>.</li>
