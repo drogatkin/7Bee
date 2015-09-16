@@ -1,10 +1,9 @@
-<!-- $Id: bee.dtd,v 1.34 2011/06/28 23:23:36 dmitriy Exp $
-  project Bee, DTD file of bee make files 
-  Copyright (c) 2004 Dmitriy Rogatkin   -->
+<!-- Project 7Bee, DTD file of bee scrpt files 
+  Copyright (c) 2004-2015 Dmitriy Rogatkin   -->
 
 <!ENTITY % PROJ_TYPE "build|test|run">
 
-<!ENTITY % VAR_TYPE "variable|file|directory|url|number|date|array|path|environment|property">
+<!ENTITY % VAR_TYPE "variable|file|directory|url|number|date|array|path|environment|property|repo_artifact">
 <!ENTITY % BLOCK_TYPE "then|else|case">
 <!ENTITY % YES_NO "yes|no">
 
