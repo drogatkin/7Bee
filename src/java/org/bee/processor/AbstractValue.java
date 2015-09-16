@@ -209,7 +209,7 @@ public abstract class AbstractValue extends DefaultHandler implements Instructio
 		char fc = pathName.charAt(0);
 		if (fc == '/' || fc == '\\' || value.indexOf(':') > 0) // absolute path criteria
 			return new File(pathName);
-		else if (fc == '.')
+		else if (pathName.startsWith("./") || pathName.startsWith(".\\"))
 			try {
 				return new File(pathName).getCanonicalFile();
 			} catch(IOException ioe) {

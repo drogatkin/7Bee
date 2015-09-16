@@ -139,8 +139,9 @@ public class Value extends AbstractValue {
 			if ("maven".equals(repDetails[0]))
 				try {
 					File tempRepo = makeFile(".temp_repo");
-					if (tempRepo.mkdirs())
-						logger.finest("Temp repo directory " + tempRepo + " created");
+					if (!tempRepo.exists())
+						if (tempRepo.mkdirs())
+							logger.finest("Temp repo directory " + tempRepo + " created");
 					tempRepo = new File(tempRepo, repDetails[2]+"-"+repDetails[3] + ".jar");
 					if (!tempRepo.exists()) {
 						URL url = new URL("http://central.maven.org/maven2/" + repDetails[1].replace('.', '/') + "/"
@@ -165,6 +166,7 @@ public class Value extends AbstractValue {
 							}
 						}
 					}
+					tempRepo = tempRepo.getAbsoluteFile();
 					return new InfoHolder<String, String, File>(name, tempRepo.getPath(), tempRepo);
 				} catch (Exception e) {
 					logger.fine("Value " + value + " can't be presented as repo URL, " + e);
