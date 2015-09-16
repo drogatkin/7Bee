@@ -2,7 +2,7 @@
 rem $Id: bootstrap.bat,v 1.7 2012/04/17 22:04:26 dmitriy Exp $
 set JAVA_HOME=C:\Program Files\Java\jdk1.7.0_17
 set JAVA_DEPENDENCY=.\3rdparty\jdepend
-set JSCH=.\3rdparty\jSch\jsch-0.1.49.jar 
+set JSCH=.\3rdparty\jSch\lib\jsch-0.1.53.jar 
 if exist lib goto :jdependlib
 mkdir lib
 :jdependlib
