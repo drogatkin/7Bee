@@ -32,7 +32,7 @@ package org.bee.func;
  */
 public final class string {
 	enum Oper {
-		uper, lower, capital, trim, sub, trunc, reverse
+		upper, lower, capital, trim, sub, trunc, reverse
 	};
 
 	public static String eval(String... args) {
@@ -43,7 +43,7 @@ public final class string {
 			return args[0];
 		case 2:
 			switch (Oper.valueOf(Oper.class, args[1])) {
-			case uper:
+			case upper:
 				return args[0].toUpperCase();
 			case lower:
 				return args[0].toLowerCase();
