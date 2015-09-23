@@ -7,7 +7,7 @@ import java.io.File;
 /**
  * @author <a href="Dmitriy@mochamail.com">Dmitriy Rogatkin</a>
  *
- * Provide class description here
+ * Returns last time file modification, or null if non exists
  */
 public final class timestamp {
 
@@ -16,7 +16,6 @@ public final class timestamp {
 	 */
 	public timestamp() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public static Date eval(String fileName) {

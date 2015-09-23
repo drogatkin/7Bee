@@ -21,7 +21,6 @@ public final class stop {
 		int result = 0;
 		try {
 			result = Integer.parseInt(code);
-			
 		}catch(NumberFormatException nfe) {
 		}
 		
