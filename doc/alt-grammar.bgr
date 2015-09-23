@@ -2,7 +2,6 @@
 # This grammar just mimics a standard one hardcoded in 7Bee, you can customize it
 bee=org.bee.processor.Bee
 bee/expression=org.bee.processor.Expression
-*/condition/expression=org.bee.processor.Expression
 */parameter/expression=org.bee.processor.Expression
 */block/expression=org.bee.processor.Expression
 bee/target/dependency/expression=org.bee.processor.Expression

@@ -72,7 +72,6 @@ public class Configuration<FRIEND> {
 
 	public InfoHolder[] descriptors = { new InfoHolder<String, String, Object>("bee", "org.bee.processor.Bee"),
 			new InfoHolder<String, String, Object>("bee/expression", "org.bee.processor.Expression"),
-			new InfoHolder<String, String, Object>("*/condition/expression", "org.bee.processor.Expression"),
 			new InfoHolder<String, String, Object>("*/parameter/expression", "org.bee.processor.Expression"),
 			new InfoHolder<String, String, Object>("*/block/expression", "org.bee.processor.Expression"),
 			new InfoHolder<String, String, Object>("*/then/expression", "org.bee.processor.Expression"),
