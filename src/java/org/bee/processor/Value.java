@@ -130,7 +130,9 @@ public class Value extends AbstractValue {
 			}
 			break;
 		case repo_artifact:
-			// parse repo as name-vendor-jar-version, for example maven:org.glassfish:javax.json:1.04			
+			// parse repo as name-vendor-jar-version, for example maven:org.glassfish:javax.json:1.04
+			if (value == null)
+				break;
 			String repDetails[] = value.split(":");
 			if (repDetails.length != 4) {
 				logger.warning("Requested 'repo_artifact' value type, but it doesn't match pattern: name:vendor:product:version.");
