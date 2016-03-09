@@ -27,6 +27,9 @@ public class ClassFileParser extends AbstractParser {
 	public static final int CONSTANT_METHOD = 10;
 	public static final int CONSTANT_INTERFACEMETHOD = 11;
 	public static final int CONSTANT_NAMEANDTYPE = 12;
+	public static final int CONSTANT_MethodHandle       =15;
+	public static final int CONSTANT_MethodType         =16;
+	public static final int CONSTANT_InvokeDynamic      =18;
 	public static final char CLASS_DESCRIPTOR = 'L';
 	public static final int ACC_INTERFACE = 0x200;
 	public static final int ACC_ABSTRACT = 0x400;
@@ -292,13 +295,18 @@ public class ClassFileParser extends AbstractParser {
 		
 			case(ClassFileParser.CONSTANT_CLASS):	
 			case(ClassFileParser.CONSTANT_STRING):
+			case(CONSTANT_MethodType):
 				result = new Constant(tag, in.readUnsignedShort());
 				 break;
 			case(ClassFileParser.CONSTANT_FIELD):
 			case(ClassFileParser.CONSTANT_METHOD):
 			case(ClassFileParser.CONSTANT_INTERFACEMETHOD):
 			case(ClassFileParser.CONSTANT_NAMEANDTYPE):
+			case(ClassFileParser.CONSTANT_InvokeDynamic):
 				result = new Constant(tag, in.readUnsignedShort(), in.readUnsignedShort());
+				break;
+			case(CONSTANT_MethodHandle):
+				result = new Constant(tag, in.readByte(), in.readUnsignedShort());
 				break;
 			case(ClassFileParser.CONSTANT_INTEGER):
 				result = new Constant(tag, new Integer(in.readInt()));

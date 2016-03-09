@@ -125,10 +125,8 @@
 Compiling jdepend...
         </echo>
         <task exec="javac" >
-           <!--
-       parameter value="-classpath"/>
-       <parameter variable="class path"/>
-            -->
+            <parameter value="-classpath"/>
+            <parameter variable="3rdparty/jdepend/lib"/>
             <parameter value="-source" />
             <parameter variable="1.6" />
             <parameter value="-target" />
@@ -241,6 +239,7 @@ Exception at compilation
          <parameter value="lib/*/*/*/*.class" type="dir"/>
          <parameter value="lib/bee.jar" type="dir"/>
          <parameter value="deploy/*/*/*/*" type="dir"/>
+         <parameter value="3rdparty/jdepend/lib/*/*/*/*.class" type="dir"/>
       </function>
     </block>
   </target>

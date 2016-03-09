@@ -2,3 +2,4 @@ lib/
 bin/
 src/java/org/bee/CompileStamp.java
 *.class
+*.jar
