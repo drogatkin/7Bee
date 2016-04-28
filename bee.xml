@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
  <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
-    "http://knitknot.info/DTD/bee.dtd" [
+    "https://raw.githubusercontent.com/drogatkin/7Bee/master/bee.dtd" [
       <!ENTITY version "1.1.1">
       <!ENTITY deploy_host "knitknot.info">
       <!ENTITY env SYSTEM "./env.xml">
@@ -181,9 +181,9 @@ Exception at compilation
        <parameter value="-d"/>
        <parameter value="lib" type="dir"/>
        <parameter value="-source"/>
-       <parameter value="1.5"/>
+       <parameter value="1.6"/>
        <parameter value="-target"/>
-       <parameter value="1.5"/>
+       <parameter value="1.6"/>
        <!--parameter>-bootclasspath</parameter>
        <parameter variable="Java5 Runtime"/-->
        <parameter>-Xlint:unchecked</parameter>
