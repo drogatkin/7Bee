@@ -1,12 +1,18 @@
 #!/bin/bash
 JDEPEN_LOC=./3rdparty/jdepend
-JSCH=./3rdparty/jsch/lib/jsch-0.1.51.jar
-JAVA_HOME=$(dirname $(dirname $(realpath /usr/bin/java)))
+JSCH=./3rdparty/jsch/lib/jsch-0.1.53.jar
+JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 mkdir -p "${JDEPEN_LOC}/lib"
 echo "build JDepend"
 $JAVA_HOME/bin/javac -sourcepath $JDEPEN_LOC/src/java -d $JDEPEN_LOC/lib $JDEPEN_LOC/src/java/jdepend/framework/*.java
+rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 mkdir -p lib
+if [ ! -e "$JSCH" ]; then
+   echo "Please download  http://central.maven.org/maven2/com/jcraft/jsch/0.1.53/jsch-0.1.53.jar to $JSCH"
+fi
 echo ./lib:$JDEPEN_LOC/lib:$JSCH
 echo "package org.bee; public class CompileStamp { public static final String getStamp() { return  \"Thu Aug 09 23:16:06 PDT 2012\"; }}" > src/java/org/bee/CompileStamp.java 
 $JAVA_HOME/bin/javac -source 1.6 -target 1.6 -classpath ./lib:$JDEPEN_LOC/lib:$JSCH -sourcepath src/java -d lib src/java/org/bee/processor/*.java src/java/org/bee/util/*.java src/java/org/bee/oper/*.java src/java/org/bee/func/*.java
+rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 $JAVA_HOME/bin/jar -cvmf ./manifest.mf lib/bee.jar -C lib org
+rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
