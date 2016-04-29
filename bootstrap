@@ -2,7 +2,7 @@
 JDEPEN_LOC=./3rdparty/jdepend
 JSCH_LOC=./3rdparty/jsch/lib
 JSCH=${JSCH_LOC}/jsch-0.1.53.jar
-JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java$::")
+JAVA_HOME=$(type -p java|xargs readlink -f|xargs dirname|xargs dirname)
 mkdir -p "$JSCH_LOC"
 mkdir -p "${JDEPEN_LOC}/lib"
 echo "compile JDepend"
