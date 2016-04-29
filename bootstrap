@@ -9,6 +9,7 @@ rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 mkdir -p lib
 if [ ! -e "$JSCH" ]; then
    echo "Please download  http://central.maven.org/maven2/com/jcraft/jsch/0.1.53/jsch-0.1.53.jar to $JSCH"
+   exit -1
 fi
 echo ./lib:$JDEPEN_LOC/lib:$JSCH
 echo "package org.bee; public class CompileStamp { public static final String getStamp() { return  \"Thu Aug 09 23:16:06 PDT 2012\"; }}" > src/java/org/bee/CompileStamp.java 
