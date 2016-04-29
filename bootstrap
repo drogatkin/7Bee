@@ -1,7 +1,9 @@
 #!/bin/bash
 JDEPEN_LOC=./3rdparty/jdepend
-JSCH=./3rdparty/jsch/lib/jsch-0.1.53.jar
+JSCH_LOC=./3rdparty/jsch/lib
+JSCH=${JSCH_LOC}/jsch-0.1.53.jar
 JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
+mkdir -p "$JSCH_LOC"
 mkdir -p "${JDEPEN_LOC}/lib"
 echo "build JDepend"
 $JAVA_HOME/bin/javac -sourcepath $JDEPEN_LOC/src/java -d $JDEPEN_LOC/lib $JDEPEN_LOC/src/java/jdepend/framework/*.java
