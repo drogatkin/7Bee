@@ -8,7 +8,7 @@ Being GitHub project, 7Bee doesn't offer binaries so they should be built. 7Bee 
 first time, you need bootstrap it. You can use either bootstrap or bootstrap.bat accordingly your platform. Needless to remind
 that 7Bee is Java application so you have to have Java version 7 or better installed.
 The Linux bootstrap script is more advanced and you need just run it and proceed with instructions. The Windows script may require
-adjust SDK path and also download <a href="http://www.jcraft.com/jsch/">JSCH</a> and place it in 3rdparty\jsch\lib\. 
+adjust JDK path and also download <a href="http://www.jcraft.com/jsch/">JSCH</a> and place it in 3rdparty\jsch\lib\. 
 bee.jar will be created in <b>lib</b> directory after running bootstrap. However before using 7Bee, it is recommended to install it.
 <h2>Installation</h2>
 Obtain administrator privileges of your platform. <i>sudo</i> can be used on Linux, or <i>cmd</i> as Administrator on Windows.
@@ -24,7 +24,7 @@ Note that if you are on Linux/Mac/FreeBSD, then bootstrap script will offer you 
 You will be prompted few simple questions, you can just use default answers. Keep attention only to JDK root directory on
 WIndows systems.
 If your platform is Windows, then it is recommended to add 7Bee installation bin directory in your
-SYSTEM path. Just change Windows environment to add the path as installation script advises.
+SYSTEM path. Just change Windows environment to add the path as the installation script advises.
 Now you should be able to launch <b>bee</b> command and execute build scripts without limitations.
 
 
