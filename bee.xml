@@ -356,7 +356,6 @@ Exception at compilation
            <function name="write">
             <parameter variable="bee bin" type="file"/>
             <parameter>@echo off
-rem $Id: bee.xml,v 1.58 2012/10/10 04:49:09 cvs Exp $
 set JAVA_HOME=</parameter>
             <parameter variable="JAVA_HOME"/>
             <parameter>
@@ -423,7 +422,6 @@ Java home directory: </value>
                <function name="write">
                   <parameter variable="bin script name" type="file"/>
 	          <parameter>#! /bin/sh
-# $Id: bee.xml,v 1.58 2012/10/10 04:49:09 cvs Exp $
 JAVA_HOME=</parameter>
                   <parameter variable="JAVA_HOME"/>
                   <parameter>
@@ -433,7 +431,7 @@ $JAVA_HOME/bin/java -Xmx512m -jar $BEE_HOME/lib/bee.jar "$@"</parameter>
                </function>
                <task exec="chmod" dir="./">
                  <parameter>755</parameter>
-                 <parameter>/usr/local/bin/bee</parameter>
+                 <parameter  variable="bin script name" type="file"/>
                </task>
                <echo>Unix installation successful.</echo>
              </block>
