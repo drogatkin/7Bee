@@ -6,7 +6,7 @@
       <!ENTITY env SYSTEM "./env.xml">
       ]>
 <!--  make file used for Bee project
-   Copyright (c) 2004, 2016 Dmitriy Rogatkin    -->
+   Copyright (c) 2004, 2019 Dmitriy Rogatkin    -->
 
 <bee name="bee" type="project">
   &env;
@@ -259,7 +259,7 @@ Exception at compilation
             <if>
               <expression>
                   <function name="match">
-                     <parameter>.*(Vista|Windows 8|Windows 7).*</parameter>
+                     <parameter>.*(Vista|Windows 8|Windows 7|Windows 10).*</parameter>
                      <parameter name="os.name" type="property"/>
                   </function>
               </expression>
@@ -328,7 +328,7 @@ Exception at compilation
            <function name="cp">
              <parameter value="lib\bee.jar"/>
              <parameter variable="bee lib"/>
-             <parameter value="3rdparty\jsch\lib\jsch-0.1.53.jar"/>
+             <parameter value="3rdparty\jsch\lib\jsch-0.1.55.jar"/>
              <parameter variable="bee lib"/>
            </function>
            <if>
@@ -404,7 +404,7 @@ Java home directory: </value>
                <function name="cp">
                     <parameter value="./lib/bee.jar"/>
                     <parameter variable="bee lib"/>
-                    <parameter value="./3rdparty/jsch/lib/jsch-0.1.53.jar"/>
+                    <parameter value="./3rdparty/jsch/lib/jsch-0.1.55.jar"/>
                     <parameter variable="bee lib"/>
                </function>
                <expression name="script name">
