@@ -1,7 +1,7 @@
 #!/bin/bash
 JDEPEN_LOC=./3rdparty/jdepend
 JSCH_LOC=./3rdparty/jsch/lib
-JSCH=${JSCH_LOC}/jsch-0.1.53.jar
+JSCH=${JSCH_LOC}/jsch-0.1.55.jar
 JAVA_HOME=$(type -p java|xargs readlink -f|xargs dirname|xargs dirname)
 mkdir -p "$JSCH_LOC"
 mkdir -p "${JDEPEN_LOC}/lib"
@@ -10,7 +10,7 @@ $JAVA_HOME/bin/javac -sourcepath $JDEPEN_LOC/src/java -d $JDEPEN_LOC/lib $JDEPEN
 rc=$?; if [ $rc != 0 ]; then exit $rc; fi
 mkdir -p lib
 if [ ! -e "$JSCH" ]; then
-	curl --output "$JSCH" http://central.maven.org/maven2/com/jcraft/jsch/0.1.53/jsch-0.1.53.jar
+	curl --output "$JSCH" http://central.maven.org/maven2/com/jcraft/jsch/0.1.55/jsch-0.1.55.jar
 	rc=$?; if [ $rc != 0 ]; then echo "Cant'd download jsch-0.1.53.jar, check Internet connection"; exit $rc; fi
 fi
 echo "compile 7Bee"

@@ -181,9 +181,9 @@ Exception at compilation
        <parameter value="-d"/>
        <parameter value="lib" type="dir"/>
        <parameter value="-source"/>
-       <parameter value="1.6"/>
+       <parameter value="1.7"/>
        <parameter value="-target"/>
-       <parameter value="1.6"/>
+       <parameter value="1.7"/>
        <!--parameter>-bootclasspath</parameter>
        <parameter variable="Java5 Runtime"/-->
        <parameter>-Xlint:unchecked</parameter>
