@@ -153,8 +153,9 @@ public class Value extends AbstractValue {
 						InputStream uis = null;
 						FileOutputStream fos = null;
 						try {
-							if (Misc.copyStream(uis = url.openStream(), fos = new FileOutputStream(tempRepo), 0) == 0)
+							if (Misc.copyStream(uis = url.openStream(), fos = new FileOutputStream(tempRepo), 0) == 0) {
 								throw new IOException("Empty file copied");
+							}
 						} catch (Exception e) {
 							logger.warning("Can't load artifact from " + url + " : " + e);
 						} finally {
@@ -169,6 +170,8 @@ public class Value extends AbstractValue {
 
 							}
 						}
+						if (tempRepo.length() == 0)
+							tempRepo.delete();
 					}
 					tempRepo = tempRepo.getAbsoluteFile();
 					return new InfoHolder<String, String, File>(name, tempRepo.getPath(), tempRepo);
