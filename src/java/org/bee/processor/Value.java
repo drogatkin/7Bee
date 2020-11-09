@@ -8,6 +8,7 @@ import java.net.URL;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -146,13 +147,14 @@ public class Value extends AbstractValue {
 							logger.finest("Temp repo directory " + tempRepo + " created");
 					tempRepo = new File(tempRepo, repDetails[2]+"-"+repDetails[3] + ".jar");
 					if (!tempRepo.exists()) {
-						URL url = new URL("http://central.maven.org/maven2/" + repDetails[1].replace('.', '/') + "/"
+						URL url = new URL("https://repo1.maven.org/maven2/" + repDetails[1].replace('.', '/') + "/"
 								+ repDetails[2] + "/" + repDetails[3] + "/" + repDetails[2] + "-" + repDetails[3]
 								+ ".jar");
 						InputStream uis = null;
 						FileOutputStream fos = null;
 						try {
-							Misc.copyStream(uis = url.openStream(), fos = new FileOutputStream(tempRepo), 0);
+							if (Misc.copyStream(uis = url.openStream(), fos = new FileOutputStream(tempRepo), 0) == 0)
+								throw new IOException("Empty file copied");
 						} catch (Exception e) {
 							logger.warning("Can't load artifact from " + url + " : " + e);
 						} finally {
