@@ -146,7 +146,7 @@ public class Value extends AbstractValue {
 						if (tempRepo.mkdirs())
 							logger.finest("Temp repo directory " + tempRepo + " created");
 					tempRepo = new File(tempRepo, repDetails[2]+"-"+repDetails[3] + ".jar");
-					if (!tempRepo.exists()) { // TODO perhaps check date last modified
+					if (!tempRepo.exists() || tempRepo.length()  < 12) { // TODO perhaps check date last modified
 						String urlBase = System.getProperties().getProperty("maven_base");
 						if (urlBase == null || !urlBase.startsWith("http"))
 							urlBase = "https://repo1.maven.org/maven2/";
