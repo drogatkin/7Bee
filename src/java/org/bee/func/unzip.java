@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -37,8 +38,7 @@ public class unzip {
 			ZipFile zipFile = new ZipFile(srcFile);
 			if (args.length > 2) {
 				for (int i = 2; i< args.length; i++) {
-					// no wild card search for now
-					// TODO for wild car entries, utilize complete set, but add check for match for every entry
+					
 					if (args[i] instanceof Collection) {
 						ArrayList entries = new ArrayList();
 						entries.addAll((Collection) args[i]);
@@ -70,10 +70,25 @@ public class unzip {
 			String name = entries[e].toString();
 			name = name .replace('\\', '/');
 			//name = new String(name.getBytes(Charset.forName("utf-8")), Charset.forName("ASCII"));
-			ZipEntry entry = zipFile.getEntry(name);
-			if (entry != null) {
-				extractEntry(zipFile, destDir, entry);
-			}			
+			if (name.indexOf('*') > -1 || name.indexOf('?') > -1) {
+				boolean wildStart = name.startsWith("./");
+				Pattern pattern = Pattern.compile(wildStart?".*"+Misc.wildCardToRegExpr(name.substring(2)):Misc.wildCardToRegExpr(name));
+				
+				Enumeration<? extends ZipEntry> zipEntries = 
+					zipFile.entries();
+				while(zipEntries.hasMoreElements()) {
+					ZipEntry ze = zipEntries.nextElement();
+					//System.out.printf("Check entry %s to %s %n" , ze.getName(), pattern.pattern());
+					if (pattern.matcher(ze.getName()).matches()) {
+						extractEntry(zipFile, destDir, ze);
+					}
+			    }
+			} else {
+				ZipEntry entry = zipFile.getEntry(name);
+				if (entry != null) {
+					extractEntry(zipFile, destDir, entry);
+				}	
+			}
 		}
 	}
 	
