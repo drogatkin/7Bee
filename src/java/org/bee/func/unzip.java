@@ -65,30 +65,36 @@ public class unzip {
 		return false;
 	}
 	
-	private static void extractEntries(ZipFile zipFile, File destDir, Object [] entries) throws IOException{
+	private static void extractEntries(ZipFile zipFile, File destDir, Object [] entries) throws IOException {
+		String patterns = "";
 		for (int e =0; e < entries.length; e++) {
 			String name = entries[e].toString();
 			name = name .replace('\\', '/');
 			//name = new String(name.getBytes(Charset.forName("utf-8")), Charset.forName("ASCII"));
 			if (name.indexOf('*') > -1 || name.indexOf('?') > -1) {
 				boolean wildStart = name.startsWith("./");
-				Pattern pattern = Pattern.compile(wildStart?".*"+Misc.wildCardToRegExpr(name.substring(2)):Misc.wildCardToRegExpr(name));
-				
-				Enumeration<? extends ZipEntry> zipEntries = 
-					zipFile.entries();
-				while(zipEntries.hasMoreElements()) {
-					ZipEntry ze = zipEntries.nextElement();
-					//System.out.printf("Check entry %s to %s %n" , ze.getName(), pattern.pattern());
-					if (pattern.matcher(ze.getName()).matches()) {
-						extractEntry(zipFile, destDir, ze);
-					}
-			    }
+				if (patterns.isEmpty() == false)
+					patterns += "|";
+				patterns += wildStart?".*"+Misc.wildCardToRegExpr(name.substring(2)):Misc.wildCardToRegExpr(name);
 			} else {
 				ZipEntry entry = zipFile.getEntry(name);
 				if (entry != null) {
 					extractEntry(zipFile, destDir, entry);
 				}	
 			}
+		}
+		if (!patterns.isEmpty()) {
+			Pattern pattern = Pattern.compile(patterns);
+			
+			Enumeration<? extends ZipEntry> zipEntries = 
+				zipFile.entries();
+			while(zipEntries.hasMoreElements()) {
+				ZipEntry ze = zipEntries.nextElement();
+				//System.out.printf("Check entry %s to %s %n" , ze.getName(), pattern.pattern());
+				if (pattern.matcher(ze.getName()).matches()) {
+					extractEntry(zipFile, destDir, ze);
+				}
+		    }
 		}
 	}
 	
