@@ -77,6 +77,8 @@ public class Misc {
 	}
 	
 	public static String wildCardToRegExpr(String wildCard) {
+		// TODO add escaping of control characters like replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+		// Pattern.quote(s) may work better, or https://stackoverflow.com/questions/10664434/escaping-special-characters-in-java-regular-expressions
 		return wildCard.replace("?", "[^/\\\\:]").replace("*", "[^/\\\\?:*]*");
 	}
 	

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
  <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
     "https://raw.githubusercontent.com/drogatkin/7Bee/master/bee.dtd" [
-      <!ENTITY version "1.1.1">
+      <!ENTITY version "1.1.2">
       <!ENTITY deploy_host "knitknot.info">
       <!ENTITY env SYSTEM "./env.xml">
+      <!ENTITY maxmem "756">
       ]>
-<!--  make file used for Bee project
-   Copyright (c) 2004, 2019 Dmitriy Rogatkin    -->
+<!--  a make file used for Bee project
+   Copyright (c) 2004, 2021 Dmitriy Rogatkin    -->
 
 <bee name="bee" type="project">
   &env;
@@ -394,6 +395,8 @@ Java home directory: </value>
                 <echo>Please login as 'root'; change to 'root' using su, and then ./install; or sudo ./install for installation.</echo>
              </block>
              <block type ="else">
+                    <variable name="empty str">
+</variable>
                <expression variable="bee lib">
                   <operator name="append">
                     <value value="/usr/local"/>
@@ -427,9 +430,9 @@ JAVA_HOME=</parameter>
                   <parameter>
 BEE_HOME=/usr/local/bee
 
-$JAVA_HOME/bin/java -Xmx512m -jar $BEE_HOME/lib/bee.jar "$@"</parameter>
+$JAVA_HOME/bin/java -Xmx&maxmem;m -jar $BEE_HOME/lib/bee.jar "$@"</parameter>
                </function>
-               <task exec="chmod" dir="./">
+               <task exec="chmod" dir="./" stdin="empty str">
                  <parameter>755</parameter>
                  <parameter  variable="bin script name" type="file"/>
                </task>
