@@ -4,6 +4,7 @@
 package org.bee.util;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -76,9 +77,10 @@ public class Misc {
 		return result;
 	}
 	
+	private static Pattern SPECIAL_REGEX_CHARS = Pattern.compile("[{}()\\[\\].+^$\\\\|]");
 	public static String wildCardToRegExpr(String wildCard) {
-		// TODO add escaping of control characters like replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
 		// Pattern.quote(s) may work better, or https://stackoverflow.com/questions/10664434/escaping-special-characters-in-java-regular-expressions
+		wildCard = SPECIAL_REGEX_CHARS.matcher(wildCard).replaceAll("\\\\$0");
 		return wildCard.replace("?", "[^/\\\\:]").replace("*", "[^/\\\\?:*]*");
 	}
 	
