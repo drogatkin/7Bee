@@ -106,6 +106,17 @@ public class Misc {
 		return result.toArray(new String[result.size()]);
 	}
 	
+	public static String join(String delim, String[] elements, int numElems) {
+		// similar to Java 8+ String join
+		StringBuilder sbStr = new StringBuilder();
+	    for (int i = 0, il = numElems <= 0 || numElems >= elements.length?elements.length:numElems; i < il; i++) {
+	        if (i > 0)
+	            sbStr.append(delim);
+	        sbStr.append(elements[i]);
+	    }
+	    return sbStr.toString();
+	}
+	
 	public static String streamToString(InputStream is, String encoding,
 			int bufSize) throws IOException {
 		StringBuffer result = new StringBuffer(100);

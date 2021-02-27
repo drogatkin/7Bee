@@ -9,21 +9,26 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.bee.util.Misc;
 
-/** provides similar functionality to zip
+/** provides a similar functionality to zip
  *  
  * @author Dmitriy
  *
  */
 public class zip {
+	
+	private static class Wildcard {
+		Pattern pattern;
+		boolean recursive;
+	}
 
 	/** main method of zipping
 	 * 
@@ -77,20 +82,20 @@ public class zip {
 			} });
 			*/
 			parameters.forEach(new Consumer<String>() {
-            @Override
-            public void accept(String n) {
-            	if (n.endsWith("/.")) {
-    				File td = new File(n.substring(0, n.length()-2)); if (td.isDirectory()) {
-    					for(File ne:td.listFiles())
-    			     		parameters2.add(ne.getPath());
-    				}
-    			} else {
-    				parameters2.add(n);
-    			}
-            }
+	            @Override
+	            public void accept(String n) {
+	            	if (n.endsWith("/.")) {
+	    				File td = new File(n.substring(0, n.length()-2)); if (td.isDirectory()) {
+	    					for(File ne:td.listFiles())
+	    			     		parameters2.add(ne.getPath());
+	    				}
+	    			} else {
+	    				parameters2.add(n);
+	    			}
+	            }
             });
 			parameters = parameters2;
-			zipFiles(null, parameters.toArray(new String[parameters.size()]), "", zs, added);
+			zipFiles(null, parameters.toArray(new String[parameters.size()]), "", zs, added, null);
 			if (zin != null) {
 				ZipEntry entry = zin.getNextEntry();
 			
@@ -128,12 +133,13 @@ public class zip {
 		return false;
 	}
 
-	private static void zipFiles(File folder, String[] selection, String current, ZipOutputStream zs, ArrayList<String> added)
+	private static void zipFiles(File folder, String[] selection, String current, ZipOutputStream zs, ArrayList<String> added, Wildcard wc)
 			throws IOException {
 		//System.out.printf("Processing: %s, %s / %s%n", folder, Arrays.toString(selection), current);
 		for (String s : selection) {
+			// if s has */? or ./ cut to dir, check it and create a pattern
 			File f = folder==null?new File(s): new File(folder, s);
-			if (f.isFile() && f.canRead()) {
+			if ((wc != null && wc.pattern.matcher(f.getName()).matches() || wc == null) && f.isFile() && f.canRead()) {
 				ZipEntry e = new ZipEntry(current + f.getName());
 				if (added != null)
 					added.add(e.getName());
@@ -142,9 +148,20 @@ public class zip {
 				FileInputStream is;
 				Misc.copyStream(is = new FileInputStream(f), zs, -1);
 				zs.closeEntry();
-				is.close();
-			} else if (f.isDirectory()) {
-				zipFiles(f, f.list(), current + f.getName() + '/', zs, added);
+				is.close(); // TODO move in finally
+			} else if (f.isDirectory() && wc != null && wc.recursive) {
+				zipFiles(f, f.list(), current + f.getName() + '/', zs, added, null);
+			} else if (folder == null) {
+				// try wildcard but only when folder == null
+				String[] mas = s.replace('\\','/').split("/");
+				if (mas[mas.length-1].indexOf('*') > -1 || mas[mas.length-1].indexOf('?') > -1 ) {
+					wc = new Wildcard();
+					wc.pattern = Pattern.compile(Misc.wildCardToRegExpr(mas[mas.length-1]));
+					wc.recursive = mas.length > 2 && ".".equals(mas[mas.length-2]);
+					String pat = Misc.join("/", mas, wc.recursive?mas.length-2:mas.length-1);
+					f = new File(pat);
+					zipFiles(f, f.list(), "", zs, added, wc);
+				}
 			}
 		}
 	}

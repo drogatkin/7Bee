@@ -333,7 +333,8 @@ and <i>operator</i>s.</p>
       parameters, 1st provides file name, 2nd and following provide content of file, every new parameter
         just appends to the file (no automatic line feed happens).</li>
     <li><b>zip</b> - zip in a file provided by first parameter. Files or directories to zip are specified by following parameters. Array type parameters are
-    supported, however no wild card in name supported yet. If a name of added file ended with /., then it is considered as a directory, with adding only its content.</li>
+    supported. If a name of added file ended with /., then it is considered as a directory, with adding only its content. 
+      If a wildcard is used, and prepended by ./, then it is recursively applied for subdirectories.</li>
 </ul>
 <p>A function name is a class name in package <i>org.bee.func</i>. Function can
 have a variable number of Object or String parameters, a result can be any type, which will be

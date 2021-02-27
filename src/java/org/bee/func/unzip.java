@@ -54,7 +54,7 @@ public class unzip {
 					extractEntry(zipFile, targetLoc, entries.nextElement());
 				}
 			}
-			zipFile.close();
+			zipFile.close(); // TODO move to finally
 			return true;
 		} catch (ZipException e) {
 			System.err.printf("zip:error: %s%n", e);
@@ -112,7 +112,7 @@ public class unzip {
 		if (dir == false && zipEntryFile.createNewFile()) {
 			FileOutputStream os;
 			Misc.copyStream(zipFile.getInputStream(zipEntry), os= new FileOutputStream(zipEntryFile), -1);
-			os.close();
+			os.close(); // TODO move to finally
 			zipEntryFile.setLastModified(zipEntry.getTime());
 		}	
 	}
