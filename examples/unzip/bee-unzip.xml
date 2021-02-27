@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
  <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
-    "http://knitknot.info/DTD/bee.dtd" >
-<!-- $Id: bee-unzip.xml,v 1.2 2012/04/19 05:27:17 dmitriy Exp $
+    "https://raw.githubusercontent.com/drogatkin/7Bee/master/bee.dtd" >
+<!-- 
    Unzip
    Copyright (c) Dmitriy Rogatkin    -->
 
