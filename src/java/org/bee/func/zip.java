@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -112,6 +113,9 @@ public class zip {
 			
 			return true;
 		} catch (IOException e) {
+			System.err.printf("zip:error:io: %s%n", e);
+			e.printStackTrace();
+		} catch (Exception e) {
 			System.err.printf("zip:error: %s%n", e);
 			e.printStackTrace();
 		} finally {
@@ -135,7 +139,7 @@ public class zip {
 
 	private static void zipFiles(File folder, String[] selection, String current, ZipOutputStream zs, ArrayList<String> added, Wildcard wc)
 			throws IOException {
-		//System.out.printf("Processing: %s, %s / %s%n", folder, Arrays.toString(selection), current);
+		//System.out.printf("Processing: %s, %s / %s pat: %s%n", folder, Arrays.toString(selection), current, wc);
 		for (String s : selection) {
 			// if s has */? or ./ cut to dir, check it and create a pattern
 			File f = folder==null?new File(s): new File(folder, s);
@@ -149,18 +153,18 @@ public class zip {
 				Misc.copyStream(is = new FileInputStream(f), zs, -1);
 				zs.closeEntry();
 				is.close(); // TODO move in finally
-			} else if (f.isDirectory() && wc != null && wc.recursive) {
+			} else if (f.isDirectory() && (wc != null && wc.recursive || wc == null)) {
 				zipFiles(f, f.list(), current + f.getName() + '/', zs, added, null);
 			} else if (folder == null) {
 				// try wildcard but only when folder == null
 				String[] mas = s.replace('\\','/').split("/");
 				if (mas[mas.length-1].indexOf('*') > -1 || mas[mas.length-1].indexOf('?') > -1 ) {
-					wc = new Wildcard();
-					wc.pattern = Pattern.compile(Misc.wildCardToRegExpr(mas[mas.length-1]));
-					wc.recursive = mas.length > 2 && ".".equals(mas[mas.length-2]);
-					String pat = Misc.join("/", mas, wc.recursive?mas.length-2:mas.length-1);
+					Wildcard wc1 = new Wildcard();
+					wc1.pattern = Pattern.compile(Misc.wildCardToRegExpr(mas[mas.length-1]));
+					wc1.recursive = mas.length > 2 && ".".equals(mas[mas.length-2]);
+					String pat = Misc.join("/", mas, wc1.recursive?mas.length-2:mas.length-1);
 					f = new File(pat);
-					zipFiles(f, f.list(), "", zs, added, wc);
+					zipFiles(f, f.list(), "", zs, added, wc1);
 				}
 			}
 		}
