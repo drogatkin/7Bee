@@ -116,6 +116,8 @@ public class Configuration<FRIEND> {
 			new InfoHolder<String, String, Object>("*/block/for", "org.bee.processor.For"),
 			new InfoHolder<String, String, Object>("*/then/for", "org.bee.processor.For"),
 			new InfoHolder<String, String, Object>("*/else/for", "org.bee.processor.For"),
+			new InfoHolder<String, String, Object>("*/then/task", "org.bee.processor.Task"),
+			new InfoHolder<String, String, Object>("*/else/task", "org.bee.processor.Task"),
 			new InfoHolder<String, String, Object>("*/value", "org.bee.processor.Value"),
 			new InfoHolder<String, String, Object>("*/block/if", "org.bee.processor.If"),
 			new InfoHolder<String, String, Object>("*/then/if", "org.bee.processor.If"),
