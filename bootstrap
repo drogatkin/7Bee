@@ -10,7 +10,7 @@ $JAVA_HOME/bin/javac -sourcepath $JDEPEN_LOC/src/java -d $JDEPEN_LOC/lib $JDEPEN
 rc=$?; if [ $rc != 0 ]; then exit $rc; fi
 mkdir -p lib
 if [ ! -e "$JSCH" ]; then
-	curl --output "$JSCH" http://central.maven.org/maven2/com/jcraft/jsch/0.1.55/jsch-0.1.55.jar
+	curl --output "$JSCH" https://repo1.maven.org/maven2/com/jcraft/jsch/0.1.55/jsch-0.1.55.jar
 	rc=$?; if [ $rc != 0 ]; then echo "Cant'd download jsch-0.1.53.jar, check Internet connection"; exit $rc; fi
 fi
 echo "compile 7Bee"
