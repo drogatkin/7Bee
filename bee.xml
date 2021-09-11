@@ -422,6 +422,21 @@ Java home directory: </value>
                        <value variable="script name"/>
                    </operator>
                </expression>
+               <expression name="JAVA_11"/>
+               <if>
+	            <expression>
+	              <operator name="lt">
+	                <value>10</value>
+	                <value name="java.specification.version" type="property"/>
+	              </operator>
+	            </expression>
+	            <then>
+	                   <variable name="JAVA_11"> --illegal-access=warn</variable>
+	            </then>
+	            <else>
+	                   <variable name="JAVA_11"></variable>
+	            </else>
+	           </if>
                <function name="write">
                   <parameter variable="bin script name" type="file"/>
 	          <parameter>#! /bin/sh
@@ -430,7 +445,9 @@ JAVA_HOME=</parameter>
                   <parameter>
 BEE_HOME=/usr/local/bee
 
-$JAVA_HOME/bin/java -Xmx&maxmem;m --illegal-access=warn -jar $BEE_HOME/lib/bee.jar "$@"</parameter>
+$JAVA_HOME/bin/java -Xmx&maxmem;m</parameter>
+                  <parameter variable="JAVA_11"/>
+                  <parameter> -jar $BEE_HOME/lib/bee.jar "$@"</parameter>
                </function>
                <task exec="chmod" dir="./" stdin="empty str">
                  <parameter>755</parameter>
