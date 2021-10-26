@@ -164,7 +164,7 @@ public class Task extends Function {
 						onExceptionHandler.eval();
 				}
 			}
-		} else if(tool != null) {// && Misc.getInt(System.getProperty("java.version"), 0) > 10) {
+		} else if(tool != null && Misc.getInt(System.getProperty("java.version"), 0) > 10) {
 			ToolProvider toolExec = ToolProvider.findFirst(tool).orElseThrow();
 			List<String> args = new ArrayList<String>(parameters.size());
 			fillParameters(args, null);
