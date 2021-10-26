@@ -24,6 +24,7 @@ public interface Instruction {
 	//public static final String ATTR_CONDITION = "condition";
 	public static final String ATTR_EXEC = "exec";
 	public static final String ATTR_CODE = "code";
+	public static final String ATTR_TOOL = "tool";
 	public static final String ATTR_DIR = "dir";
 	public static final String ATTR_URL = "url";
 	public static final String ATTR_COMMENT = "comment";

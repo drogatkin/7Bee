@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.io.IOException;
 import java.io.File;
@@ -24,6 +25,9 @@ import org.bee.util.Misc;
 import org.bee.util.StreamCatcher;
 import org.bee.util.InFeeder;
 
+//import javax.tools.ToolProvider;
+import java.util.spi.ToolProvider;
+
 /**
  * @author <a href="mailto:dmitriy@mochamail.com">Dmitriy Rogatkin</a>
  */
@@ -39,6 +43,8 @@ public class Task extends Function {
 	protected String exec;
 
 	protected String code;
+	
+	protected String tool;
 
 	protected String path;
 
@@ -158,6 +164,14 @@ public class Task extends Function {
 						onExceptionHandler.eval();
 				}
 			}
+		} else if(tool != null) {// && Misc.getInt(System.getProperty("java.version"), 0) > 10) {
+			ToolProvider toolExec = ToolProvider.findFirst(tool).orElseThrow();
+			List<String> args = new ArrayList<String>(parameters.size());
+			fillParameters(args, null);
+			// you can replace 'System.in' and 'System.err' as appropriate
+			int resultCode = toolExec.run(System.out, System.err, args.toArray(new String[args.size()]));
+			result = new InfoHolder<String, String, Object>(RESULT_CODE_VAR_NAME, String
+					.valueOf(resultCode));
 		} else if (code != null) {
 			code = lookupStringValue(code);
 			int resultCode = -1;
@@ -382,13 +396,14 @@ public class Task extends Function {
 		exec = attributes.getValue("", ATTR_EXEC);
 		code = attributes.getValue("", ATTR_CODE);
 		path = attributes.getValue("", ATTR_PATH);
+		tool = attributes.getValue("", ATTR_TOOL);
 		stdErrVar = attributes.getValue("", ATTR_ERROUT);
 		stdOutVar = attributes.getValue("", ATTR_STDOUT);
 		stdInVar = attributes.getValue("", ATTR_STDIN);
 	}
 
 	public String[] getAllowedAttributeNames() {
-		return Misc.merge(new String[] { ATTR_CODE, ATTR_EXEC, ATTR_PATH, ATTR_STDOUT, ATTR_ERROUT, ATTR_STDIN }, super
+		return Misc.merge(new String[] { ATTR_CODE, ATTR_EXEC, ATTR_TOOL, ATTR_PATH, ATTR_STDOUT, ATTR_ERROUT, ATTR_STDIN }, super
 				.getAllowedAttributeNames());
 	}
 }

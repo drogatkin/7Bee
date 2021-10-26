@@ -129,9 +129,9 @@ Compiling jdepend...
             <parameter value="-classpath"/>
             <parameter variable="3rdparty/jdepend/lib"/>
             <parameter value="-source" />
-            <parameter variable="1.6" />
+            <parameter variable="jdk ver" />
             <parameter value="-target" />
-            <parameter variable="1.6" />
+            <parameter variable="jdk ver" />
             <parameter value="-d" />
             <parameter variable="jdepend_lib" />
             <parameter variable="jdepend sources" />
@@ -182,9 +182,9 @@ Exception at compilation
        <parameter value="-d"/>
        <parameter value="lib" type="dir"/>
        <parameter value="-source"/>
-       <parameter value="1.7"/>
+       <parameter variable="jdk ver"/>
        <parameter value="-target"/>
-       <parameter value="1.7"/>
+       <parameter variable="jdk ver"/>
        <!--parameter>-bootclasspath</parameter>
        <parameter variable="Java5 Runtime"/-->
        <parameter>-Xlint:unchecked</parameter>
@@ -509,7 +509,7 @@ $JAVA_HOME/bin/java -Xmx&maxmem;m</parameter>
          <parameter variable="JSCH_LIB"/>
          <parameter value="deploy/lib/"/>
       </function>
-      <task name="jar dependencies" code="sun.tools.jar.Main">
+      <task name="jar dependencies" code="sun.tools.jar.Main" tool="jar">
          <parameter value="-cf"/>
          <parameter value="deploy/dependency.zip" type="file"/>
          <parameter value="-C"/>
@@ -541,7 +541,7 @@ $JAVA_HOME/bin/java -Xmx&maxmem;m</parameter>
          </function>
          </expression>
       </for>
-      <task name="deployment zip" code="sun.tools.jar.Main">
+      <task name="deployment zip" code="sun.tools.jar.Main" tool="jar">
          <parameter value="-cf"/>
          <parameter value="bee-&version;.zip" type="file"/>
          <parameter value="-C"/>
@@ -615,7 +615,7 @@ $JAVA_HOME/bin/java -Xmx&maxmem;m</parameter>
            </function>
     </dependency>
     <dependency>true</dependency>
-    <task name="jar_do" code="sun.tools.jar.Main">
+    <task name="jar_do" code="sun.tools.jar.Main" tool="jar">
        <parameter value="-cmf"/>
        <parameter value="manifest.mf" type="file"/>
        <parameter value="lib/bee.jar" type="file"/>

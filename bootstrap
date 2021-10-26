@@ -17,7 +17,7 @@ echo "compile 7Bee"
 echo ./lib:$JDEPEN_LOC/lib:$JSCH
 timestamp=$(date +"%c")
 echo "package org.bee; public class CompileStamp { public static final String getStamp() { return  \"$timestamp\"; }}" > src/java/org/bee/CompileStamp.java 
-$JAVA_HOME/bin/javac -source 1.6 -target 1.6 -classpath ./lib:$JDEPEN_LOC/lib:$JSCH -sourcepath src/java -d lib src/java/org/bee/processor/*.java src/java/org/bee/util/*.java src/java/org/bee/oper/*.java src/java/org/bee/func/*.java
+$JAVA_HOME/bin/javac -source 11 -target 11 -classpath ./lib:$JDEPEN_LOC/lib:$JSCH -sourcepath src/java -d lib src/java/org/bee/processor/*.java src/java/org/bee/util/*.java src/java/org/bee/oper/*.java src/java/org/bee/func/*.java
 rc=$?; if [ $rc != 0 ]; then exit $rc; fi
 echo "build result JAR"
 $JAVA_HOME/bin/jar -cvmf ./manifest.mf lib/bee.jar -C lib org -C 3rdparty/jdepend/lib jdepend

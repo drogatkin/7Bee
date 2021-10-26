@@ -164,5 +164,13 @@ public class Misc {
 		return name.endsWith(".jar") || name.endsWith(".zip");
 	}
 	
+	public static int getInt(String value, int defaultInt) {
+		try {
+			return Integer.parseInt(value);
+		} catch(Exception e) {
+			return defaultInt;
+		}
+	}
+	
 	static final boolean DEBUG_ = false;
 }
