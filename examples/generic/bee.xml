@@ -14,7 +14,7 @@
       ]>
 <!-- $Id: bee.xml,v 1.21 2012/04/17 22:52:48 dmitriy Exp $
    make file used for "generic" project
-   Copyright (c) 2004-2006 Dmitriy Rogatkin    -->
+   Copyright (c) 2004-2021 Dmitriy Rogatkin    -->
 
 <bee name="&project;" type="project">
   &env;
@@ -197,7 +197,7 @@
            </function>
     </dependency>
 
-    <task name="jar_do" code="sun.tools.jar.Main">
+    <task name="jar_do" code="sun.tools.jar.Main" tool="jar">
        <parameter>
           <expression>
             <if>
