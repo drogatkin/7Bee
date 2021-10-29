@@ -54,6 +54,8 @@ public interface Instruction {
 	public static final String TYPE_NUMBER = "number";
 	public static final String TYPE_DATE = "date";
 	public static final String TYPE_BOOL = "bool";
+	
+	public static final String NAME_JAVA_COMPILER = "Java compiler";
 
 	/** provides a handler to parce instruction
 	 * 

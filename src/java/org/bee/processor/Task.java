@@ -28,6 +28,8 @@ import org.bee.util.InFeeder;
 //import javax.tools.ToolProvider;
 import java.util.spi.ToolProvider;
 
+import javax.tools.JavaCompiler;
+
 /**
  * @author <a href="mailto:dmitriy@mochamail.com">Dmitriy Rogatkin</a>
  */
@@ -165,13 +167,22 @@ public class Task extends Function {
 				}
 			}
 		} else if(tool != null && Misc.getInt(System.getProperty("java.version"), 0) > 10) {
-			ToolProvider toolExec = ToolProvider.findFirst(tool).orElseThrow();
+			int resultCode ;
 			List<String> args = new ArrayList<String>(parameters.size());
 			fillParameters(args, null);
-			// you can replace 'System.in' and 'System.err' as appropriate
-			int resultCode = toolExec.run(System.out, System.err, args.toArray(new String[args.size()]));
-			result = new InfoHolder<String, String, Object>(RESULT_CODE_VAR_NAME, String
-					.valueOf(resultCode));
+			try {
+				if (NAME_JAVA_COMPILER.equalsIgnoreCase(tool)) {
+					JavaCompiler compiler =  javax.tools.ToolProvider.getSystemJavaCompiler();
+					resultCode = compiler.run(System.in, System.out, System.err, args.toArray(new String[args.size()]));
+				} else {
+					ToolProvider toolExec = ToolProvider.findFirst(tool).orElseThrow();
+					resultCode = toolExec.run(System.out, System.err, args.toArray(new String[args.size()]));
+				}
+				result = new InfoHolder<String, String, Object>(RESULT_CODE_VAR_NAME, String
+						.valueOf(resultCode));
+			} catch(NullPointerException  npe) {
+				logger.severe("Can't find " + tool);
+			}
 		} else if (code != null) {
 			code = lookupStringValue(code);
 			int resultCode = -1;
