@@ -71,7 +71,7 @@
     <dependency target="check build"/>
     <dependency variable="java sources"/>
     <echo>Compiling...</echo>
-    <task name="compile task" code="com.sun.tools.javac.Main" path="compiler classes">
+    <task name="compile task" code="com.sun.tools.javac.Main" path="compiler classes" tool="Java compiler">
        <parameter value="-classpath"/>
        <parameter variable="class path"/>
        <parameter value="-source"/>
