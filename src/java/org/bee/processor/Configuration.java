@@ -199,7 +199,7 @@ public class Configuration<FRIEND> {
 		if (parameters.get("-easter-eggs") != null)
 			System.out.printf("Author: Dmitriy Rogatkin\n");
 		if (parameters.get("-version") != null) {
-			System.out.printf("7Bee version %d.%d.%d compiled on %s\r\n", 1, 1, 5, org.bee.CompileStamp.getStamp());
+			System.out.printf("7Bee version %d.%d.%d compiled on %s\r\n", 1, 2, 0, org.bee.CompileStamp.getStamp());
 			exit(0);
 		}
 		if (parameters.get("-h") != null || parameters.get("-help") != null)
