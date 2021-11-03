@@ -148,12 +148,14 @@ scope in context where they defined.&nbsp;</td>
 	<li><i>expression</i> - allows to combine operators functions to set a
     variable value. <a href="#expression"> example</a></li>
   <li><i>task</i> - define a build task. Attributes <b>name</b> and <b>code</b>
-    used for calling a class, <b>exec</b> for an OS executable, <b>path</b>
+    used for calling a class, <b>exec</b> for an OS executable, <b>tool</b> for Java build tool as
+    a compiler, jar or others when <i>code</i> doesn't work due security restrictions of JDK 11 and up, <b>path</b>
     provides additional path or class path. Attributes <strong>stdout</strong>, <strong>stderr</strong>
       and <strong>stdin</strong> can specify variables keeping a content of corresponding
       streams of a running process. Parameters (<em>parameter</em>) specify strings passed in
     command line or main() arguments. If name of a parameter specified then it
-    is used as a definition which is available by <i>System.getProperty()</i>. <a href="#task">example</a></li>
+    is used as a definition which is available by <i>System.getProperty()</i>. When both attributes
+    <i>code</i> and <i>tool</i> are specified, tool is used for JDK 11 and up. <a href="#task">example</a></li>
   <li><i>dependency</i> - define a a dependency of a build task. All dependencies are 
 	evaluated. Any dependency returned true or not empty result means that a 
 	task will be executed, unless a dependency has attribute process_only="yes". <a href="#dependency">exampe</a></li>
