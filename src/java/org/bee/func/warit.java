@@ -66,7 +66,7 @@ import org.bee.util.InfoHolder;
  * </ul>
  * <p>
  * Note: optional blank separated from command character prefix is used to
- * specify dest path
+ * specify a dest path
  */
 public class warit {
 	public static final String WAR_EXT = ".war";
@@ -92,7 +92,7 @@ public class warit {
 			while (pos < args.length) {
 				if (args[pos] instanceof Object[])
 					System.err.printf(
-							"warit:error: invalid type of parameter [%d] : %s, array of Object not supported%n", pos,
+							"warit:error: an invalid type of parameter [%d] : %s, array of Object not supported%n", pos,
 							Arrays.toString((Object[]) args[pos]));
 				else if (args[pos] instanceof Collection) {
 					args = insertTo(args, pos, (Collection) args[pos]);
