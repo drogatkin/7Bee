@@ -32,6 +32,7 @@
 <!ELEMENT operator (value|function|variable|expression|operator)*>
 <!ATTLIST operator
          name    CDATA #REQUIRED
+         variable CDATA    #IMPLIED
          type (%VAR_TYPE;) #IMPLIED
 >
 

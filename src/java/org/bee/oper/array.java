@@ -20,7 +20,6 @@ public class array {
 	 */
 	public array() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public static InfoHolder<String, String, Object> proceed(InfoHolder<String, String, Object> op1,

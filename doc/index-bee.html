@@ -1,5 +1,5 @@
 <html>
-<!-- Copyright (c) 2004-2015 Dmitriy Rogatkin -->
+<!-- Copyright (c) 2004-2022 Dmitriy Rogatkin -->
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>7Bee Project (aka Bee)</title>
@@ -43,7 +43,7 @@ div.exampleInner { background-color: #d5dee3;
   <tr>
     <td width="100%" bgcolor="#800080">
       <table border=0 width="100%">
-      <tr><td width="60%"><h3><a name="bee 1.1.2"></a><font color="#FFFFFF">7Bee 1.1.2 </font></h3></td>
+      <tr><td width="60%"><h3><a name="bee 1.2.12"></a><font color="#FFFFFF">7Bee 1.2.1 </font></h3></td>
       <td width="*" align=right><a href="https://github.com/drogatkin/7Bee/blob/master/doc/index-bee.html"><img src="https://github.com/drogatkin/7Bee/blob/master/doc/7bee_logo_avatar.png?raw=true" border=0></a><a href="http://java.com/java/download/index.jsp?cid=jdp78847" target="_blank">
 <img width="88" height="31" border="0" style="margin: 8px;" alt="GetJava Download Button" title="GetJava" src="http://java.com/en/img/everywhere/getjava_sm.gif?cid=jdp78847">
 </a><a href="http://www.java.net"><img src="http://today.java.net/images/javanet_button_170.gif" border=0 alt="java.net"></a></td>
@@ -53,12 +53,12 @@ div.exampleInner { background-color: #d5dee3;
     
   </tr>
   <tr>
-    <td width="100%">7Bee 1.1.2 is now available for <a href="https://github.com/drogatkin/7Bee">download</a>.
+    <td width="100%">7Bee 1.2.1 is now available for <a href="https://github.com/drogatkin/7Bee">download</a>.
       <!--webbot bot="HTMLMarkup" startspan --><IFRAME height="42" MARGINWIDTH="0" MARGINHEIGHT="0"
  FRAMEBORDER="0" SRC="/bee/bee-update.html">
 </IFRAME><!--webbot bot="HTMLMarkup" endspan i-checksum="38056" -->
       <p>This is an initial version of 7Bee. There is no any license for this product
-except an author's copyright. Any usage of this software is your own risk and an
+except an author's copyright. Any usage of this software is on own risk and the
 author has no any responsibility for it.</td>
   </tr>
   <tr>
@@ -171,7 +171,7 @@ scope in context where they defined.&nbsp;</td>
 	<li><i>then</i> - then branch inside <b>if</b>, <font size="2">since 1.1</font></li>
 	<li><i>elseif</i> - else branch inside <b>if</b> starting a new if block,
 	<font size="2">since 1.1</font></li>
-  <li><i>echo</i> - displays a value or a variable on console. Two options
+  <li><i>echo</i> - displays a value or a variable on a console. Two options
    are available, as&nbsp; <i>-n </i>do not output the trailing newline, and <i>-E </i>disable interpretation of
     escape sequences in
     Strings
@@ -213,8 +213,8 @@ be nested and operators of lower levels are calculated first. An operator has
 a required attribute <i>name</i> and an optional <i>variable</i> specifying a 
 variable name for a result, otherwise an operator result passed to up level 
 context. The first version
-of 7Bee doesn't have inline operators, so most of expressions will look a bit
-bulky. It considered as not a big disadvantage, because build files are very rarely
+of 7Bee doesn't have calling operators ability, so most of expressions will look a bit
+bulky. It considered as not a big disadvantage, because build scripts are very rarely
 modified, therefore one time creation efforts can be neglected in a lifetime of a
 project.</p>
 <ul>
@@ -337,7 +337,8 @@ and <i>operator</i>s.</p>
         just appends to the file (no automatic line feed happens).</li>
     <li><b>zip</b> - zip in a file provided by first parameter. Files or directories to zip are specified by following parameters. Array type parameters are
     supported. If a name of added file ended with /., then it is considered as a directory, with adding only its content. 
-      If a wildcard is used, and prepended by ./, then it is recursively applied for subdirectories.</li>
+      If a wildcard is used, and prepended by ./, then it is recursively applied for subdirectories. If a file name ended with <i>!.</i>,
+      then it gets unzipped first and then its content added to the result archive.  </li>
 </ul>
 <p>A function name is a class name in package <i>org.bee.func</i>. Function can
 have a variable number of Object or String parameters, a result can be any type, which will be
