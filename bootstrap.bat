@@ -9,10 +9,10 @@ mkdir lib
 if exist %JAVA_DEPENDENCY%\lib goto :compile
 mkdir %JAVA_DEPENDENCY%\lib
 :compile
-"%JAVA_HOME%\bin\javac" -source 1.5 -sourcepath %JAVA_DEPENDENCY%\src\java -d %JAVA_DEPENDENCY%\lib %JAVA_DEPENDENCY%\src\java\jdepend\framework\*.java
+"%JAVA_HOME%\bin\javac" -source 1.8 -sourcepath %JAVA_DEPENDENCY%\src\java -d %JAVA_DEPENDENCY%\lib %JAVA_DEPENDENCY%\src\java\jdepend\framework\*.java
 if errorlevel 1 goto :end
 echo package org.bee;  public class CompileStamp { public static final String getStamp() { return  "Fri Aug 31 20:42:28 PDT 2012"; } }>src\java\org\bee\CompileStamp.java
-"%JAVA_HOME%\bin\javac" -source 1.6 -classpath "lib;%JAVA_DEPENDENCY%\lib;%JSCH%" -sourcepath src\java -d lib src\java\org\bee\processor\*.java src\java\org\bee\util\*.java src\java\org\bee\oper\*.java src\java\org\bee\func\*.java 
+"%JAVA_HOME%\bin\javac" -source 1.8 -classpath "lib;%JAVA_DEPENDENCY%\lib;%JSCH%" -sourcepath src\java -d lib src\java\org\bee\processor\*.java src\java\org\bee\util\*.java src\java\org\bee\oper\*.java src\java\org\bee\func\*.java 
 if errorlevel 1 goto :end
 "%JAVA_HOME%\bin\jar" -cvmf .\manifest.mf lib\bee.jar -C lib org -C 3rdparty\jdepend\lib jdepend
 :end
