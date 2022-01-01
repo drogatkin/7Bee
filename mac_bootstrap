@@ -11,14 +11,14 @@ $JAVA_HOME/Commands/javac -sourcepath $JDEPEN_LOC/src/java -d $JDEPEN_LOC/lib $J
 rc=$?; if [ $rc != 0 ]; then exit $rc; fi
 mkdir -p lib
 if [ ! -e "$JSCH" ]; then
-	curl --output "$JSCH" http://central.maven.org/maven2/com/jcraft/jsch/0.1.53/jsch-0.1.53.jar
+	curl --output "$JSCH" https://repo1.maven.org/maven2/com/jcraft/jsch/0.1.53/jsch-0.1.53.jar
 	rc=$?; if [ $rc != 0 ]; then echo "Cant'd download jsch-0.1.53.jar, check Internet connection"; exit $rc; fi
 fi
 echo "compile 7Bee"
 echo ./lib:$JDEPEN_LOC/lib:$JSCH
 timestamp=$(date +"%c")
 echo "package org.bee; public class CompileStamp { public static final String getStamp() { return  \"$timestamp\"; }}" > src/java/org/bee/CompileStamp.java 
-$JAVA_HOME/Commands/javac -source 1.6 -target 1.6 -classpath ./lib:$JDEPEN_LOC/lib:$JSCH -sourcepath src/java -d lib src/java/org/bee/processor/*.java src/java/org/bee/util/*.java src/java/org/bee/oper/*.java src/java/org/bee/func/*.java
+$JAVA_HOME/Commands/javac -source 11 -target 11 -classpath ./lib:$JDEPEN_LOC/lib:$JSCH -sourcepath src/java -d lib src/java/org/bee/processor/*.java src/java/org/bee/util/*.java src/java/org/bee/oper/*.java src/java/org/bee/func/*.java
 rc=$?; if [ $rc != 0 ]; then exit $rc; fi
 echo "build result JAR"
 $JAVA_HOME/Commands/jar -cvmf ./manifest.mf lib/bee.jar -C lib org -C 3rdparty/jdepend/lib jdepend
