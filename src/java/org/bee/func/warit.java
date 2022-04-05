@@ -27,7 +27,7 @@ import org.bee.util.InfoHolder;
  * This function create <b>.war </b> file specified by 1st parameter
  * <p>
  * 2nd provides location of <i>web.xml </i>, but it can be considered as content
- * of it, if the location can't be resolved.
+ * of it, if the location can't be resolved. And no web.xml if the parameter is empty.
  * <p>
  * Following parameters grouped by 2 or more parameters, and 1st in a group
  * provides
@@ -204,25 +204,27 @@ public class warit {
 	}
 
 	protected static int processWebXML(Object[] args, int pos, ZipOutputStream warFile) throws IOException {
-		InputStream wxis = null;
-		long fileTime = System.currentTimeMillis();
-		try {
+		if (args[pos] != null && !args[pos].toString().isEmpty()) {
+			InputStream wxis = null;
+			long fileTime = System.currentTimeMillis();
 			try {
-				File inFile = new File(args[pos].toString());
-				wxis = new FileInputStream(inFile);
-				fileTime = inFile.lastModified();
-			} catch (FileNotFoundException fnfe) {
-				wxis = new ByteArrayInputStream(args[pos].toString().getBytes("UTF-8"));
+				try {
+					File inFile = new File(args[pos].toString());
+					wxis = new FileInputStream(inFile);
+					fileTime = inFile.lastModified();
+				} catch (FileNotFoundException fnfe) {
+					wxis = new ByteArrayInputStream(args[pos].toString().getBytes("UTF-8"));
+				}
+				if (wxis != null) {
+					ZipEntry je = new ZipEntry("WEB-INF/web.xml");
+					je.setTime(fileTime);
+					warFile.putNextEntry(je);
+					Misc.copyStream(wxis, warFile, 0);
+				}
+			} finally {
+				if (wxis != null)
+					wxis.close();
 			}
-			if (wxis != null) {
-				ZipEntry je = new ZipEntry("WEB-INF/web.xml");
-				je.setTime(fileTime);
-				warFile.putNextEntry(je);
-				Misc.copyStream(wxis, warFile, 0);
-			}
-		} finally {
-			if (wxis != null)
-				wxis.close();
 		}
 		return pos + 1;
 	}
