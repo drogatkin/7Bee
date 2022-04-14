@@ -568,6 +568,28 @@ $JAVA_HOME/bin/java -Xmx&maxmem;m</parameter>
     </block>
   </target>
 
+  <variable name="WEBBEE_HOME" type="path">../Webbee</variable>
+  <expression name="WEBBEE_VIEWS">
+     <operator name="append">
+        <value variable="WEBBEE_HOME"/>
+        <value>/src/res/template/*.htmt</value>
+     </operator>
+  </expression>
+  <variable name="WEBFOLDER WAR" type="path">../webfolder/bin/webfolder.war</variable>
+  
+  <target name="new" dir="BEE_HOME">
+    <dependency target="jar"/>
+    <block>
+       <expression name="result"> 
+             <function name="anynewer">
+                 <parameter variable="WEBBEE_VIEWS"/>
+                 <parameter variable="WEBFOLDER WAR" type="path"/>
+             </function>
+       </expression>
+       <echo variable="result"/>
+    </block>
+  </target>
+  
   <target name="calc" dir="BEE_HOME">
        <block>
           <expression name="result"> 

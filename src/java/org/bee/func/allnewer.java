@@ -59,7 +59,7 @@ public class allnewer {
 			path = path.getParentFile();
 			if (path == null)
 				path = new File("." + File.separator);
-			return new FileWithMask(path, Misc.wildCardToRegExpr(mask).replace(".", "\\."));
+			return new FileWithMask(path, Misc.wildCardToRegExpr(mask));//.replace(".", "\\."));
 		}
 		return new FileWithMask(path, null);
 	}
