@@ -6,7 +6,7 @@ import org.bee.processor.ProcessException;
 /**
  * @author <a href="Dmitriy@mochamail.com">Dmitriy Rogatkin</a>
  *
- * Provide class description here
+ * Stop interperting commands and throws an exception
  */
 public final class stop {
 
@@ -14,7 +14,7 @@ public final class stop {
 	 * 
 	 */
 	public stop() {
-		super();
+		eval("-2");
 	}
 
 	public static Object eval(String code) {
