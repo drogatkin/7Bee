@@ -200,7 +200,7 @@ public class Value extends AbstractValue {
 		default:
 		  logger.finest("Type unknown for "+value);
 		}
-		return new InfoHolder<Object, String, Object>(name, value);
+		return new InfoHolder<Object, String, Object>(name, processTemplate(value, null));
 	}
 
 	private void processDirectory(final List<String> targetList, String currentDir, final String[] dirMasks, final int maskDirPos, final Pattern filePat) {

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
+    "https://raw.githubusercontent.com/drogatkin/7Bee/master/bee.dtd" >
+<!-- 
+   Unzip
+   Copyright (c) Dmitriy Rogatkin    -->
+
+<bee name="template" type="project">
+	<variable name="fam" value="Cherish"/>
+	<variable name="sign">Haliava</variable>
+  <target name="test" dir=".">
+     <block>
+         <variable name="name" value="Gosha"/>
+         <echo>Hey ${name}!</echo>
+         <echo>When ${name}, you visit us ${fam}?</echo>
+         <echo>Yours ${sign}</echo>
+     </block>
+  </target>
+</bee>
