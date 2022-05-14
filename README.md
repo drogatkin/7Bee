@@ -60,7 +60,7 @@ The set include statements for creation build files.
     The final value of a value gets a template processed.(since 1.3) A template element looks like:  
     `${name}`  
     The name is a name of any variable in the current scope. The name can't be longer than 128 characters. If a name is longer, then the element gets ignored. If a value ends before `}`, then the element is ignored as well. If there is no an element with the provided _name_, then the template element gets ignored (some difference in a behavior of a non template element variable). A value of a template element is considering as a template as well. A recursive processing stops as all templates got expanded or a loop is detected. If a template element is an array, then the following syntax gets considered:  
-    `${name,separator}`_The approach is under consideration_  
+    `${name,separator}`_The approach is under a consideration_  
     a name can't contain commas. The separator is used to separate values and considered as empty string when not provided.
     
 *   _target_ \- defines an addressable build task. Attribute **name** defines a name of target which can be specified in command line of 7Bee. Attribute **dir** is optional and provides a work directory for target if it's different than for a project. A target description can be specified in attribute **comment**. [example](#target)
@@ -202,12 +202,6 @@ Bee provides a mechanism of predefined variable
 6.  ~#build-file#~ - path of build file
 7.  ~#class-lib#~ - array of class libraries set by command argument -lib
 
-**Help to promote 7Bee**
-
-If you use 7Bee in your development, then you can help to promote this tool. You can add a small icon somewhere on your site web pages inserting the following simple fragment:
-
-<a href="https://github.com/drogatkin/7Bee"><img src="https://github.com/drogatkin/7Bee/blob/master/doc/7bee\_logo\_avatar.png?raw=true" border=0></a>
-
 **Getting Started**
 
 Although 7Bee build files look bulky, creation of a build script is fairly simple when templates of build files used. Folder _examples_ of 7Bee distribution contains many useful templates for different type of projects. Consider a simple project with compilation, jar creation and run tasks. Examples for such projects can be found in _examples/generic_ folder. The templates consider some project tree structures, with separate folders for sources, result of compilation and build target files. Let's create a classic **Hello, world!** project.
@@ -261,8 +255,9 @@ Although 7Bee build files look bulky, creation of a build script is fairly simpl
 
 #### variable
 
-     <variable name="jdk version">1.5</variable>
+     <variable name="jdk version">17</variable>
      <variable name="resource path" type="path">/src/resources</variable>
+     <variable name="home" type="file">/home/jamie/projects/7Bee/*</variable>
 
 #### expression
 
@@ -276,31 +271,31 @@ Although 7Bee build files look bulky, creation of a build script is fairly simpl
 
 #### task
 
-<task exec="mkdir">
-       <parameter value="&build\_directory;"/>
-</task>
-<task name="main" code="com.sun.tools.javac.Main" path="compiler classes">
-  <parameter value="-classpath"/>
-  <parameter variable="class path"/>
-  <parameter value="-source"/>
-  <parameter value="1.5"/>
-  <parameter value="-d"/>
-  <parameter value="&build\_directory;" type="dir"/>
-  <parameter variable="java sources"/>>
-  <onexit>
-     <if>
-        <expression>
-           <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
-        </expression>
-        <block type="then">
-           <echo>Error(s) at compilation</echo>
-           <function name="stop">
-	      <parameter value="1"/>
-           </function>
-        </block>
-     </if>
-  </onexit>
-</task>
+	<task exec="mkdir">
+	       <parameter value="&build\_directory;"/>
+	</task>
+	<task name="main" code="com.sun.tools.javac.Main" path="compiler classes">
+	  <parameter value="-classpath"/>
+	  <parameter variable="class path"/>
+	  <parameter value="-source"/>
+	  <parameter value="1.5"/>
+	  <parameter value="-d"/>
+	  <parameter value="&build\_directory;" type="dir"/>
+	  <parameter variable="java sources"/>>
+	  <onexit>
+	     <if>
+	        <expression>
+	           <operator name="neq"><value variable="resultcode"/><value>0</value></operator>
+	        </expression>
+	        <block type="then">
+	           <echo>Error(s) at compilation</echo>
+	           <function name="stop">
+		      <parameter value="1"/>
+	           </function>
+	        </block>
+	     </if>
+	  </onexit>
+	</task>
     
 
 #### dependency
@@ -320,7 +315,7 @@ Although 7Bee build files look bulky, creation of a build script is fairly simpl
 
 #### for
 
-<for variable="idl file" in="event, naming IDLs">
+	<for variable="idl file" in="event, naming IDLs">
       <task name="idl compilation" exec="idl compiler">
          <parameter variable="old compatible"/>
          <parameter value="-i"/>
@@ -372,60 +367,60 @@ Although 7Bee build files look bulky, creation of a build script is fairly simpl
 
 #### if
 
-<if>
-   <expression>
-      <operator name="eq">
-         <value>80</value>
-         <value variable="access port"/>
-      </operator>
-   </expression>
-   <block type="then">
-      <expression variable="access port">
-         <value></value>
-      </expression>
-   </block>
-   <block type="else"> 
-      <expression variable="access port">
-        <operator name="append">
-           <value>:</value>
-           <value variable="access port"/>
-        </operator>
-      </expression>
-   </block>
- </if>
+	<if>
+	   <expression>
+	      <operator name="eq">
+	         <value>80</value>
+	         <value variable="access port"/>
+	      </operator>
+	   </expression>
+	   <block type="then">
+	      <expression variable="access port">
+	         <value></value>
+	      </expression>
+	   </block>
+	   <block type="else"> 
+	      <expression variable="access port">
+	        <operator name="append">
+	           <value>:</value>
+	           <value variable="access port"/>
+	        </operator>
+	      </expression>
+	   </block>
+	</if>
       
 
 #### block
 
- <block>
-    <function name="touch">
-       <parameter value="src/Java/org/omg/timestamp.touch" type="path"/>
-    </function>
- </block>
+	 <block>
+	    <function name="touch">
+	       <parameter value="src/Java/org/omg/timestamp.touch" type="path"/>
+	    </function>
+	 </block>
      
 
 #### switch
 
-<switch variable="component">
-  <block type="case" value="s">
-     <echo>EPM server configuration</echo>
-  </block>
-  <block type="case" value="c">
-     <echo>EPM client configuration</echo>
-  </block>
-  <block type="case" value="a">
-     <echo>EPM All-in-one configuration</echo>
-  </block>
-  <block type="case" value="r">
-     <echo>Scheduler only configuration</echo>
-  </block>
-
-</switch>
+	<switch variable="component">
+	  <block type="case" value="s">
+	     <echo>EPM server configuration</echo>
+	  </block>
+	  <block type="case" value="c">
+	     <echo>EPM client configuration</echo>
+	  </block>
+	  <block type="case" value="a">
+	     <echo>EPM All-in-one configuration</echo>
+	  </block>
+	  <block type="case" value="r">
+	     <echo>Scheduler only configuration</echo>
+	  </block>
+	
+	</switch>
      
 
 #### function
 
-<function name="warit">
+	<function name="warit">
          <parameter value="&build\_directory;/&webapp\_file;"/>
          <parameter>src\\javaarchitect\\servlet\\web.xml</parameter>
          <parameter>C &domain;</parameter>
@@ -466,30 +461,30 @@ Although 7Bee build files look bulky, creation of a build script is fairly simpl
 
 #### operator
 
-<operator name="array">
-  <value>-cmf</value>
-  <value variable="manifest file"/>
-</operator>
+	<operator name="array">
+	  <value>-cmf</value>
+	  <value variable="manifest file"/>
+	</operator>
     
 
 #### target
 
-<target name="war" dir="." comment="Build J2EE deployer war.jar">
-  <echo>Jarring war...</echo>
-  <dependency target="compile j2ee"/>
-  <dependency>
-    <function name="allnewer">
-      <parameter value="&build\_directory;\\rogatkin" type="dir"/>
-      <parameter value="&build\_directory;\\war.jar" type="file"/>
-    </function>
-  </dependency>
-  <task name="jar\_do" code="sun.tools.jar.Main">
-     <parameter value="-cf"/>
-     <parameter value="&build\_directory;/war.jar" type="file"/>
-     <parameter value="-C"/>
-     <parameter value="&build\_directory;" type="dir"/>
-     <parameter value="rogatkin" type="dir"/>
-  </task>
-</target>    
+	<target name="war" dir="." comment="Build J2EE deployer war.jar">
+	  <echo>Jarring war...</echo>
+	  <dependency target="compile j2ee"/>
+	  <dependency>
+	    <function name="allnewer">
+	      <parameter value="&build\_directory;\\rogatkin" type="dir"/>
+	      <parameter value="&build\_directory;\\war.jar" type="file"/>
+	    </function>
+	  </dependency>
+	  <task name="jar\_do" code="sun.tools.jar.Main">
+	     <parameter value="-cf"/>
+	     <parameter value="&build\_directory;/war.jar" type="file"/>
+	     <parameter value="-C"/>
+	     <parameter value="&build\_directory;" type="dir"/>
+	     <parameter value="rogatkin" type="dir"/>
+	  </task>
+	</target>    
 
 

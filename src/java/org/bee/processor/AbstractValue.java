@@ -6,6 +6,7 @@ import static org.bee.util.Logger.logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -137,15 +138,41 @@ public abstract class AbstractValue extends DefaultHandler implements Instructio
 	}
 
 	public String lookupStringValue(String lookName) {
+		return lookupStringValue(lookName, null);
+	}
+
+	public String lookupStringValue(String lookName, String sep) {
 		InfoHolder<String, InfoHolder, Object> v = lookupInChain(lookName);
 		if (v == null) {
 			if (lookName.startsWith("~#") && lookName.endsWith("#~"))
 				return null;
 			if (System.getenv(lookName) != null)
 				return System.getenv(lookName);
-			return lookName;
+			return sep!=null?null:lookName;
 		}
 		InfoHolder<String, String, Object> v1 = v.getValue();
+		Object type = v1.getType();
+		//System.err.printf("type %s of %s%n", type==null?null:type.getClass(), lookName);
+		if (type != null) {
+			Object[] elements = null;
+			if (type instanceof Collection) {
+				elements = ((Collection) type).toArray();
+			} else if (type.getClass().isArray()) {
+				elements = (Object[]) type;
+			}
+			if (elements != null) {
+				if (elements.length == 0)
+					return "";
+				StringBuilder strArr = new StringBuilder();
+				strArr.append(elements[0]);
+				for (int ei = 1; ei < elements.length; ++ei) {
+					if (sep != null && !sep.isEmpty())
+						strArr.append(sep);
+					strArr.append(elements[ei]);
+				}
+				return strArr.toString();
+			}
+		}
 		return v1 == null ? null : v1.getValue();
 	}
 
@@ -251,7 +278,13 @@ public abstract class AbstractValue extends DefaultHandler implements Instructio
 				case var:
 					st = templStat.cbe;
 					varName = new String(templateArr, staVar, ci - staVar);
-					String val = lookupStringValue(varName);
+					// check if array
+					String val;
+					int cp = varName.indexOf(',');
+					if (cp > 0) {
+						val = lookupStringValue(varName.substring(0, cp), varName.substring(cp + 1));
+					} else
+						val = lookupStringValue(varName, "");
 					if (val == null) { // no such var
 						st = templStat.normal;
 					} else {
@@ -259,16 +292,17 @@ public abstract class AbstractValue extends DefaultHandler implements Instructio
 							accum = new StringBuilder();
 						accum.append(templateArr, staData, staVar - staData - 2);
 						if (!val.isEmpty()) {
-
 							if (nestedVariables == null) {
 								nestedVariables = new Stack<>();
 								nestedVariables.push(new HashSet<String>());
 							}
-							nestedVariables.peek().add(val);
-							// process template only if no ar name up to the stack
-							accum.append(processTemplate(val, nestedVariables));
+							if (!contains(nestedVariables, val)) {
+								accum.append(processTemplate(val, nestedVariables));
+								nestedVariables.peek().add(val);
+								staVar = -1;
+							} else
+								st = templStat.normal;
 						}
-						staVar = -1;
 					}
 					break;
 				case dol:
@@ -276,6 +310,7 @@ public abstract class AbstractValue extends DefaultHandler implements Instructio
 					break;
 				}
 				break;
+			//case ',':
 			default:
 				switch (st) {
 				case cbo:
@@ -318,6 +353,14 @@ public abstract class AbstractValue extends DefaultHandler implements Instructio
 		}
 
 		return templateValue;
+	}
+
+	static boolean contains(Stack<Set<String>> stk, String var) {
+		for (int sl=0, ss=stk.size(); sl < ss-1; ++sl) {
+			if (stk.get(sl).contains(var))
+				return true;
+		}
+		return false;
 	}
 
 	protected void verifyAttributes(Attributes attrs) {
