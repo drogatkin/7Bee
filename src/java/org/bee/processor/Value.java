@@ -72,7 +72,9 @@ public class Value extends AbstractValue {
 				return new InfoHolder<String, String, File>(name, null);
 			File file = makeFile(value);
 			String fileName = file.getName();
-			String parentPat = new File(value).getParent();			
+			String parentPat = new File(value).getParent();
+			if (parentPat != null)
+				parentPat = makeFile(parentPat).getPath();
 			logger.finest("File made "+file+", work name "+fileName+", parent dir: "+parentPat);
 			if (fileName.indexOf('*') < 0 && fileName.indexOf('?') < 0 && (parentPat== null || parentPat.indexOf('*') < 0 && parentPat.indexOf('?') < 0))
 				return new InfoHolder<String, String, File>(name, value, new File(value));

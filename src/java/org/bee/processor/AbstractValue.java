@@ -383,14 +383,10 @@ public abstract class AbstractValue extends DefaultHandler implements Instructio
 		if (fc == '/' || fc == '\\' || value.indexOf(':') > 0) // absolute path criteria
 			return new File(pathName);
 		else if (pathName.startsWith("./") || pathName.startsWith(".\\") || pathName.startsWith("../")
-				|| pathName.startsWith("..\\"))
-			try {
-				return new File(pathName).getCanonicalFile();
-			} catch (IOException ioe) {
-				logger.warning("Path '" + pathName + "' cannot be found, " + ioe);
-				return new File(pathName).getAbsoluteFile();
-			}
-		else {
+				|| pathName.startsWith("..\\")) {
+			//System.err.printf("file: %s for %s%n", pathName, new File(pathName).getAbsoluteFile());
+				return new File(pathName).getAbsoluteFile();//.getCanonicalFile();
+		} else {
 			String baseDir = lookupStringValue(RESERVE_NAME_DIR);
 			if (baseDir == null)
 				baseDir = System.getProperty("user.dir");// new File(".").getAbsolutePath();
