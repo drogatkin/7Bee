@@ -14,7 +14,6 @@ public final class stop {
 	 * 
 	 */
 	public stop() {
-		eval("-2");
 	}
 
 	public static Object eval(String code) {

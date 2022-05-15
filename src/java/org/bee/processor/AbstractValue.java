@@ -151,7 +151,7 @@ public abstract class AbstractValue extends DefaultHandler implements Instructio
 			return sep!=null?null:lookName;
 		}
 		InfoHolder<String, String, Object> v1 = v.getValue();
-		Object type = v1.getType();
+		Object type = v1==null?null:v1.getType();
 		//System.err.printf("type %s of %s%n", type==null?null:type.getClass(), lookName);
 		if (type != null) {
 			Object[] elements = null;

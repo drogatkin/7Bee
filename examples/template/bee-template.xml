@@ -6,9 +6,11 @@
    Copyright (c) 2022 Dmitriy Rogatkin    -->
 
 <bee name="template" type="project">
-	<variable name="fam" value="Cherish"/>
+	<variable name="first" value="Cherish"/>
+	<variable name="last" value="Dobkins"/>
+	<variable name="fam" value="${first} ${last}"/>
 	<variable name="sign">Haliava</variable>
-	<variable name="home" type="file">/home/dmitriy/projects/7Bee/*</variable>
+	<variable name="home" type="file">../../*</variable>
   <target name="test" dir=".">
      <block>
          <variable name="name" value="Gosha"/>
