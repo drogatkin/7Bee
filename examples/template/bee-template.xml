@@ -9,7 +9,7 @@
 	<variable name="first" value="Cherish"/>
 	<variable name="last" value="Dobkins"/>
 	<variable name="fam" value="${first} ${last}"/>
-	<variable name="sign">Haliava</variable>
+	<variable name="sign">pasha</variable>
 	<variable name="home" type="file">../../*</variable>
   <target name="test" dir=".">
      <block>
@@ -18,6 +18,20 @@
          <echo>When ${name}, you visit us ${fam}?</echo>
          <echo>How do ${abzac} you ${home,,} ?</echo>
          <echo>Yours ${sign}</echo>
+         <switch variable="sign">
+                <case value="sasha">
+                    <echo>Sasha came</echo>
+                </case>
+                <case value="pasha">
+                    <echo>Pasha came</echo>
+                </case>
+               <case value="masha">
+                    <echo>Masha came</echo>
+                </case>
+                <default>
+                    <echo>Unknown ${sign} came</echo>
+                </default>
+  </switch>
      </block>
   </target>
 </bee>

@@ -73,7 +73,7 @@ public class Function extends AbstractBlock {
 							logger.log(SEVERE, "Can't find function method " + name + " matching (Object*),"
 									+ " ([Object), (String*), ([String), length:" + callParameters.length);
 							// TODO check if getHelp is in function to print usage
-						} else
+						} else 
 							o = m.invoke(null, new Object[] { arrayParameter });
 					} else
 						o = m.invoke(null, arrayParameter);

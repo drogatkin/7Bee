@@ -102,10 +102,14 @@ public final class Processor {
 							.newInstance(workPath.toString());
 				} catch (NoSuchMethodException nsme) {
 					try {
-						instruction = (Instruction) instrClass.newInstance();
+						instruction = (Instruction) instrClass.getConstructor().newInstance();
 					} catch (Exception ex2) {
-						Logger.logger.log(SEVERE, "Can't create class for {0}", workPath);
-						throw new ProcessException();
+						try {
+							instruction = (Instruction) instrClass.getConstructor(String.class, Configuration.class).newInstance(workPath.toString(), configuration);
+						} catch (Exception ex3) {		
+							Logger.logger.log(SEVERE, "Can't create class for {0}", workPath);
+							throw new ProcessException();
+						}
 					}
 				} catch (Exception ex) {
 					Logger.logger.log(SEVERE, "Exception at initialization of {0} {1}", new Object[] {

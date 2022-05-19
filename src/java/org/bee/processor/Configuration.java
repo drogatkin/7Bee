@@ -49,7 +49,7 @@ public class Configuration<FRIEND> {
 	public static final String[] RESERVED = { "-help", "-h", "-version", "-diagnostics", "-quiet", "-q", "-verbose",
 			"-v", "-debug", "-d", "-lib", "-logfile", "-l", "-logger", "-listener", "-noinput", "-buildfile", "-file",
 			"-f", "-keep-going", "-k", "-propertyfile", "-xpropertyfile", "-inputhandler", "-find", "-s", "-grammar",
-			"-g", "-", "-r", "-th", "-targethelp", "--" };
+			"-g", "-", "-r", "-th", "-te", "-targethelp", "--" };
 
 	public String beeFile;
 
@@ -85,6 +85,8 @@ public class Configuration<FRIEND> {
 			new InfoHolder<String, String, Object>("*/if/else", "org.bee.processor.Else"),
 			new InfoHolder<String, String, Object>("bee/target/block", "org.bee.processor.Block"),
 			new InfoHolder<String, String, Object>("*/switch/block", "org.bee.processor.Block"),
+			new InfoHolder<String, String, Object>("*/switch/case", "org.bee.processor.Case"),
+			new InfoHolder<String, String, Object>("*/switch/default", "org.bee.processor.Default"),
 			new InfoHolder<String, String, Object>("bee/block", "org.bee.processor.Block"),
 			new InfoHolder<String, String, Object>("*/task/onexception/block", "org.bee.processor.Block"),
 			new InfoHolder<String, String, Object>("*/variable", "org.bee.processor.Variable"),
@@ -118,10 +120,11 @@ public class Configuration<FRIEND> {
 			new InfoHolder<String, String, Object>("*/else/for", "org.bee.processor.For"),
 			new InfoHolder<String, String, Object>("*/then/task", "org.bee.processor.Task"),
 			new InfoHolder<String, String, Object>("*/else/task", "org.bee.processor.Task"),
-			new InfoHolder<String, String, Object>("*/value", "org.bee.processor.Value"),
 			new InfoHolder<String, String, Object>("*/block/if", "org.bee.processor.If"),
 			new InfoHolder<String, String, Object>("*/then/if", "org.bee.processor.If"),
 			new InfoHolder<String, String, Object>("*/else/if", "org.bee.processor.If"),
+			new InfoHolder<String, String, Object>("*/case/if", "org.bee.processor.If"),
+			new InfoHolder<String, String, Object>("*/default/if", "org.bee.processor.If"),
 			//new InfoHolder<String, String, Object>("*/then/if", "org.bee.processor.If"),
 			//new InfoHolder<String, String, Object>("*/else/if", "org.bee.processor.If"),
 			new InfoHolder<String, String, Object>("*/expression/if", "org.bee.processor.If"),
@@ -337,6 +340,10 @@ public class Configuration<FRIEND> {
 	
 	boolean isTargetHelp() {
 		return parameters.get("-th") != null || parameters.get("-targethelp") != null;
+	}
+	
+	boolean terminateOnError() {
+		return parameters.get("-te") != null;
 	}
 
 	/**

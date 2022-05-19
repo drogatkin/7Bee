@@ -23,7 +23,7 @@ public class Switch extends AbstractBlock {
 	}
 
 	public void childDone(Instruction child) {
-		if (child instanceof Block)
+		if (child instanceof Block || child instanceof Case || child instanceof Default)
 			blockCases.add((Block)child);
 		else if (child instanceof Expression) {
 			if (expression != null)

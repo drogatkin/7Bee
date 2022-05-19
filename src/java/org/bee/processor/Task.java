@@ -2,40 +2,42 @@
 // Bee Copyright (c) 2004 Dmitriy Rogatkin
 package org.bee.processor;
 
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
+import static org.bee.util.Logger.logger;
+
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.security.Permission;
 import java.security.Policy;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
-import java.io.IOException;
-import java.io.File;
-import java.security.Permission;
-import java.net.URLClassLoader;
-import java.net.URL;
-import java.net.MalformedURLException;
-import static java.util.logging.Level.*;
-import org.bee.util.InfoHolder;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import static org.bee.util.Logger.*;
-import org.bee.util.Misc;
-import org.bee.util.StreamCatcher;
-import org.bee.util.InFeeder;
-
 //import javax.tools.ToolProvider;
 import java.util.spi.ToolProvider;
 
 import javax.tools.JavaCompiler;
 
+import org.bee.util.InFeeder;
+import org.bee.util.InfoHolder;
+import org.bee.util.Misc;
+import org.bee.util.StreamCatcher;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+
 /**
  * @author <a href="mailto:dmitriy@mochamail.com">Dmitriy Rogatkin</a>
  */
 public class Task extends Function {
-	// TODO review loggin in case of error handling
-	// TODO add run exception report
+	// TODO review logging in case of error handling
+	// TODO add a run exception report
 	public static final String RESULT_CODE_VAR_NAME = "resultcode";
 
 	public static final String PATH = "path";
@@ -55,11 +57,14 @@ public class Task extends Function {
 	protected OnExit onExitHandler;
 	
 	protected boolean lockSM;
+	
+	private Configuration configuration;
 
 	protected OnException onExceptionHandler;
 
-	public Task(String xpath) {
+	public Task(String xpath, Configuration cfg) {
 		super(xpath);
+		configuration = cfg;
 	}
 
 	public void childDone(Instruction child) {
@@ -123,8 +128,10 @@ public class Task extends Function {
 						infr = new InFeeder(System.in, p.getOutputStream());
 						infr.start();
 					}
+					int resultCode;
 					try {
-						result = new InfoHolder<String, String, Object>("onexit", String.valueOf(p.waitFor()));
+						resultCode = p.waitFor();
+						result = new InfoHolder<String, String, Integer>("onexit", String.valueOf(resultCode), resultCode);
 						if (infr != null) {
 							infr.terminate();
 							infr.join();
@@ -132,6 +139,7 @@ public class Task extends Function {
 						outputGobbler.join();
 						errorGobbler.join();
 					} catch (InterruptedException ie) {
+						resultCode = -100;
 					}
 					// TODO: use flag to understand when out needed
 					if (outputGobbler.isEmpty() == false)
@@ -152,7 +160,9 @@ public class Task extends Function {
 															.toString())));
 						else
 							logger.severe(errorGobbler.toString());
-					// TODO: make result code constant
+					if (resultCode != 0 && terminateOnError()) {
+						System.exit(resultCode);
+					}
 					getNameSpace().inScope(new InfoHolder<String, InfoHolder, Object>(RESULT_CODE_VAR_NAME, result));
 					if (onExitHandler != null)
 						onExitHandler.eval();
@@ -179,10 +189,13 @@ public class Task extends Function {
 					resultCode = toolExec.run(System.out, System.err, args.toArray(new String[args.size()]));
 				}
 				result = new InfoHolder<String, String, Object>(RESULT_CODE_VAR_NAME, String
-						.valueOf(resultCode));
+						.valueOf(resultCode), resultCode);
+				if (resultCode != 0 && terminateOnError()) {
+					System.exit(resultCode);
+				}
 			} catch(NullPointerException  npe) {
 				logger.severe("Can't find " + tool);
-			}
+			}	
 		} else if (code != null) {
 			code = lookupStringValue(code);
 			int resultCode = -1;
@@ -285,6 +298,9 @@ public class Task extends Function {
 					resultCode = ((Number)resultObject).intValue();
 				else
 					resultCode = 0;
+				if (resultCode != 0 && terminateOnError()) {
+					System.exit(resultCode);
+				}
 			} catch (Error er) {
 				// logger.severe("Error in call " + code + ".main(String...args) " + er);
 				getNameSpace().inScope(
@@ -343,6 +359,10 @@ public class Task extends Function {
 				onExitHandler.eval();
 		}
 		return result;
+	}
+
+	private boolean terminateOnError() {
+		return configuration.terminateOnError();
 	}
 
 	public String getName() {

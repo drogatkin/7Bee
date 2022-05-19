@@ -57,11 +57,11 @@ The set include statements for creation build files.
     
     The Maven repository artifact format is _maven:vendor:product:version_.
     
-    The final value of a value gets a template processed.(since 1.3) A template element looks like:  
+    The final value of a value gets a template processed unless a type qualifier is used.(since 1.3) A template element looks like:  
     `${name}`  
     The name is a name of any variable in the current scope. The name can't be longer than 128 characters. If a name is longer, then the element gets ignored. If a value ends before `}`, then the element is ignored as well. If there is no an element with the provided _name_, then the template element gets ignored (some difference in a behavior of a non template element variable). A value of a template element is considering as a template as well. A recursive processing stops as all templates got expanded or a loop is detected. If a template element is an array, then the following syntax gets considered:  
-    `${name,separator}`_The approach is under a consideration_  
-    a name can't contain commas. The separator is used to separate values and considered as empty string when not provided.
+    `${name,separator}`
+    the name can't contain commas. The separator is used to separate values and considered as an empty string when not provided. 
     
 *   _target_ \- defines an addressable build task. Attribute **name** defines a name of target which can be specified in command line of 7Bee. Attribute **dir** is optional and provides a work directory for target if it's different than for a project. A target description can be specified in attribute **comment**. [example](#target)
 *   _expression_ - allows to combine operators functions to set a variable value. [example](#expression)
@@ -74,7 +74,8 @@ The set include statements for creation build files.
 *   _then_ - then branch inside **if**, since 1.1
 *   _elseif_ - else branch inside **if** starting a new if block, since 1.1
 *   _echo_ - displays a value or a variable on a console. Two options are available, as  _\-n_ do not output the trailing newline, and _\-E_ disable interpretation of escape sequences in Strings
-*   _switch_ - provides switch, attribute **variable** defines a value which checked against attribute **value** of _case block_s. A _default block_ is executed when no one other block matches.. [example](#switch)
+*   _switch_ - provides switch, attribute **variable** defines a value which checked against attribute **value** of _case block_s.
+ A _default block_ is executed when no one other block matches. Alias tag **case** and **default** can be used to simplify typing. [example](#switch)
 *   _function_ - calls a function, see predefined functions below. Function can be also custom defined. [example](#function)
 *   _parameter_ - used for specifying parameters for _task_s and _function_s. It acts the same as a _value_, however it can set system variables with value specified., when used with types _environment_ or _property_ .
 *   _operator_ - executes an operator, see list of available operators below. An operator can be custom defined. [example](#operator)
@@ -115,7 +116,8 @@ Set of functions is expandable and useful for different build tasks. Functions c
 *   **mkd** - creates directories from list of parameters. Returns array of success code for every parameter. Directories get created from current work directory unless fully qualified name is specified.
 *   **mv** - similar to cp, but does move.
 *   **match** - matches string value to pattern, 1st parameter is a pattern, second is a string. More about patterns is [here](http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html).
-*   **newerthan** - compares last modification time of files defined by first parameter with last modification time corresponding files defined by second parameters and returns a list of files with later time. If extensions are defined in first and second parameters, then they are ignored to find corresponding files.
+*   **newerthan** - compares a last modification time of files defined by first parameter with a last modification time corresponding files
+ defined by the second parameter and returns a list of files with later time. If extensions are defined in first and second parameters, then they are ignored to find corresponding files.
 *   **newerwithdependency** - is similar to _newerthan_ , but looks in Java dependency, so for example if some Java file has newer date than corresponding byte code file, all dependent on this byte code Java files will be added to a  result. One or two additional parameters specify default class name to return, unless non empty result produced, and a package prefix, when source directory points to not top level package.
 *   **now** - returns current time.
 *   **read** - reads content of file and returns it as a result, 1st parameter is a file name, 2nd a separator pattern for returning an array, and 3rd is encoding.
