@@ -283,6 +283,7 @@ public abstract class AbstractValue extends DefaultHandler implements Instructio
 					int cp = varName.indexOf(',');
 					if (cp > 0) {
 						val = lookupStringValue(varName.substring(0, cp), varName.substring(cp + 1));
+						varName = varName.substring(0, cp);
 					} else
 						val = lookupStringValue(varName, "");
 					if (val == null) { // no such var
@@ -296,9 +297,9 @@ public abstract class AbstractValue extends DefaultHandler implements Instructio
 								nestedVariables = new Stack<>();
 								nestedVariables.push(new HashSet<String>());
 							}
-							if (!contains(nestedVariables, val)) {
+							if (!contains(nestedVariables, varName)) {
 								accum.append(processTemplate(val, nestedVariables));
-								nestedVariables.peek().add(val);
+								nestedVariables.peek().add(varName);
 								staVar = -1;
 							} else
 								st = templStat.normal;
@@ -352,13 +353,18 @@ public abstract class AbstractValue extends DefaultHandler implements Instructio
 			break;
 		}
 
+		if (nestedVariables != null)
+			nestedVariables.pop();
 		return templateValue;
 	}
 
 	static boolean contains(Stack<Set<String>> stk, String var) {
+	//	System.err.printf("stack %s%n", stk);
 		for (int sl=0, ss=stk.size(); sl < ss-1; ++sl) {
-			if (stk.get(sl).contains(var))
+			if (stk.get(sl).contains(var)) {
+			//	System.err.printf("found %s in stack %d on level %d%n", var, ss, sl);
 				return true;
+			}
 		}
 		return false;
 	}
