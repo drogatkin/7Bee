@@ -5,7 +5,8 @@
 7Bee scripting language is a mark up languages syntax based, so a learning curve can be reasonably short. Read more about 7Bee
 scripting language under <b>doc</b> directory for the project.
 ## Getting started
-Being GitHub project, 7Bee doesn't offer binaries so they should be built. 7Bee is a self building tool, however if you build it
+Being GitHub project, 7Bee doesn't offer binaries so they should be built. (You can skip a building step
+and take a pre-built bee.jar from a github release section. Place a downloaded bee.jar in lib directory.) 7Bee is a self building tool, however if you build it
 first time, you need bootstrap it. You can use either bootstrap or bootstrap.bat accordingly your platform. Needless to remind
 that 7Bee is Java application so you have to have Java version 11 or better installed.
 The Linux bootstrap script is more advanced and you need just run it and proceed with instructions. The Windows script may require
