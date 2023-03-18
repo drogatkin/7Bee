@@ -1,8 +1,9 @@
 # 7Bee
 
 ## Purpose
-7Bee is a scripting program with main purpose to execute project building scripts. However it isn't limited to the purpose yet and can be used for any other tasks where a scripting language makes sense. 
-7Bee scripting language is a mark up languages syntax based, so a learning curve can be reasonably short. Read more about 7Bee
+7Bee is a scripting program with main purpose to execute project building scripts. However it isn't limited to the purpose yet and
+ can be used for any other tasks where a scripting language makes sense. 
+7Bee scripting language is an XML language syntax based, so a learning curve should be a reasonably short. Read more about 7Bee
 scripting language under <b>doc</b> directory for the project.
 ## Getting started
 Being GitHub project, 7Bee doesn't offer binaries so they should be built. (You can skip a building step
@@ -24,7 +25,7 @@ or
 
 Note that if you are on Linux/Mac/FreeBSD, then bootstrap script will offer you an installation.
 You will be prompted few simple questions, you can just use default answers. Keep attention only to JDK root directory on
-WIndows systems.
+Windows systems.
 If your platform is Windows, then it is recommended to add 7Bee installation bin directory in your
 SYSTEM path. Just change Windows environment to add the path as the installation script advises.
 Now you should be able to launch <b>bee</b> command and execute build scripts without limitations.
@@ -143,7 +144,7 @@ Set of functions is expandable and useful for different build tasks. Functions c
 
 A function name is a class name in package _org.bee.func_. Function can have a variable number of Object or String parameters, a result can be any type, which will be interpreted accordingly context where the function met.
 
-#### Scope rules
+#### Scope of rules
 
 A variable obtains scope of its declaration and below. So variables with the same name can coexist as different only in sibling branches. When any statement is processed, all variables get evaluated first in order of appearing.
 
