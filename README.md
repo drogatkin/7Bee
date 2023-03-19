@@ -4,7 +4,7 @@
 7Bee is a scripting program with main purpose to execute project building scripts. However it isn't limited to the purpose yet and
  can be used for any other tasks where a scripting language makes sense. 
 7Bee scripting language is an XML language syntax based, so a learning curve should be a reasonably short. Read more about 7Bee
-scripting language under <b>doc</b> directory for the project.
+scripting language under [doc](https://github.com/drogatkin/7Bee/tree/master/doc) directory for the project.
 ## Getting started
 Being GitHub project, 7Bee doesn't offer binaries so they should be built. (You can skip a building step
 and take a pre-built bee.jar from a github release section. Place a downloaded bee.jar in lib directory.) 7Bee is a self building tool, however if you build it
