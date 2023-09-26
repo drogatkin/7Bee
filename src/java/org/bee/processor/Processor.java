@@ -59,7 +59,7 @@ public final class Processor {
 			// TODO Config files from URL
 			parserFactory.newSAXParser().parse(new File(configuration.beeFile), new ProcessHandler());
 		} catch (Exception saxe) {
-			Logger.logger.log(SEVERE, "Parsing exception: {0}", saxe.getMessage() != null ? saxe.getMessage() : saxe
+			Logger.logger.log(SEVERE, "Processing exception: {0}", saxe.getMessage() != null ? saxe.getMessage() : saxe
 					.toString());
 			if (saxe instanceof SAXParseException) {
 				Logger.logger.log(FINE, "** Parsing exception line {0}:col {1} id {2}", new Object[] {

@@ -27,6 +27,7 @@ import javax.tools.JavaCompiler;
 
 import org.bee.util.InFeeder;
 import org.bee.util.InfoHolder;
+import org.bee.util.Logger;
 import org.bee.util.Misc;
 import org.bee.util.StreamCatcher;
 import org.xml.sax.Attributes;
@@ -252,42 +253,46 @@ public class Task extends Function {
 				if (useSM)
 					Policy.getPolicy().refresh();
 				lockSM = true;
-				System.setSecurityManager(new SecurityManager() {
-					public void checkExit(int status) {
-						/*
-						 * getNameSpace().inScope( new InfoHolder < String, InfoHolder, Object > (RESULT_CODE_VAR_NAME, new InfoHolder < String, String, Object >
-						 * (RESULT_CODE_VAR_NAME, String.valueOf(status))));
-						 */
-						throw new SecurityException("Please do not leave.", new ProcessException(
-								"Called Java class asked for exit.", status));
-					}
-
-					public void checkPackageAccess(String pkg) {
-					}
-
-					public void checkWrite(String file) {
-					}
-
-					public void checkRead(String file) {
-					}
-
-					public void checkDelete(String file) {
-					}
-
-					public void checkPermission(Permission perm) {
-						if (!lockSM && perm.getName().equals("setSecurityManager")) {
-							// TODO: make sure that it's called from right place
-							return;
+				try {
+					System.setSecurityManager(new SecurityManager() {
+						public void checkExit(int status) {
+							/*
+							 * getNameSpace().inScope( new InfoHolder < String, InfoHolder, Object > (RESULT_CODE_VAR_NAME, new InfoHolder < String, String, Object >
+							 * (RESULT_CODE_VAR_NAME, String.valueOf(status))));
+							 */
+							throw new SecurityException("Please do not leave.", new ProcessException(
+									"Called Java class asked for exit.", status));
 						}
-						if (useSM)
-							// try {
-							super.checkPermission(perm);
-						// } catch(SecurityException se_) {
-						// logger.log(FINE, "Stack trace:", se_);
-						// throw se_;
-						// }
-					}
-				});
+	
+						public void checkPackageAccess(String pkg) {
+						}
+	
+						public void checkWrite(String file) {
+						}
+	
+						public void checkRead(String file) {
+						}
+	
+						public void checkDelete(String file) {
+						}
+	
+						public void checkPermission(Permission perm) {
+							if (!lockSM && perm.getName().equals("setSecurityManager")) {
+								// TODO: make sure that it's called from right place
+								return;
+							}
+							if (useSM)
+								// try {
+								super.checkPermission(perm);
+							// } catch(SecurityException se_) {
+							// logger.log(FINE, "Stack trace:", se_);
+							// throw se_;
+							// }
+						}
+					});
+				} catch (UnsupportedOperationException uoe) {
+					Logger.logger.log(FINE, "A security manager isn't supported in you version of Java ({0})", new Object[] {uoe});
+				}
 				if (extClassLoader != null) {
 					origLoader = Thread.currentThread().getContextClassLoader();
 					Thread.currentThread().setContextClassLoader(extClassLoader);
