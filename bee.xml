@@ -423,20 +423,42 @@ Java home directory: </value>
                    </operator>
                </expression>
                <expression name="JAVA_11"/>
+               <expression name="PREVIEW"/>
                <if>
 	            <expression>
-	              <operator name="lt">
-	                <value>10</value>
-	                <value name="java.specification.version" type="property"/>
-	              </operator>
+	              <operator name="or">
+		              <operator name="lt">
+		                <value>10</value>
+		                <value name="java.specification.version" type="property"/>
+		              </operator>
+		              <operator name="lt">
+		                <value name="java.specification.version" type="property"/>
+		                <value>17</value>
+		              </operator>
+		          </operator>
 	            </expression>
 	            <then>
-	                   <variable name="JAVA_11"> --illegal-access=warn</variable>
+	                    <variable name="JAVA_11"></variable>
 	            </then>
 	            <else>
-	                   <variable name="JAVA_11"></variable>
+	                   <variable name="JAVA_11"> --illegal-access=warn</variable>
 	            </else>
 	           </if>
+	           <if>
+	            <expression>
+		              <operator name="lt">
+		                <value>20</value>
+		                <value name="java.specification.version" type="property"/>
+		              </operator>
+	            </expression>
+	            <then>
+	                   <variable name="PREVIEW"> --enable-preview </variable>
+	            </then>
+	            <else>
+	                   <variable name="PREVIEW"></variable>
+	            </else>
+	           </if>
+	           
                <function name="write">
                   <parameter variable="bin script name" type="file"/>
 	          <parameter>#! /bin/sh
@@ -447,6 +469,7 @@ BEE_HOME=/usr/local/bee
 
 $JAVA_HOME/bin/java -Xmx&maxmem;m</parameter>
                   <parameter variable="JAVA_11"/>
+                  <parameter variable="PREVIEW"/>
                   <parameter> -jar $BEE_HOME/lib/bee.jar "$@"</parameter>
                </function>
                <task exec="chmod" dir="./" stdin="empty str">
