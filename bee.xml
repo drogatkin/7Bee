@@ -6,8 +6,8 @@
       <!ENTITY env SYSTEM "./env.xml">
       <!ENTITY maxmem "756">
       ]>
-<!--  a make file used for Bee project
-   Copyright (c) 2004, 2021 Dmitriy Rogatkin    -->
+<!--  a multipurpose script used for Bee project
+   Copyright (c) 2004, 2023 Dmitriy Rogatkin    -->
 
 <bee name="bee" type="project">
   &env;
