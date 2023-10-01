@@ -291,7 +291,7 @@ public class Task extends Function {
 						}
 					});
 				} catch (UnsupportedOperationException uoe) {
-					Logger.logger.log(FINE, "A security manager isn't supported in you version of Java ({0})", new Object[] {uoe});
+					Logger.logger.log(FINE, "A security manager isn''t supported in the used version of Java ({0})", new Object[] {uoe});
 				}
 				if (extClassLoader != null) {
 					origLoader = Thread.currentThread().getContextClassLoader();
