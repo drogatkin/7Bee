@@ -6,7 +6,8 @@
 7Bee scripting language is an XML language syntax based, so a learning curve should be a reasonably short. Read more about 7Bee
 scripting language under [doc](https://github.com/drogatkin/7Bee/tree/master/doc) directory for the project.
 
-You can also try [RustBee](https://github.com/drogatkin/rust_utilities) tool. It's inspired by 7Bee ideas and written in Rust. See [doc](https://github.com/drogatkin/rust_utilities/tree/master/doc/rustbee) of it.
+You can also try [RustBee](https://gitlab.com/tools6772135/rusthub/-/tree/master) tool. It's inspired by 7Bee ideas and written in Rust. See [doc](https://gitlab.com/tools6772135/rusthub/-/tree/master/doc/rustbee) of it.
+It can be [downloaded](https://sourceforge.net/projects/seven-bee/files/Release%201.3.1/).
 
 
 ## Getting started
