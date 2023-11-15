@@ -37,7 +37,7 @@ Now you should be able to launch <b>bee</b> command and execute build scripts wi
 
 ## Documentation
 
-7Bee uses a language with a simple set of predefined operations for creation build scripts. The language is XML based, so [DTD](http://7bee.j2ee.us/xml/DTD/bee.dtd) is very helpful to understand general rules of creation language constructions. Although base set of operations is very limited, it can be easily extended by adding user defined operators and functions. Creation specialized tasks can also reduce efforts of a preparation of build scripts. Another powerful thing is weakly hardcoded DTD, so generally the 7Bee processor can be configured for parsing different languages by just changing a grammar definition in externally defined file. See [Getting Started](#Getting Started) section how to start using 7Bee.
+7Bee uses a language with a simple set of predefined operations for creation build scripts. The language is XML based, so [DTD](http://7bee.j2ee.us/xml/DTD/bee.dtd) is very helpful to understand general rules of creation language constructions. Although base set of operations is very limited, it can be easily extended by adding user defined operators and functions. Creation specialized tasks can also reduce efforts of a preparation of build scripts. Another powerful thing is weakly hardcoded DTD, so generally the 7Bee processor can be configured for parsing different languages by just changing a grammar definition in externally defined file. See [Getting Started](#Getting+Started) section how to start using 7Bee.
 
 ### Basic 7Bee language elements
 
@@ -287,7 +287,7 @@ Although 7Bee build files look bulky, creation of a build script is fairly simpl
 	  <parameter value="-classpath"/>
 	  <parameter variable="class path"/>
 	  <parameter value="-source"/>
-	  <parameter value="1.5"/>
+	  <parameter value="8">
 	  <parameter value="-d"/>
 	  <parameter value="&build\_directory;" type="dir"/>
 	  <parameter variable="java sources"/>>
