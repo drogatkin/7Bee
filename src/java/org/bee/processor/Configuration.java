@@ -1,5 +1,5 @@
 // $Id: Configuration.java,v 1.41 2011/08/31 04:03:05 dmitriy Exp $
-// Bee Copyright (c) 2004 Dmitriy Rogatkin
+// Bee Copyright (c) 2004-2024 Dmitriy Rogatkin
 package org.bee.processor;
 
 /** @author <a href="mailto:dmitriy@mochamail.com">Dmitriy Rogatkin</a>
