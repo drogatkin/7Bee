@@ -5,8 +5,7 @@ package org.bee.func;
 
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.util.Scanner;
 
 import org.bee.util.NullPrintStream;
 
@@ -30,23 +29,11 @@ public class ask {
 	}
 
 	static protected String readLine(InputStream is/* , String encoding */) {
+		// potentially https://github.com/jline/jline3
 		if (is == null)
 			return "";
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-		int c;
-		try {
-			do {
-				c = is.read();
-				//System.out.println("Char:" + (int) c);
-				if (c == 0xA)  // to work on Unix/Windows
-					break;
-				buffer.write(c);
-			} while (c > 0);
-			while (is.available() > 0)
-				is.read();
-		} catch (IOException ioe) {
-			System.err.println("func:ask:eval: read exception: " + ioe);
+		try (Scanner s = new Scanner(is);){	
+			return s.nextLine().trim(); 
 		}
-		return new String(buffer.toByteArray()/* , encoding */).trim();
 	}
 }
