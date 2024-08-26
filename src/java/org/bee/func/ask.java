@@ -32,8 +32,7 @@ public class ask {
 		// potentially https://github.com/jline/jline3
 		if (is == null)
 			return "";
-		try (Scanner s = new Scanner(is);){	
-			return s.nextLine().trim(); 
-		}
+		Scanner s = new Scanner(is);	
+		return s.nextLine().trim(); 
 	}
 }
