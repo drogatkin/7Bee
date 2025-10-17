@@ -2,12 +2,11 @@
  <!DOCTYPE bee PUBLIC "-//Dmitriy Rogatkin//DTD Bee Project Builder 1.0//EN"
     "https://raw.githubusercontent.com/drogatkin/7Bee/master/bee.dtd" [
       <!ENTITY version "1.1.5">
-      <!ENTITY deploy_host "knitknot.info">
+      <!ENTITY deploy_host "receipt-ai.info">
       <!ENTITY env SYSTEM "./env.xml">
-      <!ENTITY maxmem "756">
       ]>
 <!--  a multipurpose script used for Bee project
-   Copyright (c) 2004, 2023 Dmitriy Rogatkin    -->
+   Copyright (c) 2004, 2025 Dmitriy Rogatkin    -->
 
 <bee name="bee" type="project">
   &env;
@@ -369,7 +368,7 @@ set DEFAULT_BEE_HOME=.
 
 if "%BEE_HOME%"=="" set BEE_HOME=%DEFAULT_BEE_HOME%
 
-"%JAVA_HOME%\bin\java" "-DJAVA_HOME=%JAVA_HOME%" -Xmx&maxmem;000000 -jar "%BEE_HOME%\lib\bee.jar" %*</parameter>
+"%JAVA_HOME%\bin\java" "-DJAVA_HOME=%JAVA_HOME%" -jar "%BEE_HOME%\lib\bee.jar" %*</parameter>
            </function>
            <expression variable="install note">
              <operator name="append">
@@ -467,7 +466,7 @@ JAVA_HOME=</parameter>
                   <parameter>
 BEE_HOME=/usr/local/bee
 
-$JAVA_HOME/bin/java -Xmx&maxmem;m</parameter>
+$JAVA_HOME/bin/java</parameter>
                   <parameter variable="JAVA_11"/>
                   <parameter variable="PREVIEW"/>
                   <parameter> -jar $BEE_HOME/lib/bee.jar "$@"</parameter>
