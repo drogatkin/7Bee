@@ -348,7 +348,11 @@ public class Task extends Function {
 				}
 			} finally {
 				lockSM = false;
-				System.setSecurityManager(origSM);
+				try {
+				    System.setSecurityManager(origSM);
+				} catch(Exception e) {
+				    logger.log(FINE, "The Security Manager " + origSM + " isn''t set", e);
+				}
 				System.setProperties(origSystemProps);
 				if (origLoader != null)
 					Thread.currentThread().setContextClassLoader(origLoader);
