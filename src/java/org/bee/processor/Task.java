@@ -107,6 +107,7 @@ public class Task extends Function {
 						environment.put(CLASSPATH, classPath);
 					}
 					environment.putAll(addEnv);
+					//System.out.printf("Adding env %s%n", addEnv);
 					String workingDirectory = lookupStringValue(RESERVE_NAME_DIR);
 					if (workingDirectory != null)
 						pb.directory(new File(workingDirectory));
@@ -399,6 +400,7 @@ public class Task extends Function {
 			if (pv != null) {
 				String parameterValue = pv.getValue();
 				Object o = pv.getType();
+				//System.out.printf("Param: %s , type: %s, val: %s%n", parameter,o,parameterValue);
 				if (o != null) {
 					if (o instanceof Object[]) {
 						for (Object ov : (Object[]) o) {
@@ -417,7 +419,7 @@ public class Task extends Function {
 				if (parameter.getName() != null) {
 					if (parameterValue == null)
 						parameterValue = "";
-					if (type != Type.environment) {
+					if (parameter.type != Type.environment) {
 						System.setProperty(parameter.getName(), parameterValue);
 					} else if (environment != null)
 						environment.put(parameter.getName(), parameterValue);
